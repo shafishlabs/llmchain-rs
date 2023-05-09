@@ -10,4 +10,4 @@
 
 - **Indexes**: Documents Loaders & Text Splitters & Vector Store & Retrievers
 
-- **Chains**
+- **Chains**: Seamlessly combines multiple actions to create unified, coherent AI services
