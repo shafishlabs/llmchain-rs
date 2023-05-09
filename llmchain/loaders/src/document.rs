@@ -14,19 +14,23 @@
 
 use anyhow::Result;
 
+#[derive(Debug, Clone)]
 pub struct DocumentSettings {
-    pub chunk_size: usize
+    pub splitter_chunk_size: usize,
 }
 
+#[derive(Debug, Clone)]
 pub struct DocumentMeta {
     pub path: String,
 }
 
+#[derive(Debug, Clone)]
 pub struct Document {
     pub meta: DocumentMeta,
     pub content: String,
 }
 
+#[async_trait::async_trait]
 pub trait DocumentLoader {
-    fn load() -> Result<Vec<Document>>;
+    async fn load(&self, path: &str) -> Result<Vec<Document>>;
 }

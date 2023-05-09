@@ -8,6 +8,11 @@ categories = ["LLM"]
 keywords = ["LLM"]
 
 [dependencies]
+async-trait = "0.1.68"
 anyhow = "1.0.58"
+opendal = "0.33.2"
+regex = "1.8.1"
+tokio = { version = "1.28.0", features = ["full"]}
 
 [dev-dependencies]
+goldenfile = "1.4"

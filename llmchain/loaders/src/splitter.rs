@@ -13,8 +13,59 @@
 // limitations under the License.
 
 use anyhow::Result;
+use regex::Regex;
 
+use crate::document::DocumentSettings;
 
-pub trait DocumentSplitter{
-    fn separators() -> Vec<String>;
+pub trait TextSplitter {
+    fn separators(&self) -> Vec<String>;
+
+    fn settings(&self) -> DocumentSettings;
+
+    fn split(&self, txt: &str) -> Result<Vec<String>> {
+        // Splits.
+        let separators = self.separators();
+        let separator_pattern = separators
+            .iter()
+            .map(|separator| regex::escape(separator))
+            .collect::<Vec<String>>()
+            .join("|");
+        let separator_regex = Regex::new(&separator_pattern)?;
+
+        let mut parts = Vec::new();
+        let mut last_end = 0;
+        for cap in separator_regex.find_iter(txt) {
+            let part = &txt[last_end..cap.start()];
+            last_end = cap.end();
+            parts.push(part.to_string());
+        }
+        parts.push(txt[last_end..].to_string());
+
+        // Merge.
+        let settings = self.settings();
+        let mut docs = Vec::new();
+        let mut current_chunk = String::new();
+        for part in &parts {
+            if current_chunk.len() > settings.splitter_chunk_size {
+                docs.push(current_chunk.clone());
+                current_chunk.clear();
+            } else if current_chunk.len() + part.len() >= settings.splitter_chunk_size {
+                current_chunk.push(' ');
+                current_chunk.push_str(part);
+                docs.push(current_chunk.clone());
+                current_chunk.clear();
+            } else {
+                if !current_chunk.is_empty() {
+                    current_chunk.push(' ');
+                }
+                current_chunk.push_str(part);
+            }
+        }
+
+        if !current_chunk.is_empty() {
+            docs.push(current_chunk);
+        }
+
+        Ok(docs)
+    }
 }
