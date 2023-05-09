@@ -1,0 +1,10 @@
+[advisories]
+ignore = [
+    #Crate:     time
+    #Version:   0.1.45
+    #Title:     Potential segfault in the time crate
+    #Date:      2020-11-18
+    #ID:        RUSTSEC-2020-0071
+    #URL:       https://rustsec.org/advisories/RUSTSEC-2020-0071
+    "RUSTSEC-2020-0071"
+]
