@@ -39,9 +39,9 @@ impl OpenAI {
 
 #[async_trait::async_trait]
 impl LLM for OpenAI {
-    async fn llm_embedding(&self, inputs: Vec<String>) -> Result<Vec<Vec<f32>>> {
+    async fn embedding(&self, inputs: Vec<String>) -> Result<Vec<Vec<f32>>> {
         let request = CreateEmbeddingRequestArgs::default()
-            .model("text-embedding-ada-002")
+            .model(&self.conf.embedding_model.to_string())
             .input(inputs)
             .build()?;
 
@@ -54,10 +54,10 @@ impl LLM for OpenAI {
         Ok(result)
     }
 
-    async fn llm_generate(&self, input: String) -> Result<String> {
+    async fn generate<S: Into<String> + Send>(&self, input: S) -> Result<String> {
         let request = CreateChatCompletionRequestArgs::default()
             .max_tokens(self.conf.max_token as u16)
-            .model("gpt-3.5-turbo")
+            .model(&self.conf.generate_model.to_string())
             .messages([ChatCompletionRequestMessageArgs::default()
                 .role(Role::Assistant)
                 .content(input)

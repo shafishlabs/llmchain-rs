@@ -12,6 +12,34 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+use clap::ValueEnum;
+
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize, ValueEnum)]
+pub enum OpenAIEmbeddingModel {
+    TextEmbeddingAda002,
+}
+
+impl ToString for OpenAIEmbeddingModel {
+    fn to_string(&self) -> String {
+        "text-embedding-ada-002".to_string()
+    }
+}
+
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize, ValueEnum)]
+pub enum OpenAIGenerateModel {
+    Gpt3,
+    Gpt4,
+}
+
+impl ToString for OpenAIGenerateModel {
+    fn to_string(&self) -> String {
+        match self {
+            OpenAIGenerateModel::Gpt3 => "gpt-3.5-turbo".to_string(),
+            OpenAIGenerateModel::Gpt4 => "gpt-4".to_string(),
+        }
+    }
+}
+
 #[derive(clap::Parser, Debug, Clone, serde::Serialize, serde::Deserialize)]
 #[serde(default, deny_unknown_fields)]
 pub struct OpenAIConfig {
@@ -26,6 +54,12 @@ pub struct OpenAIConfig {
 
     #[clap(long = "max-token", default_value = "512")]
     pub max_token: usize,
+
+    #[clap(long = "embedding-model")]
+    pub embedding_model: OpenAIEmbeddingModel,
+
+    #[clap(long = "generate-model")]
+    pub generate_model: OpenAIGenerateModel,
 }
 
 impl Default for OpenAIConfig {
@@ -35,6 +69,8 @@ impl Default for OpenAIConfig {
             openai_api_key: "".to_string(),
             temperature: 0.7,
             max_token: 512,
+            embedding_model: OpenAIEmbeddingModel::TextEmbeddingAda002,
+            generate_model: OpenAIGenerateModel::Gpt3,
         }
     }
 }

@@ -16,6 +16,9 @@ use anyhow::Result;
 
 #[async_trait::async_trait]
 pub trait LLM {
-    async fn llm_embedding(&self, inputs: Vec<String>) -> Result<Vec<Vec<f32>>>;
-    async fn llm_generate(&self, input: String) -> Result<String>;
+    async fn embedding(&self, inputs: Vec<String>) -> Result<Vec<Vec<f32>>>;
+    async fn generate<S: Into<String> + Send>(&self, input: S) -> Result<String>;
+    async fn chat(&self, _input: Vec<String>) -> Result<Vec<String>> {
+        unimplemented!("")
+    }
 }
