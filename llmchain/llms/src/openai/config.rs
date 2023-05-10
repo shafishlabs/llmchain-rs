@@ -14,7 +14,7 @@
 
 use clap::ValueEnum;
 
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize, ValueEnum)]
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize, Eq, PartialEq, ValueEnum)]
 pub enum OpenAIEmbeddingModel {
     TextEmbeddingAda002,
 }
@@ -25,7 +25,7 @@ impl ToString for OpenAIEmbeddingModel {
     }
 }
 
-#[derive(Debug, Clone, serde::Serialize, serde::Deserialize, ValueEnum)]
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize, Eq, PartialEq, ValueEnum)]
 pub enum OpenAIGenerateModel {
     Gpt3,
     Gpt4,
@@ -43,10 +43,10 @@ impl ToString for OpenAIGenerateModel {
 #[derive(clap::Parser, Debug, Clone, serde::Serialize, serde::Deserialize)]
 #[serde(default, deny_unknown_fields)]
 pub struct OpenAIConfig {
-    #[clap(long = "base-url", default_value = "https://api.openai.com/v1/")]
+    #[clap(long = "openai-api-base", default_value = "https://api.openai.com/v1/")]
     pub openai_api_base: String,
 
-    #[clap(long = "base-url", default_value = "")]
+    #[clap(long = "openai-api-key", default_value = "")]
     pub openai_api_key: String,
 
     #[clap(long = "temperature", default_value = "0.7")]
@@ -55,10 +55,10 @@ pub struct OpenAIConfig {
     #[clap(long = "max-token", default_value = "512")]
     pub max_token: usize,
 
-    #[clap(long = "embedding-model")]
+    #[clap(long = "embedding-model", default_value = "text-embedding-ada002")]
     pub embedding_model: OpenAIEmbeddingModel,
 
-    #[clap(long = "generate-model")]
+    #[clap(long = "generate-model", default_value = "gpt3")]
     pub generate_model: OpenAIGenerateModel,
 }
 
