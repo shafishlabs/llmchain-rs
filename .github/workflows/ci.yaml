@@ -3,7 +3,7 @@ name: ci
 on:
   push:
     branches: [main]
-  pull_request:
+  pull_request_target:
     branches: [main]
 
 concurrency:
@@ -38,9 +38,11 @@ jobs:
 
   unit:
     runs-on: ubuntu-latest
+    env:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
     steps:
       - uses: actions/checkout@v3
       - uses: ./.github/actions/setup
         with:
           cache-key: unit
-      - run: cargo test --all-features --lib -- --show-output
+      - run: cargo test --all-features -- --show-output
