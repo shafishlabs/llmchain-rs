@@ -43,4 +43,4 @@ jobs:
       - uses: ./.github/actions/setup
         with:
           cache-key: unit
-      - run: cargo test --all-features --show-output
+      - run: cargo test --all-features -- --show-output
