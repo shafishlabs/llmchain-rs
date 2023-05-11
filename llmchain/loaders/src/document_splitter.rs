@@ -16,12 +16,16 @@ use anyhow::Result;
 use regex::Regex;
 
 use crate::document::Document;
-use crate::document::DocumentSettings;
+
+#[derive(Debug, Clone, Default)]
+pub struct DocumentSplitterSettings {
+    pub splitter_chunk_size: usize,
+}
 
 pub trait TextSplitter {
     fn separators(&self) -> Vec<String>;
 
-    fn settings(&self) -> DocumentSettings;
+    fn settings(&self) -> DocumentSplitterSettings;
 
     fn split_text(&self, text: &str) -> Result<Vec<String>> {
         // Splits.

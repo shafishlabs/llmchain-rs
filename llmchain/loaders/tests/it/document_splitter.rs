@@ -12,17 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use llmchain_loaders::document::DocumentSettings;
+use llmchain_loaders::document_splitter::DocumentSplitterSettings;
 use llmchain_loaders::document_splitter::TextSplitter;
 
 struct CustomTextSplitter {
-    settings: DocumentSettings,
+    settings: DocumentSplitterSettings,
 }
 
 impl CustomTextSplitter {
     fn new(splitter_chunk_size: usize) -> Self {
         CustomTextSplitter {
-            settings: DocumentSettings {
+            settings: DocumentSplitterSettings {
                 splitter_chunk_size,
             },
         }
@@ -34,7 +34,7 @@ impl TextSplitter for CustomTextSplitter {
         vec![String::from("\n"), String::from("--")]
     }
 
-    fn settings(&self) -> DocumentSettings {
+    fn settings(&self) -> DocumentSplitterSettings {
         self.settings.clone()
     }
 }

@@ -12,18 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use crate::document::DocumentSettings;
+use crate::document_splitter::DocumentSplitterSettings;
 use crate::document_splitter::TextSplitter;
 
 pub struct MarkdownSplitter {
-    settings: DocumentSettings,
+    settings: DocumentSplitterSettings,
 }
 
 impl MarkdownSplitter {
-    pub fn create(settings: &DocumentSettings) -> Self {
+    pub fn create() -> Self {
         MarkdownSplitter {
-            settings: settings.clone(),
+            settings: DocumentSplitterSettings {
+                splitter_chunk_size: 400,
+            },
         }
+    }
+
+    pub fn with_chunk_size(mut self, chunk_size: usize) -> Self {
+        self.settings.splitter_chunk_size = chunk_size;
+        self
     }
 }
 
@@ -38,7 +45,7 @@ impl TextSplitter for MarkdownSplitter {
         ]
     }
 
-    fn settings(&self) -> DocumentSettings {
+    fn settings(&self) -> DocumentSplitterSettings {
         self.settings.clone()
     }
 }
