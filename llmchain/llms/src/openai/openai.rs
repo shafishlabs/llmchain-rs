@@ -19,6 +19,8 @@ use async_openai::types::CreateEmbeddingRequestArgs;
 use async_openai::types::Role;
 use async_openai::Client;
 
+use crate::llm::EmbeddingResult;
+use crate::llm::GenerateResult;
 use crate::llm::LLM;
 use crate::openai::OpenAIConfig;
 
@@ -39,22 +41,27 @@ impl OpenAI {
 
 #[async_trait::async_trait]
 impl LLM for OpenAI {
-    async fn embedding(&self, inputs: Vec<String>) -> Result<Vec<Vec<f32>>> {
+    async fn embedding(&self, inputs: Vec<String>) -> Result<EmbeddingResult> {
         let request = CreateEmbeddingRequestArgs::default()
             .model(&self.conf.embedding_model.to_string())
             .input(inputs)
             .build()?;
 
         let response = self.client.embeddings().create(request).await?;
-        let mut result = Vec::with_capacity(response.data.len());
+        let mut embeddings = Vec::with_capacity(response.data.len());
         for embedding in &response.data {
-            result.push(embedding.embedding.clone());
+            embeddings.push(embedding.embedding.clone());
         }
 
-        Ok(result)
+        let embedding_result = EmbeddingResult {
+            prompt_tokens: response.usage.prompt_tokens,
+            total_tokens: response.usage.total_tokens,
+            embeddings,
+        };
+        Ok(embedding_result)
     }
 
-    async fn generate<S: Into<String> + Send>(&self, input: S) -> Result<String> {
+    async fn generate<S: Into<String> + Send>(&self, input: S) -> Result<GenerateResult> {
         let request = CreateChatCompletionRequestArgs::default()
             .max_tokens(self.conf.max_token as u16)
             .model(&self.conf.generate_model.to_string())
@@ -65,10 +72,20 @@ impl LLM for OpenAI {
             .build()?;
 
         let response = self.client.chat().create(request).await?;
-        if !response.choices.is_empty() {
-            return Ok(response.choices[0].message.content.clone());
+
+        let mut generate_result = GenerateResult::default();
+
+        // Usage.
+        if let Some(usage) = response.usage {
+            generate_result.prompt_tokens = usage.prompt_tokens;
+            generate_result.total_tokens = usage.total_tokens;
+            generate_result.completion_tokens = usage.completion_tokens;
         }
 
-        Ok("".to_string())
+        if !response.choices.is_empty() {
+            generate_result.generation = response.choices[0].message.content.clone();
+        }
+
+        Ok(generate_result)
     }
 }
