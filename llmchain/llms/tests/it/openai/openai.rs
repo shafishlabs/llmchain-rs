@@ -15,38 +15,44 @@
 use anyhow::Result;
 use llmchain_llms::llm::LLM;
 use llmchain_llms::openai::OpenAI;
-use llmchain_llms::openai::OpenAIConfig;
+use llmchain_llms::openai::OpenAIGenerateModel;
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 1)]
-async fn test_llm_openai_generate() -> Result<()> {
-    let key = std::env::var("OPENAI_API_KEY").unwrap_or("".to_string());
-    let openai_conf = OpenAIConfig {
-        openai_api_key: key,
-        ..Default::default()
-    };
+async fn test_llm_openai_generate_gpt35() -> Result<()> {
+    let api_key = std::env::var("OPENAI_API_KEY").unwrap_or("".to_string());
 
-    let openai_llm = OpenAI::create(openai_conf);
-    let result = openai_llm.generate("say Hello").await?;
+    let llm = OpenAI::create(&api_key);
+    let result = llm.generate("say Hello").await?;
     let generation = result.generation;
     assert!(generation.contains("Hello"));
     assert_eq!(result.prompt_tokens, 10);
-    assert_eq!(result.total_tokens, 19);
     assert_eq!(result.completion_tokens, 9);
+    assert_eq!(result.total_tokens, 19);
+
+    Ok(())
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 1)]
+async fn test_llm_openai_generate_gpt4() -> Result<()> {
+    let api_key = std::env::var("OPENAI_API_KEY").unwrap_or("".to_string());
+
+    let llm = OpenAI::create(&api_key).with_generate_model(OpenAIGenerateModel::Gpt4);
+    let result = llm.generate("say Hello").await?;
+    let generation = result.generation;
+    assert!(generation.contains("Hello"));
+    assert_eq!(result.prompt_tokens, 9);
+    assert_eq!(result.completion_tokens, 2);
+    assert_eq!(result.total_tokens, 11);
 
     Ok(())
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 1)]
 async fn test_llm_openai_embedding() -> Result<()> {
-    let key = std::env::var("OPENAI_API_KEY").unwrap_or("".to_string());
-    let openai_conf = OpenAIConfig {
-        openai_api_key: key,
-        ..Default::default()
-    };
-
-    let openai_llm = OpenAI::create(openai_conf);
+    let api_key = std::env::var("OPENAI_API_KEY").unwrap_or("".to_string());
+    let llm = OpenAI::create(&api_key);
     let inputs = vec!["llmchain".to_string(), "rs".to_string()];
-    let result = openai_llm.embedding(inputs).await?;
+    let result = llm.embedding(inputs).await?;
     let embeddings = result.embeddings;
     assert_eq!(embeddings.len(), 2);
 

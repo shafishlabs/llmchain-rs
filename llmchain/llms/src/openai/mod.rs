@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-mod config;
 #[allow(clippy::module_inception)]
 mod openai;
 
-pub use config::OpenAIConfig;
 pub use openai::OpenAI;
+pub use openai::OpenAIEmbeddingModel;
+pub use openai::OpenAIGenerateModel;
