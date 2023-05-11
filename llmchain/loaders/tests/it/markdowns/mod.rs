@@ -13,3 +13,4 @@
 // limitations under the License.
 
 mod markdown;
+mod markdown_splitter;

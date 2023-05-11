@@ -17,7 +17,10 @@ use std::io::Write;
 use anyhow::Result;
 use goldenfile::Mint;
 use llmchain_loaders::document::DocumentLoader;
+use llmchain_loaders::document::DocumentSettings;
 use llmchain_loaders::markdown::Markdown;
+use llmchain_loaders::markdown::MarkdownSplitter;
+use llmchain_loaders::splitter::TextSplitter;
 use opendal::services::Fs;
 use opendal::Operator;
 
@@ -34,18 +37,25 @@ async fn test_markdown() -> Result<()> {
 
     // Load
     let markdown = Markdown::create(op.clone());
-    let docs = markdown.load("markdowns/copy.md").await?;
+    let documents = markdown.load("markdowns/copy.md").await?;
+
+    let settings = DocumentSettings {
+        splitter_chunk_size: 400,
+    };
+    let markdown_splitter = MarkdownSplitter::create(&settings);
+    let documents = markdown_splitter.split_documents(&documents)?;
 
     // Check.
     let mut mint = Mint::new(&testdata_dir);
-    let golden_path = "markdowns/copy_md_load.txt";
+    let golden_path = "markdowns/copy_md_splitter.txt";
     let mut file = mint.new_goldenfile(golden_path)?;
-    for (i, doc) in docs.iter().enumerate() {
+    for (i, doc) in documents.iter().enumerate() {
         writeln!(
             file,
-            "part={}, len={}, path={}",
+            "part={}, len={}, chunk_size={}, path={}",
             i,
             doc.content.len(),
+            settings.splitter_chunk_size,
             doc.meta.path
         )?;
         writeln!(

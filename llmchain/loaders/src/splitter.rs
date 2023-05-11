@@ -15,6 +15,7 @@
 use anyhow::Result;
 use regex::Regex;
 
+use crate::document::Document;
 use crate::document::DocumentSettings;
 
 pub trait TextSplitter {
@@ -22,7 +23,7 @@ pub trait TextSplitter {
 
     fn settings(&self) -> DocumentSettings;
 
-    fn split(&self, txt: &str) -> Result<Vec<String>> {
+    fn split_text(&self, text: &str) -> Result<Vec<String>> {
         // Splits.
         let separators = self.separators();
         let separator_pattern = separators
@@ -34,12 +35,12 @@ pub trait TextSplitter {
 
         let mut parts = Vec::new();
         let mut last_end = 0;
-        for cap in separator_regex.find_iter(txt) {
-            let part = &txt[last_end..cap.start()];
+        for cap in separator_regex.find_iter(text) {
+            let part = &text[last_end..cap.start()];
             last_end = cap.end();
             parts.push(part.to_string());
         }
-        parts.push(txt[last_end..].to_string());
+        parts.push(text[last_end..].to_string());
 
         // Merge.
         let settings = self.settings();
@@ -67,5 +68,22 @@ pub trait TextSplitter {
         }
 
         Ok(docs)
+    }
+
+    fn split_documents(&self, documents: &[Document]) -> Result<Vec<Document>> {
+        let mut result = vec![];
+
+        for document in documents {
+            let meta = document.meta.clone();
+            let chunks = self.split_text(&document.content)?;
+
+            for chunk in chunks {
+                result.push(Document {
+                    meta: meta.clone(),
+                    content: chunk,
+                })
+            }
+        }
+        Ok(result)
     }
 }

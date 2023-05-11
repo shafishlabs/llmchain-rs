@@ -18,21 +18,14 @@ use opendal::Operator;
 use crate::document::Document;
 use crate::document::DocumentLoader;
 use crate::document::DocumentMeta;
-use crate::document::DocumentSettings;
-use crate::markdown::markdown_splitter::MarkdownSplitter;
-use crate::splitter::TextSplitter;
 
 pub struct Markdown {
     pub op: Operator,
-    pub settings: DocumentSettings,
 }
 
 impl Markdown {
-    pub fn create(op: Operator, settings: &DocumentSettings) -> Self {
-        Markdown {
-            op,
-            settings: settings.clone(),
-        }
+    pub fn create(op: Operator) -> Self {
+        Markdown { op }
     }
 }
 
@@ -40,22 +33,13 @@ impl Markdown {
 impl DocumentLoader for Markdown {
     async fn load(&self, path: &str) -> Result<Vec<Document>> {
         let bs = self.op.read(path).await?;
-        let text = String::from_utf8_lossy(&bs).to_string();
+        let content = String::from_utf8_lossy(&bs).to_string();
 
-        let splitter = MarkdownSplitter::create(&self.settings);
-        let chunks = splitter.split(&text)?;
-
-        let mut docs = Vec::with_capacity(chunks.len());
-        for chunk in &chunks {
-            let doc = Document {
-                meta: DocumentMeta {
-                    path: path.to_string(),
-                },
-                content: chunk.clone(),
-            };
-            docs.push(doc);
-        }
-
-        Ok(docs)
+        Ok(vec![Document {
+            meta: DocumentMeta {
+                path: path.to_string(),
+            },
+            content,
+        }])
     }
 }

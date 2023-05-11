@@ -47,7 +47,7 @@ fn test_split() {
     {
         let splitter = CustomTextSplitter::new(7);
 
-        let result = splitter.split(txt).unwrap();
+        let result = splitter.split_text(txt).unwrap();
         let expected = vec![
             "Hello world",
             "This is a test bala bala bala",
@@ -61,7 +61,7 @@ fn test_split() {
     {
         let splitter = CustomTextSplitter::new(11);
 
-        let result = splitter.split(txt).unwrap();
+        let result = splitter.split_text(txt).unwrap();
         let expected = vec![
             "Hello world This",
             "is a test bala bala bala",
