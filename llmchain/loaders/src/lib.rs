@@ -13,5 +13,5 @@
 // limitations under the License.
 
 pub mod document;
+pub mod document_splitter;
 pub mod markdown;
-pub mod splitter;
