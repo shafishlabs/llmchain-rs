@@ -18,9 +18,9 @@ use anyhow::Result;
 use goldenfile::Mint;
 use llmchain_loaders::document::DocumentLoader;
 use llmchain_loaders::document::DocumentSettings;
+use llmchain_loaders::document_splitter::TextSplitter;
 use llmchain_loaders::markdown::Markdown;
 use llmchain_loaders::markdown::MarkdownSplitter;
-use llmchain_loaders::splitter::TextSplitter;
 use opendal::services::Fs;
 use opendal::Operator;
 

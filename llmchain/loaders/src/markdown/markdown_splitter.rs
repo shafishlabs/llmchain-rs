@@ -13,7 +13,7 @@
 // limitations under the License.
 
 use crate::document::DocumentSettings;
-use crate::splitter::TextSplitter;
+use crate::document_splitter::TextSplitter;
 
 pub struct MarkdownSplitter {
     settings: DocumentSettings,

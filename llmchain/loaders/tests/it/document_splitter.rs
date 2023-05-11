@@ -13,7 +13,7 @@
 // limitations under the License.
 
 use llmchain_loaders::document::DocumentSettings;
-use llmchain_loaders::splitter::TextSplitter;
+use llmchain_loaders::document_splitter::TextSplitter;
 
 struct CustomTextSplitter {
     settings: DocumentSettings,
