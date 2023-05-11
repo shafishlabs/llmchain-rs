@@ -14,11 +14,34 @@
 
 use anyhow::Result;
 
+pub struct EmbeddingResult {
+    // Usage
+    pub prompt_tokens: u32,
+    pub total_tokens: u32,
+
+    pub embeddings: Vec<Vec<f32>>,
+}
+
+#[derive(Default)]
+pub struct GenerateResult {
+    // Usage
+    pub prompt_tokens: u32,
+    pub completion_tokens: u32,
+    pub total_tokens: u32,
+
+    pub generation: String,
+}
+
+pub struct ChatResult {
+    pub role: String,
+    pub content: String,
+}
+
 #[async_trait::async_trait]
 pub trait LLM {
-    async fn embedding(&self, inputs: Vec<String>) -> Result<Vec<Vec<f32>>>;
-    async fn generate<S: Into<String> + Send>(&self, input: S) -> Result<String>;
-    async fn chat(&self, _input: Vec<String>) -> Result<Vec<String>> {
+    async fn embedding(&self, inputs: Vec<String>) -> Result<EmbeddingResult>;
+    async fn generate<S: Into<String> + Send>(&self, input: S) -> Result<GenerateResult>;
+    async fn chat(&self, _input: Vec<String>) -> Result<Vec<ChatResult>> {
         unimplemented!("")
     }
 }

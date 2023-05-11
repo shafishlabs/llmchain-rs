@@ -19,22 +19,26 @@ use llmchain_llms::openai::OpenAIConfig;
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 1)]
 async fn test_llm_openai_generate() -> Result<()> {
-    let key = std::env::var("OPENAI_API_KEY")?;
+    let key = std::env::var("OPENAI_API_KEY").unwrap_or("".to_string());
     let openai_conf = OpenAIConfig {
         openai_api_key: key,
         ..Default::default()
     };
 
     let openai_llm = OpenAI::create(openai_conf);
-    let generate = openai_llm.generate("say Hello").await?;
-    assert!(generate.contains("Hello"));
+    let result = openai_llm.generate("say Hello").await?;
+    let generation = result.generation;
+    assert!(generation.contains("Hello"));
+    assert_eq!(result.prompt_tokens, 10);
+    assert_eq!(result.total_tokens, 19);
+    assert_eq!(result.completion_tokens, 9);
 
     Ok(())
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 1)]
 async fn test_llm_openai_embedding() -> Result<()> {
-    let key = std::env::var("OPENAI_API_KEY")?;
+    let key = std::env::var("OPENAI_API_KEY").unwrap_or("".to_string());
     let openai_conf = OpenAIConfig {
         openai_api_key: key,
         ..Default::default()
@@ -42,11 +46,14 @@ async fn test_llm_openai_embedding() -> Result<()> {
 
     let openai_llm = OpenAI::create(openai_conf);
     let inputs = vec!["llmchain".to_string(), "rs".to_string()];
-    let embeddings = openai_llm.embedding(inputs).await?;
+    let result = openai_llm.embedding(inputs).await?;
+    let embeddings = result.embeddings;
     assert_eq!(embeddings.len(), 2);
 
     assert_eq!(embeddings[0].len(), 1536);
     assert_eq!(embeddings[1].len(), 1536);
+    assert_eq!(result.prompt_tokens, 4);
+    assert_eq!(result.total_tokens, 4);
 
     Ok(())
 }
