@@ -11,11 +11,6 @@ keywords = ["LLMs"]
 async-openai = "0.10.3"
 async-trait = "0.1.68"
 anyhow = "1.0.58"
-clap = { version = "4.1.7", features = ["derive", "env"] }
-opendal = "0.33.2"
-regex = "1.8.1"
-serde = { version = "1.0.159", features = ["derive"] }
-serfig = "0.0.3"
 tokio = { version = "1.28.0", features = ["full"]}
 
 [dev-dependencies]
