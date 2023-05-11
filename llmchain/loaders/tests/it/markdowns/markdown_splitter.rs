@@ -17,7 +17,6 @@ use std::io::Write;
 use anyhow::Result;
 use goldenfile::Mint;
 use llmchain_loaders::document::DocumentLoader;
-use llmchain_loaders::document::DocumentSettings;
 use llmchain_loaders::document_splitter::TextSplitter;
 use llmchain_loaders::markdown::Markdown;
 use llmchain_loaders::markdown::MarkdownSplitter;
@@ -25,7 +24,7 @@ use opendal::services::Fs;
 use opendal::Operator;
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 1)]
-async fn test_markdown() -> Result<()> {
+async fn test_markdown_splitter_default() -> Result<()> {
     // testdata dir.
     let curdir = std::env::current_dir()?.to_str().unwrap().to_string();
     let testdata_dir = format!("{}/tests/testdata", curdir);
@@ -39,15 +38,12 @@ async fn test_markdown() -> Result<()> {
     let markdown = Markdown::create(op.clone());
     let documents = markdown.load("markdowns/copy.md").await?;
 
-    let settings = DocumentSettings {
-        splitter_chunk_size: 400,
-    };
-    let markdown_splitter = MarkdownSplitter::create(&settings);
+    let markdown_splitter = MarkdownSplitter::create();
     let documents = markdown_splitter.split_documents(&documents)?;
 
     // Check.
     let mut mint = Mint::new(&testdata_dir);
-    let golden_path = "markdowns/copy_md_splitter.txt";
+    let golden_path = "markdowns/copy_md_splitter_default.txt";
     let mut file = mint.new_goldenfile(golden_path)?;
     for (i, doc) in documents.iter().enumerate() {
         writeln!(
@@ -55,7 +51,48 @@ async fn test_markdown() -> Result<()> {
             "part={}, len={}, chunk_size={}, path={}",
             i,
             doc.content.len(),
-            settings.splitter_chunk_size,
+            markdown_splitter.settings().splitter_chunk_size,
+            doc.meta.path
+        )?;
+        writeln!(
+            file,
+            "------------------------------------------------------------"
+        )?;
+        writeln!(file, "{}", doc.content)?;
+    }
+
+    Ok(())
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 1)]
+async fn test_markdown_splitter_100() -> Result<()> {
+    // testdata dir.
+    let curdir = std::env::current_dir()?.to_str().unwrap().to_string();
+    let testdata_dir = format!("{}/tests/testdata", curdir);
+
+    // Operator.
+    let mut builder = Fs::default();
+    builder.root(&testdata_dir);
+    let op: Operator = Operator::new(builder)?.finish();
+
+    // Load
+    let markdown = Markdown::create(op.clone());
+    let documents = markdown.load("markdowns/copy.md").await?;
+
+    let markdown_splitter = MarkdownSplitter::create().with_chunk_size(100);
+    let documents = markdown_splitter.split_documents(&documents)?;
+
+    // Check.
+    let mut mint = Mint::new(&testdata_dir);
+    let golden_path = "markdowns/copy_md_splitter_chunk_100.txt";
+    let mut file = mint.new_goldenfile(golden_path)?;
+    for (i, doc) in documents.iter().enumerate() {
+        writeln!(
+            file,
+            "part={}, len={}, chunk_size={}, path={}",
+            i,
+            doc.content.len(),
+            markdown_splitter.settings().splitter_chunk_size,
             doc.meta.path
         )?;
         writeln!(

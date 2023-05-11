@@ -15,11 +15,6 @@
 use anyhow::Result;
 
 #[derive(Debug, Clone)]
-pub struct DocumentSettings {
-    pub splitter_chunk_size: usize,
-}
-
-#[derive(Debug, Clone)]
 pub struct DocumentMeta {
     pub path: String,
 }
