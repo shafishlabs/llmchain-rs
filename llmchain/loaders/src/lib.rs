@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+pub mod directory;
 pub mod document;
 pub mod document_splitter;
 pub mod markdown;

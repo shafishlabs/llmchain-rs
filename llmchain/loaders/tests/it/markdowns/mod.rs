@@ -12,5 +12,5 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-mod markdown;
+mod markdown_loader;
 mod markdown_splitter;

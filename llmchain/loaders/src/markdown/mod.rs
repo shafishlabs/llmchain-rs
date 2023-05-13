@@ -12,9 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#[allow(clippy::module_inception)]
-mod markdown;
+mod markdown_loader;
 mod markdown_splitter;
 
-pub use markdown::Markdown;
+pub use markdown_loader::MarkdownLoader;
 pub use markdown_splitter::MarkdownSplitter;

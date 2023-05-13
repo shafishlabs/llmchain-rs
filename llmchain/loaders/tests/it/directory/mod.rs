@@ -12,19 +12,5 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use anyhow::Result;
-
-#[derive(Debug, Clone)]
-pub struct DocumentMeta {
-    pub path: String,
-}
-
-#[derive(Debug, Clone)]
-pub struct Document {
-    pub meta: DocumentMeta,
-    pub content: String,
-}
-
-pub trait DocumentLoader: Send + Sync {
-    fn load(&self, path: &str) -> Result<Vec<Document>>;
-}
+mod directory_loader;
+mod directory_splitter;
