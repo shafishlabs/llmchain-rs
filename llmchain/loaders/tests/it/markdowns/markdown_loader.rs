@@ -17,12 +17,13 @@ use std::io::Write;
 use anyhow::Result;
 use goldenfile::Mint;
 use llmchain_loaders::document::DocumentLoader;
-use llmchain_loaders::markdown::Markdown;
+use llmchain_loaders::markdown::MarkdownLoader;
 use opendal::services::Fs;
+use opendal::BlockingOperator;
 use opendal::Operator;
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 1)]
-async fn test_markdown() -> Result<()> {
+#[test]
+fn test_markdown() -> Result<()> {
     // testdata dir.
     let curdir = std::env::current_dir()?.to_str().unwrap().to_string();
     let testdata_dir = format!("{}/tests/testdata", curdir);
@@ -30,11 +31,11 @@ async fn test_markdown() -> Result<()> {
     // Operator.
     let mut builder = Fs::default();
     builder.root(&testdata_dir);
-    let op: Operator = Operator::new(builder)?.finish();
+    let op: BlockingOperator = Operator::new(builder)?.finish().blocking();
 
     // Load
-    let markdown = Markdown::create(op.clone());
-    let docs = markdown.load("markdowns/copy.md").await?;
+    let markdown = MarkdownLoader::create(op);
+    let docs = markdown.load("markdowns/copy.md")?;
 
     // Check.
     let mut mint = Mint::new(&testdata_dir);

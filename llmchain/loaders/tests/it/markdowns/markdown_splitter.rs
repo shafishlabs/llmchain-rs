@@ -18,13 +18,14 @@ use anyhow::Result;
 use goldenfile::Mint;
 use llmchain_loaders::document::DocumentLoader;
 use llmchain_loaders::document_splitter::TextSplitter;
-use llmchain_loaders::markdown::Markdown;
+use llmchain_loaders::markdown::MarkdownLoader;
 use llmchain_loaders::markdown::MarkdownSplitter;
 use opendal::services::Fs;
+use opendal::BlockingOperator;
 use opendal::Operator;
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 1)]
-async fn test_markdown_splitter_default() -> Result<()> {
+#[test]
+fn test_markdown_splitter_default() -> Result<()> {
     // testdata dir.
     let curdir = std::env::current_dir()?.to_str().unwrap().to_string();
     let testdata_dir = format!("{}/tests/testdata", curdir);
@@ -32,11 +33,11 @@ async fn test_markdown_splitter_default() -> Result<()> {
     // Operator.
     let mut builder = Fs::default();
     builder.root(&testdata_dir);
-    let op: Operator = Operator::new(builder)?.finish();
+    let op: BlockingOperator = Operator::new(builder)?.finish().blocking();
 
     // Load
-    let markdown = Markdown::create(op.clone());
-    let documents = markdown.load("markdowns/copy.md").await?;
+    let markdown = MarkdownLoader::create(op);
+    let documents = markdown.load("markdowns/copy.md")?;
 
     let markdown_splitter = MarkdownSplitter::create();
     let documents = markdown_splitter.split_documents(&documents)?;
@@ -64,8 +65,8 @@ async fn test_markdown_splitter_default() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 1)]
-async fn test_markdown_splitter_100() -> Result<()> {
+#[test]
+fn test_markdown_splitter_100() -> Result<()> {
     // testdata dir.
     let curdir = std::env::current_dir()?.to_str().unwrap().to_string();
     let testdata_dir = format!("{}/tests/testdata", curdir);
@@ -73,11 +74,11 @@ async fn test_markdown_splitter_100() -> Result<()> {
     // Operator.
     let mut builder = Fs::default();
     builder.root(&testdata_dir);
-    let op: Operator = Operator::new(builder)?.finish();
+    let op: BlockingOperator = Operator::new(builder)?.finish().blocking();
 
     // Load
-    let markdown = Markdown::create(op.clone());
-    let documents = markdown.load("markdowns/copy.md").await?;
+    let markdown = MarkdownLoader::create(op);
+    let documents = markdown.load("markdowns/copy.md")?;
 
     let markdown_splitter = MarkdownSplitter::create().with_chunk_size(100);
     let documents = markdown_splitter.split_documents(&documents)?;

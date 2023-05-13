@@ -13,26 +13,25 @@
 // limitations under the License.
 
 use anyhow::Result;
-use opendal::Operator;
+use opendal::BlockingOperator;
 
 use crate::document::Document;
 use crate::document::DocumentLoader;
 use crate::document::DocumentMeta;
 
-pub struct Markdown {
-    pub op: Operator,
+pub struct MarkdownLoader {
+    op: BlockingOperator,
 }
 
-impl Markdown {
-    pub fn create(op: Operator) -> Self {
-        Markdown { op }
+impl MarkdownLoader {
+    pub fn create(op: BlockingOperator) -> Self {
+        MarkdownLoader { op }
     }
 }
 
-#[async_trait::async_trait]
-impl DocumentLoader for Markdown {
-    async fn load(&self, path: &str) -> Result<Vec<Document>> {
-        let bs = self.op.read(path).await?;
+impl DocumentLoader for MarkdownLoader {
+    fn load(&self, path: &str) -> Result<Vec<Document>> {
+        let bs = self.op.read(path)?;
         let content = String::from_utf8_lossy(&bs).to_string();
 
         Ok(vec![Document {
