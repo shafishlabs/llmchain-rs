@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+use std::sync::Arc;
+
 use anyhow::Result;
 use opendal::BlockingOperator;
 
@@ -24,8 +26,8 @@ pub struct MarkdownLoader {
 }
 
 impl MarkdownLoader {
-    pub fn create(op: BlockingOperator) -> Self {
-        MarkdownLoader { op }
+    pub fn create(op: BlockingOperator) -> Arc<Self> {
+        Arc::new(MarkdownLoader { op })
     }
 }
 

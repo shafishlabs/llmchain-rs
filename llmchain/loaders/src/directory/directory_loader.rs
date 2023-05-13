@@ -28,7 +28,8 @@ use crate::document::DocumentLoader;
 
 pub struct DirectoryLoader {
     op: BlockingOperator,
-    loaders: HashMap<String, Arc<dyn DocumentLoader + Send + Sync>>,
+    loaders: HashMap<String, Arc<dyn DocumentLoader>>,
+    max_worker: usize,
 }
 
 impl DirectoryLoader {
@@ -36,50 +37,61 @@ impl DirectoryLoader {
         DirectoryLoader {
             op,
             loaders: HashMap::default(),
+            max_worker: 8,
         }
     }
 
-    pub fn with_loader(
-        mut self,
-        glob: &str,
-        loader: Arc<dyn DocumentLoader + Send + Sync>,
-    ) -> Self {
+    pub fn with_loader(mut self, glob: &str, loader: Arc<dyn DocumentLoader>) -> Self {
         self.loaders.insert(glob.to_string(), loader);
         self
+    }
+
+    pub fn with_max_worker(mut self, max_worker: usize) -> Self {
+        self.max_worker = max_worker;
+        self
+    }
+
+    fn process_directory(
+        &self,
+        path: &str,
+        tasks: &mut VecDeque<(String, Arc<dyn DocumentLoader>)>,
+    ) -> Result<()> {
+        let op = self.op.clone();
+        let ds = op.scan(path)?;
+        for de in ds {
+            let de = de?;
+            let path_buf = de.path();
+            let path_str = path_buf.to_string();
+            let meta = op.metadata(&de, Metakey::Mode)?;
+            match meta.mode() {
+                EntryMode::FILE => {
+                    for loader in &self.loaders {
+                        if glob_match(loader.0, &path_str) {
+                            tasks.push_back((path_str, loader.1.clone()));
+                            break;
+                        }
+                    }
+                }
+                _ => continue,
+            }
+        }
+        Ok(())
     }
 }
 
 impl DocumentLoader for DirectoryLoader {
     fn load(&self, path: &str) -> Result<Vec<Document>> {
-        let mut tasks = VecDeque::new();
+        let mut tasks: VecDeque<(String, Arc<dyn DocumentLoader>)> = VecDeque::new();
+        self.process_directory(path, &mut tasks)?;
 
-        let op = self.op.clone();
-        let ds = op.list(path)?;
-        for de in ds {
-            let de = de?;
-            let path = de.path().to_string();
-            let meta = op.metadata(&de, Metakey::Mode)?;
-            match meta.mode() {
-                EntryMode::FILE => {
-                    for loader in &self.loaders {
-                        if glob_match(loader.0, &path) {
-                            tasks.push_back((path, loader.1.clone()));
-                            break;
-                        }
-                    }
-                }
-                EntryMode::DIR => continue,
-                EntryMode::Unknown => continue,
-            }
-        }
-
-        let pool = ThreadPoolBuilder::new().num_threads(4).build()?;
-
-        let results: Vec<_> = pool.install(|| {
+        let worker_pool = ThreadPoolBuilder::new()
+            .num_threads(self.max_worker)
+            .build()?;
+        let results: Vec<_> = worker_pool.install(|| {
             tasks
                 .iter()
                 .map(|(path, loader)| loader.load(path))
-                .collect() // collect results
+                .collect()
         });
 
         let mut documents = vec![];

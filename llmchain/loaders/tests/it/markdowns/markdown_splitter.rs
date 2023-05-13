@@ -36,8 +36,8 @@ fn test_markdown_splitter_default() -> Result<()> {
     let op: BlockingOperator = Operator::new(builder)?.finish().blocking();
 
     // Load
-    let markdown = MarkdownLoader::create(op);
-    let documents = markdown.load("markdowns/copy.md")?;
+    let markdown_loader = MarkdownLoader::create(op);
+    let documents = markdown_loader.load("markdowns/copy.md")?;
 
     let markdown_splitter = MarkdownSplitter::create();
     let documents = markdown_splitter.split_documents(&documents)?;
@@ -77,11 +77,14 @@ fn test_markdown_splitter_100() -> Result<()> {
     let op: BlockingOperator = Operator::new(builder)?.finish().blocking();
 
     // Load
-    let markdown = MarkdownLoader::create(op);
-    let documents = markdown.load("markdowns/copy.md")?;
+    let markdown_loader = MarkdownLoader::create(op);
+    let documents = markdown_loader.load("markdowns/copy.md")?;
 
     let markdown_splitter = MarkdownSplitter::create().with_chunk_size(100);
     let documents = markdown_splitter.split_documents(&documents)?;
+
+    // Check.
+    assert_eq!(documents.len(), 14);
 
     // Check.
     let mut mint = Mint::new(&testdata_dir);
