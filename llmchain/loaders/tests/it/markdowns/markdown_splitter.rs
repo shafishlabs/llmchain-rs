@@ -44,7 +44,7 @@ fn test_markdown_splitter_default() -> Result<()> {
 
     // Check.
     let mut mint = Mint::new(&testdata_dir);
-    let golden_path = "markdowns/copy_md_splitter_default.txt";
+    let golden_path = "markdowns/copy_md_splitter_default.golden";
     let mut file = mint.new_goldenfile(golden_path)?;
     for (i, doc) in documents.iter().enumerate() {
         writeln!(
@@ -88,7 +88,7 @@ fn test_markdown_splitter_100() -> Result<()> {
 
     // Check.
     let mut mint = Mint::new(&testdata_dir);
-    let golden_path = "markdowns/copy_md_splitter_chunk_100.txt";
+    let golden_path = "markdowns/copy_md_splitter_chunk_100.golden";
     let mut file = mint.new_goldenfile(golden_path)?;
     for (i, doc) in documents.iter().enumerate() {
         writeln!(

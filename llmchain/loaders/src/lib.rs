@@ -25,4 +25,5 @@ pub use document::DocumentMeta;
 pub use document_splitter::DocumentSplitter;
 pub use markdown::MarkdownLoader;
 pub use markdown::MarkdownSplitter;
+pub use text::TextLoader;
 pub use text::TextSplitter;

@@ -39,7 +39,7 @@ fn test_markdown_loader() -> Result<()> {
 
     // Check.
     let mut mint = Mint::new(&testdata_dir);
-    let golden_path = "markdowns/copy_md_loader.txt";
+    let golden_path = "markdowns/copy_md_loader.golden";
     let mut file = mint.new_goldenfile(golden_path)?;
     for (i, doc) in documents.iter().enumerate() {
         writeln!(

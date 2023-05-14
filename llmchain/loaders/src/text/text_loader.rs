@@ -19,21 +19,28 @@ use opendal::BlockingOperator;
 
 use crate::Document;
 use crate::DocumentLoader;
-use crate::TextLoader;
+use crate::DocumentMeta;
 
-pub struct MarkdownLoader {
+pub struct TextLoader {
     op: BlockingOperator,
 }
 
-impl MarkdownLoader {
+impl TextLoader {
     pub fn create(op: BlockingOperator) -> Arc<Self> {
-        Arc::new(MarkdownLoader { op })
+        Arc::new(TextLoader { op })
     }
 }
 
-impl DocumentLoader for MarkdownLoader {
+impl DocumentLoader for TextLoader {
     fn load(&self, path: &str) -> Result<Vec<Document>> {
-        let text_loader = TextLoader::create(self.op.clone());
-        text_loader.load(path)
+        let bs = self.op.read(path)?;
+        let content = String::from_utf8_lossy(&bs).to_string();
+
+        Ok(vec![Document {
+            meta: DocumentMeta {
+                path: path.to_string(),
+            },
+            content,
+        }])
     }
 }
