@@ -19,7 +19,7 @@ use crate::document::Document;
 use crate::DocumentSplitter;
 
 pub struct TextSplitter {
-    splitter_chunk_size: usize,
+    pub splitter_chunk_size: usize,
     separators: Vec<String>,
 }
 
@@ -27,7 +27,7 @@ impl TextSplitter {
     pub fn create() -> Self {
         TextSplitter {
             splitter_chunk_size: 400,
-            separators: vec![],
+            separators: vec!["\n".to_string()],
         }
     }
 
