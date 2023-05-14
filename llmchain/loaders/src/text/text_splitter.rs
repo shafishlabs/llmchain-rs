@@ -16,7 +16,7 @@ use anyhow::Result;
 use regex::Regex;
 
 use crate::document::Document;
-use crate::document_splitter::DocumentSplitter;
+use crate::DocumentSplitter;
 
 pub struct TextSplitter {
     splitter_chunk_size: usize,

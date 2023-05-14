@@ -16,10 +16,10 @@ use std::io::Write;
 
 use anyhow::Result;
 use goldenfile::Mint;
-use llmchain_loaders::document::DocumentLoader;
-use llmchain_loaders::document_splitter::DocumentSplitter;
-use llmchain_loaders::markdown::MarkdownLoader;
-use llmchain_loaders::markdown::MarkdownSplitter;
+use llmchain_loaders::DocumentLoader;
+use llmchain_loaders::DocumentSplitter;
+use llmchain_loaders::MarkdownLoader;
+use llmchain_loaders::MarkdownSplitter;
 use opendal::services::Fs;
 use opendal::BlockingOperator;
 use opendal::Operator;

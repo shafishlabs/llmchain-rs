@@ -17,9 +17,9 @@ use std::sync::Arc;
 use anyhow::Result;
 use opendal::BlockingOperator;
 
-use crate::document::Document;
-use crate::document::DocumentLoader;
-use crate::document::DocumentMeta;
+use crate::Document;
+use crate::DocumentLoader;
+use crate::DocumentMeta;
 
 pub struct MarkdownLoader {
     op: BlockingOperator,

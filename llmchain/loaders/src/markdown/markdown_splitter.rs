@@ -14,9 +14,9 @@
 
 use anyhow::Result;
 
-use crate::document::Document;
-use crate::document_splitter::DocumentSplitter;
-use crate::text_splitter::TextSplitter;
+use crate::text::TextSplitter;
+use crate::Document;
+use crate::DocumentSplitter;
 
 pub struct MarkdownSplitter {
     pub splitter_chunk_size: usize,

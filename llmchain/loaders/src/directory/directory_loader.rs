@@ -24,8 +24,8 @@ use rayon::iter::ParallelIterator;
 use rayon::prelude::IntoParallelRefIterator;
 use rayon::ThreadPoolBuilder;
 
-use crate::document::Document;
-use crate::document::DocumentLoader;
+use crate::Document;
+use crate::DocumentLoader;
 
 pub struct DirectoryLoader {
     op: BlockingOperator,
