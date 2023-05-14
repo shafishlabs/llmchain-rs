@@ -17,7 +17,7 @@ use std::io::Write;
 use anyhow::Result;
 use goldenfile::Mint;
 use llmchain_loaders::document::DocumentLoader;
-use llmchain_loaders::document_splitter::TextSplitter;
+use llmchain_loaders::document_splitter::DocumentSplitter;
 use llmchain_loaders::markdown::MarkdownLoader;
 use llmchain_loaders::markdown::MarkdownSplitter;
 use opendal::services::Fs;
@@ -52,7 +52,7 @@ fn test_markdown_splitter_default() -> Result<()> {
             "part={}, len={}, chunk_size={}, path={}",
             i,
             doc.content.len(),
-            markdown_splitter.settings().splitter_chunk_size,
+            markdown_splitter.splitter_chunk_size,
             doc.meta.path
         )?;
         writeln!(
@@ -96,7 +96,7 @@ fn test_markdown_splitter_100() -> Result<()> {
             "part={}, len={}, chunk_size={}, path={}",
             i,
             doc.content.len(),
-            markdown_splitter.settings().splitter_chunk_size,
+            markdown_splitter.splitter_chunk_size,
             doc.meta.path
         )?;
         writeln!(

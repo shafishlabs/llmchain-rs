@@ -12,29 +12,30 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use crate::document_splitter::DocumentSplitterSettings;
-use crate::document_splitter::TextSplitter;
+use anyhow::Result;
+
+use crate::document::Document;
+use crate::document_splitter::DocumentSplitter;
+use crate::text_splitter::TextSplitter;
 
 pub struct MarkdownSplitter {
-    settings: DocumentSplitterSettings,
+    pub splitter_chunk_size: usize,
 }
 
 impl MarkdownSplitter {
     pub fn create() -> Self {
         MarkdownSplitter {
-            settings: DocumentSplitterSettings {
-                splitter_chunk_size: 400,
-            },
+            splitter_chunk_size: 400,
         }
     }
 
     pub fn with_chunk_size(mut self, chunk_size: usize) -> Self {
-        self.settings.splitter_chunk_size = chunk_size;
+        self.splitter_chunk_size = chunk_size;
         self
     }
 }
 
-impl TextSplitter for MarkdownSplitter {
+impl DocumentSplitter for MarkdownSplitter {
     fn separators(&self) -> Vec<String> {
         vec![
             "\n## ".to_string(),
@@ -45,7 +46,10 @@ impl TextSplitter for MarkdownSplitter {
         ]
     }
 
-    fn settings(&self) -> DocumentSplitterSettings {
-        self.settings.clone()
+    fn split_documents(&self, documents: &[Document]) -> Result<Vec<Document>> {
+        let text_splitter = TextSplitter::create()
+            .with_chunk_size(self.splitter_chunk_size)
+            .with_separators(self.separators());
+        text_splitter.split_documents(documents)
     }
 }

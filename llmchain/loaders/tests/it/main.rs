@@ -13,5 +13,4 @@
 // limitations under the License.
 
 mod directory;
-mod document_splitter;
 mod markdowns;

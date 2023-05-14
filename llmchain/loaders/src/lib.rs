@@ -16,3 +16,4 @@ pub mod directory;
 pub mod document;
 pub mod document_splitter;
 pub mod markdown;
+pub mod text_splitter;
