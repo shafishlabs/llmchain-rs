@@ -16,9 +16,9 @@ use std::io::Write;
 
 use anyhow::Result;
 use goldenfile::Mint;
-use llmchain_loaders::directory::DirectoryLoader;
-use llmchain_loaders::document::DocumentLoader;
-use llmchain_loaders::markdown::MarkdownLoader;
+use llmchain_loaders::DirectoryLoader;
+use llmchain_loaders::DocumentLoader;
+use llmchain_loaders::MarkdownLoader;
 use opendal::services::Fs;
 use opendal::BlockingOperator;
 use opendal::Operator;
@@ -42,7 +42,7 @@ fn test_directory_loader() -> Result<()> {
 
     // Check.
     let mut mint = Mint::new(&testdata_dir);
-    let golden_path = "directory/directory_loader.txt";
+    let golden_path = "directory/directory_loader.golden";
     let mut file = mint.new_goldenfile(golden_path)?;
     for (i, doc) in documents.iter().enumerate() {
         writeln!(

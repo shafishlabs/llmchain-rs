@@ -13,7 +13,6 @@
 // limitations under the License.
 
 use std::collections::HashMap;
-use std::collections::VecDeque;
 use std::sync::Arc;
 
 use anyhow::Result;
@@ -21,15 +20,17 @@ use glob_match::glob_match;
 use opendal::BlockingOperator;
 use opendal::EntryMode;
 use opendal::Metakey;
+use rayon::iter::ParallelIterator;
+use rayon::prelude::IntoParallelRefIterator;
 use rayon::ThreadPoolBuilder;
 
-use crate::document::Document;
-use crate::document::DocumentLoader;
+use crate::Document;
+use crate::DocumentLoader;
 
 pub struct DirectoryLoader {
     op: BlockingOperator,
     loaders: HashMap<String, Arc<dyn DocumentLoader>>,
-    max_worker: usize,
+    max_threads: usize,
 }
 
 impl DirectoryLoader {
@@ -37,7 +38,7 @@ impl DirectoryLoader {
         DirectoryLoader {
             op,
             loaders: HashMap::default(),
-            max_worker: 8,
+            max_threads: 8,
         }
     }
 
@@ -46,15 +47,15 @@ impl DirectoryLoader {
         self
     }
 
-    pub fn with_max_worker(mut self, max_worker: usize) -> Self {
-        self.max_worker = max_worker;
+    pub fn with_max_threads(mut self, max_threads: usize) -> Self {
+        self.max_threads = max_threads;
         self
     }
 
     fn process_directory(
         &self,
         path: &str,
-        tasks: &mut VecDeque<(String, Arc<dyn DocumentLoader>)>,
+        tasks: &mut Vec<(String, Arc<dyn DocumentLoader>)>,
     ) -> Result<()> {
         let op = self.op.clone();
         let ds = op.scan(path)?;
@@ -67,7 +68,7 @@ impl DirectoryLoader {
                 EntryMode::FILE => {
                     for loader in &self.loaders {
                         if glob_match(loader.0, &path_str) {
-                            tasks.push_back((path_str, loader.1.clone()));
+                            tasks.push((path_str, loader.1.clone()));
                             break;
                         }
                     }
@@ -81,15 +82,15 @@ impl DirectoryLoader {
 
 impl DocumentLoader for DirectoryLoader {
     fn load(&self, path: &str) -> Result<Vec<Document>> {
-        let mut tasks: VecDeque<(String, Arc<dyn DocumentLoader>)> = VecDeque::new();
+        let mut tasks: Vec<(String, Arc<dyn DocumentLoader>)> = Vec::new();
         self.process_directory(path, &mut tasks)?;
 
         let worker_pool = ThreadPoolBuilder::new()
-            .num_threads(self.max_worker)
+            .num_threads(self.max_threads)
             .build()?;
         let results: Vec<_> = worker_pool.install(|| {
             tasks
-                .iter()
+                .par_iter()
                 .map(|(path, loader)| loader.load(path))
                 .collect()
         });

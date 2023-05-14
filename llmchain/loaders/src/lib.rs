@@ -12,7 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-pub mod directory;
-pub mod document;
-pub mod document_splitter;
-pub mod markdown;
+mod directory;
+mod document;
+mod document_splitter;
+mod markdown;
+mod text;
+
+pub use directory::DirectoryLoader;
+pub use document::Document;
+pub use document::DocumentLoader;
+pub use document::DocumentMeta;
+pub use document_splitter::DocumentSplitter;
+pub use markdown::MarkdownLoader;
+pub use markdown::MarkdownSplitter;
+pub use text::TextLoader;
+pub use text::TextSplitter;

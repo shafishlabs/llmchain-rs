@@ -12,11 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use anyhow::Result;
+mod text_loader;
+mod text_splitter;
 
-use crate::document::Document;
-
-pub trait DocumentSplitter {
-    fn separators(&self) -> Vec<String>;
-    fn split_documents(&self, documents: &[Document]) -> Result<Vec<Document>>;
-}
+pub use text_loader::TextLoader;
+pub use text_splitter::TextSplitter;
