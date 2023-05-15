@@ -17,26 +17,26 @@ use std::sync::Arc;
 
 use anyhow::Result;
 use glob_match::glob_match;
-use opendal::BlockingOperator;
 use opendal::EntryMode;
 use opendal::Metakey;
 use rayon::iter::ParallelIterator;
 use rayon::prelude::IntoParallelRefIterator;
 use rayon::ThreadPoolBuilder;
 
+use crate::Disk;
 use crate::Document;
 use crate::DocumentLoader;
 
 pub struct DirectoryLoader {
-    op: BlockingOperator,
+    disk: Arc<dyn Disk>,
     loaders: HashMap<String, Arc<dyn DocumentLoader>>,
     max_threads: usize,
 }
 
 impl DirectoryLoader {
-    pub fn create(op: BlockingOperator) -> Self {
+    pub fn create(disk: Arc<dyn Disk>) -> Self {
         DirectoryLoader {
-            op,
+            disk,
             loaders: HashMap::default(),
             max_threads: 8,
         }
@@ -57,7 +57,7 @@ impl DirectoryLoader {
         path: &str,
         tasks: &mut Vec<(String, Arc<dyn DocumentLoader>)>,
     ) -> Result<()> {
-        let op = self.op.clone();
+        let op = self.disk.get_operator()?;
         let ds = op.scan(path)?;
         for de in ds {
             let de = de?;

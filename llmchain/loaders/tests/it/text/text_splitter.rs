@@ -18,26 +18,20 @@ use anyhow::Result;
 use goldenfile::Mint;
 use llmchain_loaders::DocumentLoader;
 use llmchain_loaders::DocumentSplitter;
+use llmchain_loaders::LocalDisk;
 use llmchain_loaders::TextLoader;
 use llmchain_loaders::TextSplitter;
-use opendal::services::Fs;
-use opendal::BlockingOperator;
-use opendal::Operator;
 
 #[test]
 fn test_text_splitter_default() -> Result<()> {
     // testdata dir.
     let curdir = std::env::current_dir()?.to_str().unwrap().to_string();
     let testdata_dir = format!("{}/tests/testdata", curdir);
-
-    // Operator.
-    let mut builder = Fs::default();
-    builder.root(&testdata_dir);
-    let op: BlockingOperator = Operator::new(builder)?.finish().blocking();
+    let text_file = format!("{}/text/example.txt", testdata_dir);
 
     // Load
-    let text_loader = TextLoader::create(op);
-    let documents = text_loader.load("text/example.txt")?;
+    let text_loader = TextLoader::create(LocalDisk::create()?);
+    let documents = text_loader.load(&text_file)?;
 
     let text_splitter = TextSplitter::create();
     let documents = text_splitter.split_documents(&documents)?;
@@ -70,15 +64,11 @@ fn test_text_splitter_10() -> Result<()> {
     // testdata dir.
     let curdir = std::env::current_dir()?.to_str().unwrap().to_string();
     let testdata_dir = format!("{}/tests/testdata", curdir);
-
-    // Operator.
-    let mut builder = Fs::default();
-    builder.root(&testdata_dir);
-    let op: BlockingOperator = Operator::new(builder)?.finish().blocking();
+    let text_file = format!("{}/text/example.txt", testdata_dir);
 
     // Load
-    let text_loader = TextLoader::create(op);
-    let documents = text_loader.load("text/example.txt")?;
+    let text_loader = TextLoader::create(LocalDisk::create()?);
+    let documents = text_loader.load(&text_file)?;
 
     let text_splitter = TextSplitter::create().with_chunk_size(10);
     let documents = text_splitter.split_documents(&documents)?;
@@ -93,11 +83,10 @@ fn test_text_splitter_10() -> Result<()> {
     for (i, doc) in documents.iter().enumerate() {
         writeln!(
             file,
-            "part={}, len={}, chunk_size={}, path={}",
+            "part={}, len={}, chunk_size={}",
             i,
             doc.content.len(),
             text_splitter.splitter_chunk_size,
-            doc.meta.path
         )?;
         writeln!(
             file,

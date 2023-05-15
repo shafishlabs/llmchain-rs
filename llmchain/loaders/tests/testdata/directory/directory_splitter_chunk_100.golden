@@ -1,4 +1,4 @@
-part=0, len=290, chunk_size=100, path=directory/subdir/42-data-type-map.md
+part=0, len=290, chunk_size=100
 ------------------------------------------------------------
  ---
 title: Map
@@ -6,7 +6,7 @@ title: Map
 
 The MAP data structure is utilized for holding a set of `Key:Value` pairs, and stores data using a nested data structure of Array(Tuple(key, value)). It is appropriate in situations where the data type is constant, but the `Key`'s value cannot be entirely ascertained.
 
-part=1, len=983, chunk_size=100, path=directory/subdir/42-data-type-map.md
+part=1, len=983, chunk_size=100
 ------------------------------------------------------------
  Understanding Key:Value
 
@@ -26,7 +26,7 @@ SELECT {'k1': 1, 'k2': 2}, map([1, 2], ['v1', 'v2']);
 +-----------------+---------------------------+
 ```
 
-part=2, len=978, chunk_size=100, path=directory/subdir/42-data-type-map.md
+part=2, len=978, chunk_size=100
 ------------------------------------------------------------
  Map and Bloom Filter Index
 
@@ -58,7 +58,7 @@ select * from nginx_log where log['ip'] = '205.91.162.141';
 Time: 0.129s
 ```
 
-part=3, len=1972, chunk_size=100, path=directory/subdir/42-data-type-map.md
+part=3, len=1972, chunk_size=100
 ------------------------------------------------------------
  Examples
 
@@ -130,7 +130,7 @@ LIMIT 3;
 +---------------------+--------+
 ```
 
-part=4, len=940, chunk_size=100, path=directory/copy.md
+part=4, len=940, chunk_size=100
 ------------------------------------------------------------
  ---
 title: "COPY INTO <table>"
@@ -149,7 +149,7 @@ The files must already be staged in one of the following locations:
     - Remote servers from where you can access the files by their URL (starting with "https://...").
     - [IPFS](https://ipfs.tech).
 
-part=5, len=736, chunk_size=100, path=directory/copy.md
+part=5, len=736, chunk_size=100
 ------------------------------------------------------------
  Syntax
 
@@ -172,7 +172,7 @@ COPY INTO [<database>.]<table_name> [ ( <col_name> [ , <col_name> ... ] ) ]
 [ copyOptions ]
 ```
 
-part=6, len=238, chunk_size=100, path=directory/copy.md
+part=6, len=238, chunk_size=100
 ------------------------------------------------------------
 internalStage
 
@@ -187,7 +187,7 @@ externalStage ::= @<external_stage_name>[/<path>]
 
 Also see [How to Create External Stage](../00-ddl/40-stage/01-ddl-create-stage.md).
 
-part=7, len=9604, chunk_size=100, path=directory/copy.md
+part=7, len=9604, chunk_size=100
 ------------------------------------------------------------
  externalLocation
 
@@ -325,19 +325,19 @@ externalLocation ::=
 
 </Tabs>
 
-part=8, len=118, chunk_size=100, path=directory/copy.md
+part=8, len=118, chunk_size=100
 ------------------------------------------------------------
  FILES = ( 'file1' [ , 'file2' ... ] )
 
 Specify a list of one or more files names (separated by commas) to be loaded.
 
-part=9, len=328, chunk_size=100, path=directory/copy.md
+part=9, len=328, chunk_size=100
 ------------------------------------------------------------
  PATTERN = 'regex_pattern'
 
 A [PCRE2](https://www.pcre.org/current/doc/html/)-based regular expression pattern string, enclosed in single quotes, specifying the file names to match. Click [here](#loading-data-with-pattern-matching) to see an example. For PCRE2 syntax, see http://www.pcre.org/current/doc/html/pcre2syntax.html.
 
-part=10, len=1699, chunk_size=100, path=directory/copy.md
+part=10, len=1699, chunk_size=100
 ------------------------------------------------------------
 FILE_FORMAT
 
@@ -365,7 +365,7 @@ copyOptions ::=
 The parameter ON_ERROR currently does not work for parquet files.
 :::
 
-part=11, len=157, chunk_size=100, path=directory/copy.md
+part=11, len=157, chunk_size=100
 ------------------------------------------------------------
 Examples
  1. Loading Data from an Internal Stage
@@ -377,7 +377,7 @@ PATTERN = '.*[.]parquet'
 FILE_FORMAT = (TYPE = PARQUET);
 ```
 
-part=12, len=258, chunk_size=100, path=directory/copy.md
+part=12, len=258, chunk_size=100
 ------------------------------------------------------------
  2. Loading Data from an External Stage
 
@@ -395,7 +395,7 @@ PATTERN = '.*[.]parquet'
 FILE_FORMAT = (TYPE = PARQUET);
 ```
 
-part=13, len=1956, chunk_size=100, path=directory/copy.md
+part=13, len=1956, chunk_size=100
 ------------------------------------------------------------
  3. Loading Data from External Locations
 
@@ -471,7 +471,7 @@ FILE_FORMAT = (type = CSV, field_delimiter = ',', record_delimiter = '\n', skip_
 
 </Tabs>
 
-part=14, len=709, chunk_size=100, path=directory/copy.md
+part=14, len=709, chunk_size=100
 ------------------------------------------------------------
  4. Loading Data with Pattern Matching
 
@@ -493,7 +493,7 @@ PATTERN = '.*[.]csv'
 FILE_FORMAT = (type = CSV, field_delimiter = ',', record_delimiter = '\n', skip_header = 1);
 ```
 
-part=15, len=401, chunk_size=100, path=directory/copy.md
+part=15, len=401, chunk_size=100
 ------------------------------------------------------------
  5. Loading Data with AWS IAM Role
 
@@ -510,7 +510,7 @@ PATTERN = '.*[.]csv'
 FILE_FORMAT = (type = CSV, field_delimiter = ',', record_delimiter = '\n', skip_header = 1);
 ```
 
-part=16, len=477, chunk_size=100, path=directory/copy.md
+part=16, len=477, chunk_size=100
 ------------------------------------------------------------
  6. Loading Data with Compression
 
@@ -528,7 +528,7 @@ FILE_FORMAT = (type = CSV, field_delimiter = ',', record_delimiter = '\n', skip_
 SIZE_LIMIT = 10;
 ```
 
-part=17, len=246, chunk_size=100, path=directory/copy.md
+part=17, len=246, chunk_size=100
 ------------------------------------------------------------
  7. Loading Parquet Files
 

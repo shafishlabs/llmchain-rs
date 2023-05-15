@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+use std::sync::Arc;
+
 use anyhow::Result;
 use opendal::services::Fs;
 use opendal::BlockingOperator;
@@ -24,12 +26,12 @@ pub struct LocalDisk {
 }
 
 impl LocalDisk {
-    pub fn create() -> Result<Self> {
+    pub fn create() -> Result<Arc<Self>> {
         let mut builder = Fs::default();
         builder.root("/");
         let op: BlockingOperator = Operator::new(builder)?.finish().blocking();
 
-        Ok(LocalDisk { op })
+        Ok(Arc::new(LocalDisk { op }))
     }
 }
 

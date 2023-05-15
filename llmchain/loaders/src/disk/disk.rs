@@ -15,6 +15,6 @@
 use anyhow::Result;
 use opendal::BlockingOperator;
 
-pub trait Disk {
+pub trait Disk: Send + Sync {
     fn get_operator(&self) -> Result<BlockingOperator>;
 }

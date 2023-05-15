@@ -17,38 +17,26 @@ use std::io::Write;
 use anyhow::Result;
 use goldenfile::Mint;
 use llmchain_loaders::DocumentLoader;
+use llmchain_loaders::LocalDisk;
 use llmchain_loaders::TextLoader;
-use opendal::services::Fs;
-use opendal::BlockingOperator;
-use opendal::Operator;
 
 #[test]
 fn test_text_loader() -> Result<()> {
     // testdata dir.
     let curdir = std::env::current_dir()?.to_str().unwrap().to_string();
     let testdata_dir = format!("{}/tests/testdata", curdir);
-
-    // Operator.
-    let mut builder = Fs::default();
-    builder.root(&testdata_dir);
-    let op: BlockingOperator = Operator::new(builder)?.finish().blocking();
+    let text_file = format!("{}/text/example.txt", testdata_dir);
 
     // Load
-    let text_loader = TextLoader::create(op);
-    let documents = text_loader.load("text/example.txt")?;
+    let text_loader = TextLoader::create(LocalDisk::create()?);
+    let documents = text_loader.load(&text_file)?;
 
     // Check.
     let mut mint = Mint::new(&testdata_dir);
     let golden_path = "text/example_txt_loader.golden";
     let mut file = mint.new_goldenfile(golden_path)?;
     for (i, doc) in documents.iter().enumerate() {
-        writeln!(
-            file,
-            "part={}, len={}, path={}",
-            i,
-            doc.content.len(),
-            doc.meta.path
-        )?;
+        writeln!(file, "part={}, len={}", i, doc.content.len(),)?;
         writeln!(
             file,
             "------------------------------------------------------------"

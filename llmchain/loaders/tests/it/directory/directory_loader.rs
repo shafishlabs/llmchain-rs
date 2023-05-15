@@ -18,26 +18,21 @@ use anyhow::Result;
 use goldenfile::Mint;
 use llmchain_loaders::DirectoryLoader;
 use llmchain_loaders::DocumentLoader;
+use llmchain_loaders::LocalDisk;
 use llmchain_loaders::MarkdownLoader;
-use opendal::services::Fs;
-use opendal::BlockingOperator;
-use opendal::Operator;
 
 #[test]
 fn test_directory_loader() -> Result<()> {
     // testdata dir.
     let curdir = std::env::current_dir()?.to_str().unwrap().to_string();
     let testdata_dir = format!("{}/tests/testdata", curdir);
-
-    // Operator.
-    let mut builder = Fs::default();
-    builder.root(&testdata_dir);
-    let op: BlockingOperator = Operator::new(builder)?.finish().blocking();
+    let directory_dir = format!("{}/directory/", testdata_dir);
 
     // Load
-    let markdown_loader = MarkdownLoader::create(op.clone());
-    let directory_loader = DirectoryLoader::create(op).with_loader("**/*.md", markdown_loader);
-    let documents = directory_loader.load("directory/")?;
+    let markdown_loader = MarkdownLoader::create(LocalDisk::create()?);
+    let directory_loader =
+        DirectoryLoader::create(LocalDisk::create()?).with_loader("**/*.md", markdown_loader);
+    let documents = directory_loader.load(&directory_dir)?;
     assert_eq!(documents.len(), 2);
 
     // Check.
@@ -45,13 +40,7 @@ fn test_directory_loader() -> Result<()> {
     let golden_path = "directory/directory_loader.golden";
     let mut file = mint.new_goldenfile(golden_path)?;
     for (i, doc) in documents.iter().enumerate() {
-        writeln!(
-            file,
-            "part={}, len={}, path={}",
-            i,
-            doc.content.len(),
-            doc.meta.path
-        )?;
+        writeln!(file, "part={}, len={}", i, doc.content.len(),)?;
         writeln!(
             file,
             "------------------------------------------------------------"
