@@ -19,27 +19,22 @@ use goldenfile::Mint;
 use llmchain_loaders::DirectoryLoader;
 use llmchain_loaders::DocumentLoader;
 use llmchain_loaders::DocumentSplitter;
+use llmchain_loaders::LocalDisk;
 use llmchain_loaders::MarkdownLoader;
 use llmchain_loaders::MarkdownSplitter;
-use opendal::services::Fs;
-use opendal::BlockingOperator;
-use opendal::Operator;
 
 #[test]
 fn test_directory_splitter_default() -> Result<()> {
     // testdata dir.
     let curdir = std::env::current_dir()?.to_str().unwrap().to_string();
     let testdata_dir = format!("{}/tests/testdata", curdir);
-
-    // Operator.
-    let mut builder = Fs::default();
-    builder.root(&testdata_dir);
-    let op: BlockingOperator = Operator::new(builder)?.finish().blocking();
+    let directory_dir = format!("{}/directory/", testdata_dir);
 
     // Load
-    let markdown_loader = MarkdownLoader::create(op.clone());
-    let directory_loader = DirectoryLoader::create(op).with_loader("**/*.md", markdown_loader);
-    let documents = directory_loader.load("directory/")?;
+    let markdown_loader = MarkdownLoader::create(LocalDisk::create()?);
+    let directory_loader =
+        DirectoryLoader::create(LocalDisk::create()?).with_loader("**/*.md", markdown_loader);
+    let documents = directory_loader.load(&directory_dir)?;
     assert_eq!(documents.len(), 2);
 
     let markdown_splitter = MarkdownSplitter::create().with_chunk_size(100);
@@ -53,11 +48,10 @@ fn test_directory_splitter_default() -> Result<()> {
     for (i, doc) in documents.iter().enumerate() {
         writeln!(
             file,
-            "part={}, len={}, chunk_size={}, path={}",
+            "part={}, len={}, chunk_size={}",
             i,
             doc.content.len(),
             markdown_splitter.splitter_chunk_size,
-            doc.meta.path
         )?;
         writeln!(
             file,

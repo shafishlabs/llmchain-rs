@@ -1,4 +1,4 @@
-part=0, len=4231, path=directory/subdir/42-data-type-map.md
+part=0, len=4231
 ------------------------------------------------------------
 ---
 title: Map
@@ -124,7 +124,7 @@ LIMIT 3;
 +---------------------+--------+
 ```
 
-part=1, len=17931, path=directory/copy.md
+part=1, len=17931
 ------------------------------------------------------------
 ---
 title: "COPY INTO <table>"

@@ -1,4 +1,4 @@
-part=0, len=423, path=text/example.txt
+part=0, len=423
 ------------------------------------------------------------
 Databend is an open-source Elastic and Workload-Aware modern cloud data warehouse focusing on Low-Cost and Low-Complexity for your massive-scale analytics needs.
 

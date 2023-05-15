@@ -1,3 +1,3 @@
-part=0, len=423, chunk_size=400, path=text/example.txt
+part=0, len=423, chunk_size=400, path=/Users/bohu/github/shafishlabs/llmchain/llmchain/loaders/tests/testdata/text/example.txt
 ------------------------------------------------------------
 Databend is an open-source Elastic and Workload-Aware modern cloud data warehouse focusing on Low-Cost and Low-Complexity for your massive-scale analytics needs.  Databend uses the latest techniques in vectorized query processing to allow you to do blazing-fast data analytics on object storage: (S3, Azure Blob, Google Cloud Storage, Alibaba Cloud OSS, Tencent Cloud COS, Huawei Cloud OBS, Cloudflare R2, Wasabi or MinIO).

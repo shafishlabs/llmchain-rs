@@ -1,4 +1,4 @@
-part=0, len=940, chunk_size=400, path=markdown/copy.md
+part=0, len=940, chunk_size=400
 ------------------------------------------------------------
  ---
 title: "COPY INTO <table>"
@@ -17,7 +17,7 @@ The files must already be staged in one of the following locations:
     - Remote servers from where you can access the files by their URL (starting with "https://...").
     - [IPFS](https://ipfs.tech).
 
-part=1, len=736, chunk_size=400, path=markdown/copy.md
+part=1, len=736, chunk_size=400
 ------------------------------------------------------------
  Syntax
 
@@ -40,7 +40,7 @@ COPY INTO [<database>.]<table_name> [ ( <col_name> [ , <col_name> ... ] ) ]
 [ copyOptions ]
 ```
 
-part=2, len=9842, chunk_size=400, path=markdown/copy.md
+part=2, len=9842, chunk_size=400
 ------------------------------------------------------------
 internalStage
 
@@ -190,7 +190,7 @@ externalLocation ::=
 
 </Tabs>
 
-part=3, len=445, chunk_size=400, path=markdown/copy.md
+part=3, len=445, chunk_size=400
 ------------------------------------------------------------
 FILES = ( 'file1' [ , 'file2' ... ] )
 
@@ -199,7 +199,7 @@ Specify a list of one or more files names (separated by commas) to be loaded.
 
 A [PCRE2](https://www.pcre.org/current/doc/html/)-based regular expression pattern string, enclosed in single quotes, specifying the file names to match. Click [here](#loading-data-with-pattern-matching) to see an example. For PCRE2 syntax, see http://www.pcre.org/current/doc/html/pcre2syntax.html.
 
-part=4, len=1699, chunk_size=400, path=markdown/copy.md
+part=4, len=1699, chunk_size=400
 ------------------------------------------------------------
 FILE_FORMAT
 
@@ -227,7 +227,7 @@ copyOptions ::=
 The parameter ON_ERROR currently does not work for parquet files.
 :::
 
-part=5, len=415, chunk_size=400, path=markdown/copy.md
+part=5, len=415, chunk_size=400
 ------------------------------------------------------------
 Examples
  1. Loading Data from an Internal Stage
@@ -254,7 +254,7 @@ PATTERN = '.*[.]parquet'
 FILE_FORMAT = (TYPE = PARQUET);
 ```
 
-part=6, len=1956, chunk_size=400, path=markdown/copy.md
+part=6, len=1956, chunk_size=400
 ------------------------------------------------------------
  3. Loading Data from External Locations
 
@@ -330,7 +330,7 @@ FILE_FORMAT = (type = CSV, field_delimiter = ',', record_delimiter = '\n', skip_
 
 </Tabs>
 
-part=7, len=709, chunk_size=400, path=markdown/copy.md
+part=7, len=709, chunk_size=400
 ------------------------------------------------------------
  4. Loading Data with Pattern Matching
 
@@ -352,7 +352,7 @@ PATTERN = '.*[.]csv'
 FILE_FORMAT = (type = CSV, field_delimiter = ',', record_delimiter = '\n', skip_header = 1);
 ```
 
-part=8, len=401, chunk_size=400, path=markdown/copy.md
+part=8, len=401, chunk_size=400
 ------------------------------------------------------------
  5. Loading Data with AWS IAM Role
 
@@ -369,7 +369,7 @@ PATTERN = '.*[.]csv'
 FILE_FORMAT = (type = CSV, field_delimiter = ',', record_delimiter = '\n', skip_header = 1);
 ```
 
-part=9, len=477, chunk_size=400, path=markdown/copy.md
+part=9, len=477, chunk_size=400
 ------------------------------------------------------------
  6. Loading Data with Compression
 
@@ -387,7 +387,7 @@ FILE_FORMAT = (type = CSV, field_delimiter = ',', record_delimiter = '\n', skip_
 SIZE_LIMIT = 10;
 ```
 
-part=10, len=245, chunk_size=400, path=markdown/copy.md
+part=10, len=245, chunk_size=400
 ------------------------------------------------------------
 7. Loading Parquet Files
 

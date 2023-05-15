@@ -15,25 +15,25 @@
 use std::sync::Arc;
 
 use anyhow::Result;
-use opendal::BlockingOperator;
 
+use crate::Disk;
 use crate::Document;
 use crate::DocumentLoader;
 use crate::TextLoader;
 
 pub struct MarkdownLoader {
-    op: BlockingOperator,
+    disk: Arc<dyn Disk>,
 }
 
 impl MarkdownLoader {
-    pub fn create(op: BlockingOperator) -> Arc<Self> {
-        Arc::new(MarkdownLoader { op })
+    pub fn create(disk: Arc<dyn Disk>) -> Arc<Self> {
+        Arc::new(MarkdownLoader { disk })
     }
 }
 
 impl DocumentLoader for MarkdownLoader {
     fn load(&self, path: &str) -> Result<Vec<Document>> {
-        let text_loader = TextLoader::create(self.op.clone());
+        let text_loader = TextLoader::create(self.disk.clone());
         text_loader.load(path)
     }
 }

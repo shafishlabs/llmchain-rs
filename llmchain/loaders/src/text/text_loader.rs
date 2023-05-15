@@ -15,25 +15,25 @@
 use std::sync::Arc;
 
 use anyhow::Result;
-use opendal::BlockingOperator;
 
+use crate::Disk;
 use crate::Document;
 use crate::DocumentLoader;
 use crate::DocumentMeta;
 
 pub struct TextLoader {
-    op: BlockingOperator,
+    disk: Arc<dyn Disk>,
 }
 
 impl TextLoader {
-    pub fn create(op: BlockingOperator) -> Arc<Self> {
-        Arc::new(TextLoader { op })
+    pub fn create(disk: Arc<dyn Disk>) -> Arc<Self> {
+        Arc::new(TextLoader { disk })
     }
 }
 
 impl DocumentLoader for TextLoader {
     fn load(&self, path: &str) -> Result<Vec<Document>> {
-        let bs = self.op.read(path)?;
+        let bs = self.disk.get_operator()?.read(path)?;
         let content = String::from_utf8_lossy(&bs).to_string();
 
         Ok(vec![Document {

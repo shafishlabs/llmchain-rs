@@ -18,26 +18,20 @@ use anyhow::Result;
 use goldenfile::Mint;
 use llmchain_loaders::DocumentLoader;
 use llmchain_loaders::DocumentSplitter;
+use llmchain_loaders::LocalDisk;
 use llmchain_loaders::MarkdownLoader;
 use llmchain_loaders::MarkdownSplitter;
-use opendal::services::Fs;
-use opendal::BlockingOperator;
-use opendal::Operator;
 
 #[test]
 fn test_markdown_splitter_default() -> Result<()> {
     // testdata dir.
     let curdir = std::env::current_dir()?.to_str().unwrap().to_string();
     let testdata_dir = format!("{}/tests/testdata", curdir);
-
-    // Operator.
-    let mut builder = Fs::default();
-    builder.root(&testdata_dir);
-    let op: BlockingOperator = Operator::new(builder)?.finish().blocking();
+    let markdown_file = format!("{}/markdown/copy.md", testdata_dir);
 
     // Load
-    let markdown_loader = MarkdownLoader::create(op);
-    let documents = markdown_loader.load("markdown/copy.md")?;
+    let markdown_loader = MarkdownLoader::create(LocalDisk::create()?);
+    let documents = markdown_loader.load(&markdown_file)?;
 
     let markdown_splitter = MarkdownSplitter::create();
     let documents = markdown_splitter.split_documents(&documents)?;
@@ -49,11 +43,10 @@ fn test_markdown_splitter_default() -> Result<()> {
     for (i, doc) in documents.iter().enumerate() {
         writeln!(
             file,
-            "part={}, len={}, chunk_size={}, path={}",
+            "part={}, len={}, chunk_size={}",
             i,
             doc.content.len(),
             markdown_splitter.splitter_chunk_size,
-            doc.meta.path
         )?;
         writeln!(
             file,
@@ -70,15 +63,11 @@ fn test_markdown_splitter_100() -> Result<()> {
     // testdata dir.
     let curdir = std::env::current_dir()?.to_str().unwrap().to_string();
     let testdata_dir = format!("{}/tests/testdata", curdir);
-
-    // Operator.
-    let mut builder = Fs::default();
-    builder.root(&testdata_dir);
-    let op: BlockingOperator = Operator::new(builder)?.finish().blocking();
+    let markdown_file = format!("{}/markdown/copy.md", testdata_dir);
 
     // Load
-    let markdown_loader = MarkdownLoader::create(op);
-    let documents = markdown_loader.load("markdown/copy.md")?;
+    let markdown_loader = MarkdownLoader::create(LocalDisk::create()?);
+    let documents = markdown_loader.load(&markdown_file)?;
 
     let markdown_splitter = MarkdownSplitter::create().with_chunk_size(100);
     let documents = markdown_splitter.split_documents(&documents)?;
