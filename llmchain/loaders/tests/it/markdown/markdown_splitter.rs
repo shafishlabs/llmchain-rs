@@ -32,12 +32,13 @@ fn test_markdown_splitter_default() -> Result<()> {
 
     // Operator.
     let mut builder = Fs::default();
-    builder.root(&testdata_dir);
+    builder.root("/");
     let op: BlockingOperator = Operator::new(builder)?.finish().blocking();
 
     // Load
     let markdown_loader = MarkdownLoader::create(op);
-    let documents = markdown_loader.load("markdown/copy.md")?;
+    let xx = format!("{}/markdown/copy.md", testdata_dir);
+    let documents = markdown_loader.load(&xx)?;
 
     let markdown_splitter = MarkdownSplitter::create();
     let documents = markdown_splitter.split_documents(&documents)?;

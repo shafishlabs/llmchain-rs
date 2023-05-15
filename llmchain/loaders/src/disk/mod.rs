@@ -12,21 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-mod directory;
-mod disk;
-mod document;
-mod document_splitter;
-mod markdown;
-mod text;
+mod local_disk;
 
-pub use directory::DirectoryLoader;
+#[allow(clippy::module_inception)]
+mod disk;
+
 pub use disk::Disk;
-pub use disk::LocalDisk;
-pub use document::Document;
-pub use document::DocumentLoader;
-pub use document::DocumentMeta;
-pub use document_splitter::DocumentSplitter;
-pub use markdown::MarkdownLoader;
-pub use markdown::MarkdownSplitter;
-pub use text::TextLoader;
-pub use text::TextSplitter;
+pub use local_disk::LocalDisk;

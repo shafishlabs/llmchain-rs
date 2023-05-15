@@ -12,21 +12,29 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-mod directory;
-mod disk;
-mod document;
-mod document_splitter;
-mod markdown;
-mod text;
+use anyhow::Result;
+use opendal::services::Fs;
+use opendal::BlockingOperator;
+use opendal::Operator;
 
-pub use directory::DirectoryLoader;
-pub use disk::Disk;
-pub use disk::LocalDisk;
-pub use document::Document;
-pub use document::DocumentLoader;
-pub use document::DocumentMeta;
-pub use document_splitter::DocumentSplitter;
-pub use markdown::MarkdownLoader;
-pub use markdown::MarkdownSplitter;
-pub use text::TextLoader;
-pub use text::TextSplitter;
+use crate::disk::Disk;
+
+pub struct LocalDisk {
+    op: BlockingOperator,
+}
+
+impl LocalDisk {
+    pub fn create() -> Result<Self> {
+        let mut builder = Fs::default();
+        builder.root("/");
+        let op: BlockingOperator = Operator::new(builder)?.finish().blocking();
+
+        Ok(LocalDisk { op })
+    }
+}
+
+impl Disk for LocalDisk {
+    fn get_operator(&self) -> Result<BlockingOperator> {
+        Ok(self.op.clone())
+    }
+}
