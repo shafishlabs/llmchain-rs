@@ -36,5 +36,8 @@ async fn test_vector_stores_databend() -> Result<()> {
     let result = databend.add_documents(documents).await?;
     assert_eq!(result.len(), 2);
 
+    let similarities = databend.similarity_search("llmchain", 1).await?;
+    assert_eq!(similarities.len(), 1);
+
     Ok(())
 }

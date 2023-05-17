@@ -16,6 +16,7 @@ use std::sync::Arc;
 
 use anyhow::Result;
 use databend_driver::new_connection;
+use futures_util::StreamExt;
 use llmchain_embeddings::Embedding;
 use llmchain_loaders::Document;
 use uuid::Uuid;
@@ -27,6 +28,7 @@ pub struct DatabendVectorStore {
     database: String,
     table: String,
     embedding: Arc<dyn Embedding>,
+    min_similarity: f32,
 }
 
 impl DatabendVectorStore {
@@ -36,6 +38,7 @@ impl DatabendVectorStore {
             database: "embedding_store".to_string(),
             table: "llmchain_collection".to_string(),
             embedding,
+            min_similarity: 0.5,
         }
     }
 
@@ -46,6 +49,11 @@ impl DatabendVectorStore {
 
     pub fn with_table(mut self, table: &str) -> Self {
         self.table = table.to_string();
+        self
+    }
+
+    pub fn with_min_similarity(mut self, similarity: f32) -> Self {
+        self.min_similarity = similarity;
         self
     }
 }
@@ -60,7 +68,7 @@ impl VectorStore for DatabendVectorStore {
 
         let table_create_sql = format!(
             "CREATE TABLE IF NOT EXISTS {}.{} \
-            (uuid VARCHAR, path VARCHAR, content VARCHAR, md5 VARCHAR, embedding ARRAY(float32))",
+            (uuid VARCHAR, path VARCHAR, content VARCHAR, content_md5 VARCHAR, embedding ARRAY(float32))",
             self.database, self.table
         );
         conn.exec(&table_create_sql).await?;
@@ -75,7 +83,7 @@ impl VectorStore for DatabendVectorStore {
         let embeddings = self.embedding.embed_documents(inputs.clone()).await?;
 
         let sql = format!(
-            "INSERT INTO {}.{} (uuid, path, content, md5, embedding) VALUES ",
+            "INSERT INTO {}.{} (uuid, path, content, content_md5, embedding) VALUES ",
             self.database, self.table
         );
         let mut val_vec = vec![];
@@ -94,7 +102,29 @@ impl VectorStore for DatabendVectorStore {
         Ok(uuids)
     }
 
-    async fn similarity_search(&self, _query: &str) -> Result<Vec<Document>> {
-        todo!()
+    async fn similarity_search(&self, query: &str, k: usize) -> Result<Vec<Document>> {
+        let query_embedding = self.embedding.embed_query(query).await?;
+
+        let conn = new_connection(&self.dsn)?;
+
+        let sql = format!(
+            "SELECT path, content, content_md5, (1- cosine_distance({:?}, embedding)) AS similarity FROM {}.{}\
+            WHERE length(embedding) > 0 AND length(content) > 0 AND similarity > {} ORDER BY similarity DESC LIMIT {}",
+            query_embedding, self.database, self.table, self.min_similarity, k
+        );
+
+        let mut documents = vec![];
+        type RowResult = (String, String, String, f32);
+        let mut rows = conn.query_iter(&sql).await?;
+        while let Some(row) = rows.next().await {
+            let row: RowResult = row?.try_into()?;
+            documents.push(Document {
+                path: row.0,
+                content: row.1,
+                content_md5: row.2,
+            });
+        }
+
+        Ok(documents)
     }
 }

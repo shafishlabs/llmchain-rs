@@ -19,5 +19,5 @@ use llmchain_loaders::Document;
 pub trait VectorStore: Send + Sync {
     async fn init(&self) -> Result<()>;
     async fn add_documents(&self, inputs: Vec<Document>) -> Result<Vec<String>>;
-    async fn similarity_search(&self, query: &str) -> Result<Vec<Document>>;
+    async fn similarity_search(&self, query: &str, k: usize) -> Result<Vec<Document>>;
 }
