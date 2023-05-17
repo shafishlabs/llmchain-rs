@@ -13,11 +13,11 @@
 // limitations under the License.
 
 use anyhow::Result;
-use llmchain_llms::llm::LLM;
-use llmchain_llms::openai::OpenAI;
-use llmchain_llms::openai::OpenAIGenerateModel;
+use llmchain_llms::OpenAI;
+use llmchain_llms::OpenAIGenerateModel;
+use llmchain_llms::LLM;
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 1)]
+#[tokio::test]
 async fn test_llm_openai_generate_gpt35() -> Result<()> {
     let api_key = std::env::var("OPENAI_API_KEY").unwrap_or("".to_string());
 
@@ -32,7 +32,7 @@ async fn test_llm_openai_generate_gpt35() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 1)]
+#[tokio::test]
 async fn test_llm_openai_generate_gpt4() -> Result<()> {
     let api_key = std::env::var("OPENAI_API_KEY").unwrap_or("".to_string());
 
@@ -47,7 +47,7 @@ async fn test_llm_openai_generate_gpt4() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 1)]
+#[tokio::test]
 async fn test_llm_openai_embedding() -> Result<()> {
     let api_key = std::env::var("OPENAI_API_KEY").unwrap_or("".to_string());
     let llm = OpenAI::create(&api_key);

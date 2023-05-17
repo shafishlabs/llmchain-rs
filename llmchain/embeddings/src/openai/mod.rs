@@ -12,33 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use anyhow::Result;
+#[allow(clippy::module_inception)]
+mod openai;
 
-#[derive(Debug, Clone, Default)]
-pub struct DocumentMeta {
-    pub path: String,
-}
-
-#[derive(Debug, Clone)]
-pub struct Document {
-    pub meta: DocumentMeta,
-    pub content: String,
-}
-
-impl Document {
-    pub fn create(content: &str) -> Self {
-        Document {
-            meta: Default::default(),
-            content: content.to_string(),
-        }
-    }
-
-    pub fn with_meta(mut self, meta: DocumentMeta) -> Self {
-        self.meta = meta;
-        self
-    }
-}
-
-pub trait DocumentLoader: Send + Sync {
-    fn load(&self, path: &str) -> Result<Vec<Document>>;
-}
+pub use openai::OpenAIEmbedding;

@@ -1,5 +1,6 @@
 [workspace]
 members = [
+    "llmchain/embeddings",
     "llmchain/loaders",
     "llmchain/llms"
 ]
