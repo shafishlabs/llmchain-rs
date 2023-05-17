@@ -14,6 +14,13 @@ doctest = false
 test = false
 
 [[bin]]
+name = "example_markdown_loader"
+path = "src/example_markdown_loader.rs"
+doctest = false
+test = false
+
+
+[[bin]]
 name = "example_vector_store"
 path = "src/example_vector_store.rs"
 doctest = false
