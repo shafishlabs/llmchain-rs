@@ -86,7 +86,7 @@ fn test_markdown_splitter_100() -> Result<()> {
             i,
             doc.content.len(),
             markdown_splitter.splitter_chunk_size,
-            doc.meta.path
+            doc.path
         )?;
         writeln!(
             file,

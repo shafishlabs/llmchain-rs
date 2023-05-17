@@ -47,7 +47,7 @@ fn test_text_splitter_default() -> Result<()> {
             i,
             doc.content.len(),
             text_splitter.splitter_chunk_size,
-            doc.meta.path
+            doc.path
         )?;
         writeln!(
             file,

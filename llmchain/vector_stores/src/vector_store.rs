@@ -12,16 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use std::sync::Arc;
-
 use anyhow::Result;
-use llmchain_embeddings::Embedding;
 use llmchain_loaders::Document;
 
 #[async_trait::async_trait]
 pub trait VectorStore: Send + Sync {
-    async fn init(&self, embeddings: Arc<dyn Embedding>) -> Result<()>;
-    async fn add_texts(&self, inputs: Vec<String>) -> Result<()>;
-    async fn add_documents(&self, inputs: Vec<Document>) -> Result<()>;
+    async fn init(&self) -> Result<()>;
+    async fn add_documents(&self, inputs: Vec<Document>) -> Result<Vec<String>>;
     async fn similarity_search(&self, query: &str) -> Result<Vec<Document>>;
 }
