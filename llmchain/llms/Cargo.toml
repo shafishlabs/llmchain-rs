@@ -8,10 +8,11 @@ categories = ["LLMs"]
 keywords = ["LLMs"]
 
 [dependencies]
+anyhow = { workspace = true }
+async-trait = { workspace = true }
+tokio = { workspace = true }
+
 async-openai = "0.10.3"
-async-trait = "0.1.68"
-anyhow = "1.0.58"
-tokio = { version = "1.28.0", features = ["full"]}
 
 [dev-dependencies]
 goldenfile = "1.4"

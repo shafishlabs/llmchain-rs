@@ -15,16 +15,20 @@
 use std::sync::Arc;
 
 use anyhow::Result;
+use env_logger::Env;
 use llmchain_embeddings::OpenAIEmbedding;
 use llmchain_loaders::Document;
 use llmchain_vector_stores::DatabendVectorStore;
 use llmchain_vector_stores::VectorStore;
+use log::info;
 
 /// EXPORT OPENAI_API_KEY=<your-openai-api-key>
 /// EXPORT DATABEND_DSN=<your-databend-dsn>
 /// cargo run --bin example_vector_store
 #[tokio::main]
 async fn main() -> Result<()> {
+    env_logger::Builder::from_env(Env::default().default_filter_or("info")).init();
+
     let api_key = std::env::var("OPENAI_API_KEY")
         .map_err(|_| {
             "OPENAI_API_KEY is empty, please EXPORT OPENAI_API_KEY=<your-openai-api-key>"
@@ -52,12 +56,12 @@ async fn main() -> Result<()> {
 
     // add documents to vector store.
     let uuids = databend.add_documents(documents).await?;
-    println!("embedding uuids:{:?}", uuids);
+    info!("embedding uuids:{:?}", uuids);
 
     // query a similarity document.
     let query = "llmchain";
     let similarities = databend.similarity_search("llmchain", 1).await?;
-    println!("query:{}, similarity documents:{:?}", query, similarities);
+    info!("query:{}, similarity documents:{:?}", query, similarities);
 
     Ok(())
 }
