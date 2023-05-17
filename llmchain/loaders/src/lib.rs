@@ -22,6 +22,7 @@ mod text;
 pub use directory::DirectoryLoader;
 pub use disk::Disk;
 pub use disk::LocalDisk;
+pub use disk::RemoteDisk;
 pub use document::Document;
 pub use document::DocumentLoader;
 pub use document::DocumentMeta;
