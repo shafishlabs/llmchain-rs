@@ -105,16 +105,15 @@ impl VectorStore for DatabendVectorStore {
     async fn similarity_search(&self, query: &str, k: usize) -> Result<Vec<Document>> {
         let query_embedding = self.embedding.embed_query(query).await?;
 
-        let conn = new_connection(&self.dsn)?;
-
         let sql = format!(
-            "SELECT path, content, content_md5, (1- cosine_distance({:?}, embedding)) AS similarity FROM {}.{}\
-            WHERE length(embedding) > 0 AND length(content) > 0 AND similarity > {} ORDER BY similarity DESC LIMIT {}",
+            "SELECT path, content, content_md5, (1- cosine_distance({:?}, embedding)) AS similarity FROM {}.{} \
+             WHERE length(embedding) > 0 AND length(content) > 0 AND similarity > {} ORDER BY similarity DESC LIMIT {}",
             query_embedding, self.database, self.table, self.min_similarity, k
         );
 
         let mut documents = vec![];
         type RowResult = (String, String, String, f32);
+        let conn = new_connection(&self.dsn)?;
         let mut rows = conn.query_iter(&sql).await?;
         while let Some(row) = rows.next().await {
             let row: RowResult = row?.try_into()?;
