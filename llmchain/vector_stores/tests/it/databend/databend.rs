@@ -31,13 +31,23 @@ async fn test_vector_stores_databend() -> Result<()> {
 
     let documents = vec![
         Document::create("1.md", "hello"),
-        Document::create("2.md", "llmchai.rs"),
+        Document::create("2.md", "llmchain.rs"),
     ];
     let result = databend.add_documents(documents).await?;
     assert_eq!(result.len(), 2);
 
     let similarities = databend.similarity_search("llmchain", 1).await?;
     assert_eq!(similarities.len(), 1);
+
+    let expect_document = Document {
+        path: "2.md".to_string(),
+        content: "llmchain.rs".to_string(),
+        content_md5: "033d6bd60a5237d54fa8331dd2ca1325".to_string(),
+    };
+
+    let actual_document = similarities[0].clone();
+
+    assert_eq!(expect_document, actual_document);
 
     Ok(())
 }

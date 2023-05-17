@@ -14,7 +14,7 @@
 
 use anyhow::Result;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub struct Document {
     pub path: String,
     pub content: String,
