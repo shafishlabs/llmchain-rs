@@ -13,32 +13,10 @@
 // limitations under the License.
 
 use anyhow::Result;
+use llmchain_loaders::Document;
 
-#[derive(Debug, Clone, Default)]
-pub struct DocumentMeta {
-    pub path: String,
-}
-
-#[derive(Debug, Clone)]
-pub struct Document {
-    pub meta: DocumentMeta,
-    pub content: String,
-}
-
-impl Document {
-    pub fn create(content: &str) -> Self {
-        Document {
-            meta: Default::default(),
-            content: content.to_string(),
-        }
-    }
-
-    pub fn with_meta(mut self, meta: DocumentMeta) -> Self {
-        self.meta = meta;
-        self
-    }
-}
-
-pub trait DocumentLoader: Send + Sync {
-    fn load(&self, path: &str) -> Result<Vec<Document>>;
+#[async_trait::async_trait]
+pub trait Embedding {
+    async fn embed_query(&self, input: &str) -> Result<Vec<f32>>;
+    async fn embed_documents(&self, inputs: Vec<Document>) -> Result<Vec<Vec<f32>>>;
 }
