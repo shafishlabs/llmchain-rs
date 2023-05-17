@@ -12,12 +12,34 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-mod local_disk;
+/// Cloud Object Storage as Disk
+///
+/// AWS S3
+/// Azure Blob
+/// Google Cloud Storage
+/// Cloudflare R2
+/// Wasabi
+/// MinIO
+/// Alibaba Cloud OSS
+/// Tencent Cloud COS
+/// Huawei Cloud OBS
+use std::sync::Arc;
 
-#[allow(clippy::module_inception)]
-mod disk;
-mod remote_disk;
+use anyhow::Result;
+use opendal::BlockingOperator;
 
-pub use disk::Disk;
-pub use local_disk::LocalDisk;
-pub use remote_disk::RemoteDisk;
+use crate::disk::Disk;
+
+pub struct RemoteDisk {}
+
+impl RemoteDisk {
+    pub fn create() -> Result<Arc<Self>> {
+        Ok(Arc::new(RemoteDisk {}))
+    }
+}
+
+impl Disk for RemoteDisk {
+    fn get_operator(&self) -> Result<BlockingOperator> {
+        todo!()
+    }
+}
