@@ -1,0 +1,31 @@
+[package]
+name = "llmchain-examples"
+version = "0.1.0"
+edition = "2021"
+license = "Apache-2.0"
+description = "A Rust framework for large language models, inspired by LangChain"
+categories = ["LLMs"]
+keywords = ["LLMs"]
+
+[[bin]]
+name = "embedding_example"
+path = "src/example_embedding.rs"
+doctest = false
+test = false
+
+[[bin]]
+name = "example_vector_store"
+path = "src/example_vector_store.rs"
+doctest = false
+test = false
+
+
+[dependencies]
+llmchain-embeddings = { path = "../llmchain/embeddings" }
+llmchain-loaders = { path = "../llmchain/loaders" }
+llmchain-vector-stores = { path = "../llmchain/vector_stores" }
+
+anyhow = "1.0.58"
+tokio = { version = "1.28.0", features = ["full"]}
+
+[dev-dependencies]
