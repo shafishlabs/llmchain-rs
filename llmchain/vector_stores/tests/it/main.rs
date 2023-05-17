@@ -11,12 +11,3 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-
-use anyhow::Result;
-use llmchain_loaders::Document;
-
-#[async_trait::async_trait]
-pub trait Embedding: Send + Sync {
-    async fn embed_query(&self, input: &str) -> Result<Vec<f32>>;
-    async fn embed_documents(&self, inputs: Vec<Document>) -> Result<Vec<Vec<f32>>>;
-}
