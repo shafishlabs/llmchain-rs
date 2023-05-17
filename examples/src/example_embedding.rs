@@ -13,14 +13,18 @@
 // limitations under the License.
 
 use anyhow::Result;
+use env_logger::Env;
 use llmchain_embeddings::Embedding;
 use llmchain_embeddings::OpenAIEmbedding;
 use llmchain_loaders::Document;
+use log::info;
 
 /// EXPORT OPENAI_API_KEY=<your-openai-api-key>
 /// cargo run --bin example_embedding
 #[tokio::main]
 async fn main() -> Result<()> {
+    env_logger::Builder::from_env(Env::default().default_filter_or("info")).init();
+
     let api_key = std::env::var("OPENAI_API_KEY")
         .map_err(|_| {
             "OPENAI_API_KEY is empty, please EXPORT OPENAI_API_KEY=<your-openai-api-key>"
@@ -39,7 +43,7 @@ async fn main() -> Result<()> {
 
     // embedding documents.
     let document_result = embeddings.embed_documents(documents).await?;
-    println!("{:?}", document_result);
+    info!("{:?}", document_result);
 
     Ok(())
 }

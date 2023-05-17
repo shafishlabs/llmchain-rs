@@ -32,7 +32,9 @@ llmchain-embeddings = { path = "../llmchain/embeddings" }
 llmchain-loaders = { path = "../llmchain/loaders" }
 llmchain-vector-stores = { path = "../llmchain/vector_stores" }
 
-anyhow = "1.0.58"
-tokio = { version = "1.28.0", features = ["full"]}
+anyhow = { workspace = true }
+env_logger = { workspace = true }
+log = { workspace = true }
+tokio = { workspace = true }
 
 [dev-dependencies]

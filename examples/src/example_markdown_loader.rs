@@ -13,19 +13,23 @@
 // limitations under the License.
 
 use anyhow::Result;
+use env_logger::Env;
 use llmchain_loaders::DirectoryLoader;
 use llmchain_loaders::DocumentLoader;
 use llmchain_loaders::LocalDisk;
 use llmchain_loaders::MarkdownLoader;
+use log::info;
 
-/// cargo run --bin example_markdown
+/// cargo run --bin example_markdown_loader
 #[tokio::main]
 async fn main() -> Result<()> {
+    env_logger::Builder::from_env(Env::default().default_filter_or("info")).init();
+
     // dir.
     let curdir = std::env::current_dir()?.to_str().unwrap().to_string();
     let testdata_dir = format!("{}/examples/testdata", curdir);
     let directory_dir = format!("{}/markdowns/", testdata_dir);
-    println!("{}", directory_dir);
+    info!("{}", directory_dir);
 
     // Loader from local disk.
     let local_disk = LocalDisk::create()?;
@@ -39,7 +43,7 @@ async fn main() -> Result<()> {
 
     // loader all documents.
     let documents = directory_loader.load(&directory_dir)?;
-    println!("{:?}", documents);
+    info!("{:?}", documents);
 
     Ok(())
 }

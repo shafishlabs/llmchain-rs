@@ -8,7 +8,8 @@ categories = ["LLM"]
 keywords = ["LLM"]
 
 [dependencies]
-anyhow = "1.0.58"
+anyhow = { workspace = true }
+
 glob-match = "0.2.1"
 opendal = "0.33.2"
 rayon = "1.7.0"
