@@ -36,7 +36,13 @@ fn test_text_loader() -> Result<()> {
     let golden_path = "text/example_txt_loader.golden";
     let mut file = mint.new_goldenfile(golden_path)?;
     for (i, doc) in documents.iter().enumerate() {
-        writeln!(file, "part={}, len={}", i, doc.content.len(),)?;
+        writeln!(
+            file,
+            "part={}, len={}, md5={}",
+            i,
+            doc.content.len(),
+            doc.content_md5
+        )?;
         writeln!(
             file,
             "------------------------------------------------------------"

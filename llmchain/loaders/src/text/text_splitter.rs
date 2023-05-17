@@ -97,14 +97,10 @@ impl DocumentSplitter for TextSplitter {
         let mut result = vec![];
 
         for document in documents {
-            let meta = document.meta.clone();
             let chunks = self.split_text(&document.content)?;
 
             for chunk in chunks {
-                result.push(Document {
-                    meta: meta.clone(),
-                    content: chunk,
-                })
+                result.push(Document::create(&document.path, &chunk))
             }
         }
         Ok(result)

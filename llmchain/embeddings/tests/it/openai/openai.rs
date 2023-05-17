@@ -31,7 +31,10 @@ async fn test_embedding_openai() -> Result<()> {
     // embeddings documents.
     {
         let embeddings = OpenAIEmbedding::create(&api_key);
-        let documents = vec![Document::create("hello"), Document::create("llmchain.rs")];
+        let documents = vec![
+            Document::create("", "hello"),
+            Document::create("", "llmchain.rs"),
+        ];
         let document_result = embeddings.embed_documents(documents).await?;
         assert_eq!(document_result.len(), 2);
         assert_eq!(document_result[0].len(), 1536);

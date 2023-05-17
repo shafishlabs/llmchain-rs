@@ -1,4 +1,4 @@
-part=0, len=940, chunk_size=100, path=/Users/bohu/github/shafishlabs/llmchain/llmchain/loaders/tests/testdata/markdown/copy.md
+part=0, len=940, chunk_size=100, md5=89715fd62792b5113891346a86f2fba4
 ------------------------------------------------------------
  ---
 title: "COPY INTO <table>"
@@ -17,7 +17,7 @@ The files must already be staged in one of the following locations:
     - Remote servers from where you can access the files by their URL (starting with "https://...").
     - [IPFS](https://ipfs.tech).
 
-part=1, len=736, chunk_size=100, path=/Users/bohu/github/shafishlabs/llmchain/llmchain/loaders/tests/testdata/markdown/copy.md
+part=1, len=736, chunk_size=100, md5=a7e3d9e117d0d2fdbc888f6d0b992a08
 ------------------------------------------------------------
  Syntax
 
@@ -40,7 +40,7 @@ COPY INTO [<database>.]<table_name> [ ( <col_name> [ , <col_name> ... ] ) ]
 [ copyOptions ]
 ```
 
-part=2, len=238, chunk_size=100, path=/Users/bohu/github/shafishlabs/llmchain/llmchain/loaders/tests/testdata/markdown/copy.md
+part=2, len=238, chunk_size=100, md5=6c89a33f1941a7dce08cde18ad206c20
 ------------------------------------------------------------
 internalStage
 
@@ -55,7 +55,7 @@ externalStage ::= @<external_stage_name>[/<path>]
 
 Also see [How to Create External Stage](../00-ddl/40-stage/01-ddl-create-stage.md).
 
-part=3, len=9604, chunk_size=100, path=/Users/bohu/github/shafishlabs/llmchain/llmchain/loaders/tests/testdata/markdown/copy.md
+part=3, len=9604, chunk_size=100, md5=427aebbe8e9f3a24713b3e7d725da58e
 ------------------------------------------------------------
  externalLocation
 
@@ -193,19 +193,19 @@ externalLocation ::=
 
 </Tabs>
 
-part=4, len=118, chunk_size=100, path=/Users/bohu/github/shafishlabs/llmchain/llmchain/loaders/tests/testdata/markdown/copy.md
+part=4, len=118, chunk_size=100, md5=470db11ba9ee9575464d16f3ae20ed38
 ------------------------------------------------------------
  FILES = ( 'file1' [ , 'file2' ... ] )
 
 Specify a list of one or more files names (separated by commas) to be loaded.
 
-part=5, len=328, chunk_size=100, path=/Users/bohu/github/shafishlabs/llmchain/llmchain/loaders/tests/testdata/markdown/copy.md
+part=5, len=328, chunk_size=100, md5=de883a16a31fcba97aba83edd60c0332
 ------------------------------------------------------------
  PATTERN = 'regex_pattern'
 
 A [PCRE2](https://www.pcre.org/current/doc/html/)-based regular expression pattern string, enclosed in single quotes, specifying the file names to match. Click [here](#loading-data-with-pattern-matching) to see an example. For PCRE2 syntax, see http://www.pcre.org/current/doc/html/pcre2syntax.html.
 
-part=6, len=1699, chunk_size=100, path=/Users/bohu/github/shafishlabs/llmchain/llmchain/loaders/tests/testdata/markdown/copy.md
+part=6, len=1699, chunk_size=100, md5=40642ebce599a5847a77a5c99d7044a4
 ------------------------------------------------------------
 FILE_FORMAT
 
@@ -233,7 +233,7 @@ copyOptions ::=
 The parameter ON_ERROR currently does not work for parquet files.
 :::
 
-part=7, len=157, chunk_size=100, path=/Users/bohu/github/shafishlabs/llmchain/llmchain/loaders/tests/testdata/markdown/copy.md
+part=7, len=157, chunk_size=100, md5=d1bfe7eb9a3936a3371495e70d494f8d
 ------------------------------------------------------------
 Examples
  1. Loading Data from an Internal Stage
@@ -245,7 +245,7 @@ PATTERN = '.*[.]parquet'
 FILE_FORMAT = (TYPE = PARQUET);
 ```
 
-part=8, len=258, chunk_size=100, path=/Users/bohu/github/shafishlabs/llmchain/llmchain/loaders/tests/testdata/markdown/copy.md
+part=8, len=258, chunk_size=100, md5=8fe754790435184efec45ef9224545fe
 ------------------------------------------------------------
  2. Loading Data from an External Stage
 
@@ -263,7 +263,7 @@ PATTERN = '.*[.]parquet'
 FILE_FORMAT = (TYPE = PARQUET);
 ```
 
-part=9, len=1956, chunk_size=100, path=/Users/bohu/github/shafishlabs/llmchain/llmchain/loaders/tests/testdata/markdown/copy.md
+part=9, len=1956, chunk_size=100, md5=c109564da84e7f9f2d0ff261ac38a9e8
 ------------------------------------------------------------
  3. Loading Data from External Locations
 
@@ -339,7 +339,7 @@ FILE_FORMAT = (type = CSV, field_delimiter = ',', record_delimiter = '\n', skip_
 
 </Tabs>
 
-part=10, len=709, chunk_size=100, path=/Users/bohu/github/shafishlabs/llmchain/llmchain/loaders/tests/testdata/markdown/copy.md
+part=10, len=709, chunk_size=100, md5=dcaeccf7e6c2104febc41fd00b66f7e7
 ------------------------------------------------------------
  4. Loading Data with Pattern Matching
 
@@ -361,7 +361,7 @@ PATTERN = '.*[.]csv'
 FILE_FORMAT = (type = CSV, field_delimiter = ',', record_delimiter = '\n', skip_header = 1);
 ```
 
-part=11, len=401, chunk_size=100, path=/Users/bohu/github/shafishlabs/llmchain/llmchain/loaders/tests/testdata/markdown/copy.md
+part=11, len=401, chunk_size=100, md5=2834773ab9303c3aabf80c66401ef530
 ------------------------------------------------------------
  5. Loading Data with AWS IAM Role
 
@@ -378,7 +378,7 @@ PATTERN = '.*[.]csv'
 FILE_FORMAT = (type = CSV, field_delimiter = ',', record_delimiter = '\n', skip_header = 1);
 ```
 
-part=12, len=477, chunk_size=100, path=/Users/bohu/github/shafishlabs/llmchain/llmchain/loaders/tests/testdata/markdown/copy.md
+part=12, len=477, chunk_size=100, md5=8ff792ee64f58d78d1b8b56f2ec0fce5
 ------------------------------------------------------------
  6. Loading Data with Compression
 
@@ -396,7 +396,7 @@ FILE_FORMAT = (type = CSV, field_delimiter = ',', record_delimiter = '\n', skip_
 SIZE_LIMIT = 10;
 ```
 
-part=13, len=246, chunk_size=100, path=/Users/bohu/github/shafishlabs/llmchain/llmchain/loaders/tests/testdata/markdown/copy.md
+part=13, len=246, chunk_size=100, md5=059809ca86a86d9427c135ab2913cca3
 ------------------------------------------------------------
  7. Loading Parquet Files
 

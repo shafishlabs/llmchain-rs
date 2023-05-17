@@ -19,7 +19,6 @@ use anyhow::Result;
 use crate::Disk;
 use crate::Document;
 use crate::DocumentLoader;
-use crate::DocumentMeta;
 
 pub struct TextLoader {
     disk: Arc<dyn Disk>,
@@ -36,11 +35,6 @@ impl DocumentLoader for TextLoader {
         let bs = self.disk.get_operator()?.read(path)?;
         let content = String::from_utf8_lossy(&bs).to_string();
 
-        Ok(vec![Document {
-            meta: DocumentMeta {
-                path: path.to_string(),
-            },
-            content,
-        }])
+        Ok(vec![Document::create(path, &content)])
     }
 }

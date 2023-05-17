@@ -14,28 +14,20 @@
 
 use anyhow::Result;
 
-#[derive(Debug, Clone, Default)]
-pub struct DocumentMeta {
-    pub path: String,
-}
-
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub struct Document {
-    pub meta: DocumentMeta,
+    pub path: String,
     pub content: String,
+    pub content_md5: String,
 }
 
 impl Document {
-    pub fn create(content: &str) -> Self {
+    pub fn create(path: &str, content: &str) -> Self {
         Document {
-            meta: Default::default(),
+            path: path.to_string(),
             content: content.to_string(),
+            content_md5: format!("{:x}", md5::compute(content)),
         }
-    }
-
-    pub fn with_meta(mut self, meta: DocumentMeta) -> Self {
-        self.meta = meta;
-        self
     }
 }
 

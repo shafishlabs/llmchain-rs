@@ -48,10 +48,11 @@ fn test_directory_splitter_default() -> Result<()> {
     for (i, doc) in documents.iter().enumerate() {
         writeln!(
             file,
-            "part={}, len={}, chunk_size={}",
+            "part={}, len={}, chunk_size={}, md5={}",
             i,
             doc.content.len(),
             markdown_splitter.splitter_chunk_size,
+            doc.content_md5
         )?;
         writeln!(
             file,
