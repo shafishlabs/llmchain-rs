@@ -17,3 +17,11 @@ mod vector_store;
 
 pub use databend::DatabendVectorStore;
 pub use vector_store::VectorStore;
+
+pub fn escape_sql_string(input: &str) -> String {
+    input
+        .replace('\\', "\\\\")
+        .replace('\'', "''")
+        .replace('\n', " ")
+        .replace('\r', "\\r")
+}

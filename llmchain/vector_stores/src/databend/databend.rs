@@ -21,6 +21,7 @@ use llmchain_embeddings::Embedding;
 use llmchain_loaders::Document;
 use uuid::Uuid;
 
+use crate::escape_sql_string;
 use crate::VectorStore;
 
 pub struct DatabendVectorStore {
@@ -90,7 +91,11 @@ impl VectorStore for DatabendVectorStore {
         for (idx, doc) in inputs.iter().enumerate() {
             val_vec.push(format!(
                 "('{}', '{}', '{}', '{}', {:?})",
-                uuids[idx], doc.path, doc.content, doc.content_md5, embeddings[idx]
+                uuids[idx],
+                escape_sql_string(&doc.path),
+                escape_sql_string(&doc.content),
+                doc.content_md5,
+                embeddings[idx]
             ));
         }
         let values = val_vec.join(",").to_string();

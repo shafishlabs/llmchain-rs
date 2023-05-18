@@ -31,9 +31,17 @@ path = "src/example_vector_store.rs"
 doctest = false
 test = false
 
+[[bin]]
+name = "example_document_qa"
+path = "src/example_document_qa.rs"
+doctest = false
+test = false
+
+
 [dependencies]
 llmchain-embeddings = { path = "../llmchain/embeddings" }
 llmchain-loaders = { path = "../llmchain/loaders" }
+llmchain-llms = { path = "../llmchain/llms" }
 llmchain-prompts = { path = "../llmchain/prompts" }
 llmchain-vector-stores = { path = "../llmchain/vector_stores" }
 
