@@ -12,6 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-mod directory;
-mod markdown;
-mod text;
+mod prompt;
+mod text_to_sql_prompt;
+
+pub use prompt::Prompt;
+pub use prompt::PromptTemplate;
+pub use text_to_sql_prompt::TextToSQLPrompt;
