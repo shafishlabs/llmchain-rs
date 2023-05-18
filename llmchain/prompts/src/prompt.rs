@@ -59,7 +59,7 @@ impl Prompt for PromptTemplate {
                 ));
             }
 
-            let key = format!("{{{{{}}}}}", key);
+            let key = format!("{{{}}}", key);
             prompt = prompt.replace(&key, value);
         }
 

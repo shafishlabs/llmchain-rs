@@ -37,10 +37,7 @@ fn test_prompt_text_to_sql() -> Result<()> {
         let mut input_variables = HashMap::new();
         input_variables.insert("1", "v");
         let result = text_to_sql_template.format(input_variables);
-
-        writeln!(file, "------------------")?;
-        writeln!(file, "{:?}", result.err())?;
-        writeln!(file, "------------------")?;
+        assert!(result.is_err());
     }
 
     // ok.
