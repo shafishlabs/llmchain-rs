@@ -22,7 +22,7 @@ pub struct EmbeddingResult {
     pub embeddings: Vec<Vec<f32>>,
 }
 
-#[derive(Default)]
+#[derive(Default, Debug)]
 pub struct GenerateResult {
     // Usage
     pub prompt_tokens: u32,
