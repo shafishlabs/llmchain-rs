@@ -19,6 +19,11 @@ path = "src/example_markdown_loader.rs"
 doctest = false
 test = false
 
+[[bin]]
+name = "example_prompt_template"
+path = "src/example_prompt_template.rs"
+doctest = false
+test = false
 
 [[bin]]
 name = "example_vector_store"
@@ -26,10 +31,10 @@ path = "src/example_vector_store.rs"
 doctest = false
 test = false
 
-
 [dependencies]
 llmchain-embeddings = { path = "../llmchain/embeddings" }
 llmchain-loaders = { path = "../llmchain/loaders" }
+llmchain-prompts = { path = "../llmchain/prompts" }
 llmchain-vector-stores = { path = "../llmchain/vector_stores" }
 
 anyhow = { workspace = true }

@@ -4,6 +4,7 @@ members = [
     "llmchain/loaders",
     "llmchain/llms",
     "llmchain/prompts",
+    "llmchain/test_kits",
     "llmchain/vector_stores",
     "examples",
 ]
