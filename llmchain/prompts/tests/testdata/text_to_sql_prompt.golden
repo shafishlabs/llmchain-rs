@@ -1,6 +1,3 @@
 ------------------
-Some(input variable: '1' is not in the variables: ["dialect", "schema", "query_str"])
-------------------
-------------------
 "Given an input question, first create a syntactically correct mysql query to run, then look at the results of the query and return the answer. You can order the results by a relevant column to return the most interesting examples in the database.\nNever query for all the columns from a specific table, only ask for a the few relevant columns given the question.\nPay attention to use only the column names that you can see in the schema description. Be careful to not query for columns that do not exist. Pay attention to which column is in which table. Also, qualify column names with the table name when needed.\nUse the following format:\nQuestion: Question here\nSQLQuery: SQL Query to run\nSQLResult: Result of the SQLQuery\nAnswer: Final answer here\nOnly use the tables listed below.\nname string\nQuestion: how many names\nSQLQuery: "
 ------------------

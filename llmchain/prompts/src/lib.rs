@@ -12,9 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+mod document_retrieval_prompt;
 mod prompt;
 mod text_to_sql_prompt;
 
+pub use document_retrieval_prompt::DocumentRetrievalPrompt;
 pub use prompt::Prompt;
 pub use prompt::PromptTemplate;
 pub use text_to_sql_prompt::TextToSQLPrompt;
