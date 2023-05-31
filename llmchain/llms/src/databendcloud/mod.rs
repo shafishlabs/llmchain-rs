@@ -12,11 +12,5 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#[allow(clippy::module_inception)]
 mod databendcloud;
-mod llm;
-mod openai;
-
-pub use llm::LLM;
-pub use openai::OpenAI;
-pub use openai::OpenAIEmbeddingModel;
-pub use openai::OpenAIGenerateModel;

@@ -12,11 +12,31 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-mod databendcloud;
-mod llm;
-mod openai;
+use anyhow::Result;
 
-pub use llm::LLM;
-pub use openai::OpenAI;
-pub use openai::OpenAIEmbeddingModel;
-pub use openai::OpenAIGenerateModel;
+use crate::llm::EmbeddingResult;
+use crate::llm::GenerateResult;
+use crate::llm::LLM;
+
+pub struct DatabendCloud {
+    dsn: String,
+}
+
+impl DatabendCloud {
+    pub fn create(dsn: &str) -> Self {
+        DatabendCloud {
+            dsn: dsn.to_string(),
+        }
+    }
+}
+
+#[async_trait::async_trait]
+impl LLM for DatabendCloud {
+    async fn embedding(&self, inputs: Vec<String>) -> Result<EmbeddingResult> {
+        todo!()
+    }
+
+    async fn generate(&self, input: &str) -> Result<GenerateResult> {
+        todo!()
+    }
+}
