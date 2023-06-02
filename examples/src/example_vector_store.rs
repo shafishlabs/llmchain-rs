@@ -16,25 +16,18 @@ use std::sync::Arc;
 
 use anyhow::Result;
 use env_logger::Env;
-use llmchain_embeddings::OpenAIEmbedding;
+use llmchain_embeddings::DatabendEmbedding;
 use llmchain_loaders::Document;
 use llmchain_vector_stores::DatabendVectorStore;
 use llmchain_vector_stores::VectorStore;
 use log::info;
 
-/// EXPORT OPENAI_API_KEY=<your-openai-api-key>
 /// EXPORT DATABEND_DSN=<your-databend-dsn>
 /// cargo run --bin example_vector_store
 #[tokio::main]
 async fn main() -> Result<()> {
     env_logger::Builder::from_env(Env::default().default_filter_or("info")).init();
 
-    let api_key = std::env::var("OPENAI_API_KEY")
-        .map_err(|_| {
-            "OPENAI_API_KEY is empty, please EXPORT OPENAI_API_KEY=<your-openai-api-key>"
-                .to_string()
-        })
-        .unwrap();
     let dsn = std::env::var("DATABEND_DSN")
         .map_err(|_| {
             "DATABEND_DSN is empty, please EXPORT DATABEND_DSN=<your-databend-dsn>".to_string()
@@ -47,11 +40,11 @@ async fn main() -> Result<()> {
         Document::create("2.md", "llmchain.rs"),
     ];
 
-    // create openai embedding.
-    let openai_embedding = Arc::new(OpenAIEmbedding::create(&api_key));
+    // create embedding.
+    let databend_embedding = Arc::new(DatabendEmbedding::create(&dsn));
 
     // create databend vector store.
-    let databend = DatabendVectorStore::create(&dsn, openai_embedding);
+    let databend = DatabendVectorStore::create(&dsn, databend_embedding);
     databend.init().await?;
 
     // add documents to vector store.
