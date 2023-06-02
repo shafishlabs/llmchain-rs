@@ -12,8 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+mod databend;
 mod embedding;
 mod openai;
 
+pub use databend::DatabendEmbedding;
 pub use embedding::Embedding;
 pub use openai::OpenAIEmbedding;

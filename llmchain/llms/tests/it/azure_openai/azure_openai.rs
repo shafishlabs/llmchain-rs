@@ -37,7 +37,8 @@ async fn test_llm_azure_openai_generate_gpt35() -> Result<()> {
 async fn test_llm_azure_openai_embedding() -> Result<()> {
     let api_base = std::env::var("AZURE_OPENAI_API_BASE").unwrap_or("".to_string());
     let api_key = std::env::var("AZURE_OPENAI_API_KEY").unwrap_or("".to_string());
-    let api_deployment = std::env::var("AZURE_OPENAI_API_EMBED_DEPLOYMENT").unwrap_or("".to_string());
+    let api_deployment =
+        std::env::var("AZURE_OPENAI_API_EMBED_DEPLOYMENT").unwrap_or("".to_string());
 
     let llm = AzureOpenAI::create(&api_base, &api_key, &api_deployment);
 
