@@ -12,8 +12,5 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#[allow(clippy::module_inception)]
 mod databend;
-mod vector_store;
-
-pub use databend::DatabendVectorStore;
-pub use vector_store::VectorStore;

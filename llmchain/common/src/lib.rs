@@ -12,5 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#[allow(clippy::module_inception)]
-mod databendcloud;
+mod string;
+
+pub use string::escape_sql_string;

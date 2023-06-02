@@ -1,0 +1,14 @@
+[package]
+name = "llmchain-common"
+version = "0.1.0"
+edition = "2021"
+license = "Apache-2.0"
+description = "A Rust framework for large language models, inspired by LangChain"
+categories = ["LLM"]
+keywords = ["LLM"]
+
+[dependencies]
+anyhow = { workspace = true }
+
+[dev-dependencies]
+goldenfile = "1.4"
