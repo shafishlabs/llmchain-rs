@@ -5,7 +5,7 @@
 ## Features
 
 - **Models**: LLMs & Chat Models & Embedding Models
-    - **LLMS**: OpenAI GPT3.5 and GPT4
+    - **LLMS**: OpenAI/AzureOpenAI/DatabendCloud
 
 - **Prompts**: LLMs & Chat Prompt Templates
 
