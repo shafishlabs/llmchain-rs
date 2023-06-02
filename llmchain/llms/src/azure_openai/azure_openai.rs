@@ -13,7 +13,7 @@
 // limitations under the License.
 
 use anyhow::Result;
-use async_openai::config::OpenAIConfig;
+use async_openai::config::AzureConfig;
 use async_openai::types::ChatCompletionRequestMessageArgs;
 use async_openai::types::CreateChatCompletionRequestArgs;
 use async_openai::types::CreateEmbeddingRequestArgs;
@@ -23,34 +23,14 @@ use async_openai::Client;
 use crate::llm::EmbeddingResult;
 use crate::llm::GenerateResult;
 use crate::llm::LLM;
+use crate::OpenAIEmbeddingModel;
+use crate::OpenAIGenerateModel;
 
-pub enum OpenAIEmbeddingModel {
-    TextEmbeddingAda002,
-}
-
-impl ToString for OpenAIEmbeddingModel {
-    fn to_string(&self) -> String {
-        "text-embedding-ada-002".to_string()
-    }
-}
-
-pub enum OpenAIGenerateModel {
-    Gpt35,
-    Gpt4,
-}
-
-impl ToString for OpenAIGenerateModel {
-    fn to_string(&self) -> String {
-        match self {
-            OpenAIGenerateModel::Gpt35 => "gpt-3.5-turbo".to_string(),
-            OpenAIGenerateModel::Gpt4 => "gpt-4".to_string(),
-        }
-    }
-}
-
-pub struct OpenAI {
+pub struct AzureOpenAI {
     api_base: String,
     api_key: String,
+    api_version: String,
+    deployment_id: String,
 
     // The maximum number of tokens allowed for the generated answer.
     // By default, the number of tokens the model can return will be (4095 - prompt tokens).
@@ -64,21 +44,18 @@ pub struct OpenAI {
     generate_model: OpenAIGenerateModel,
 }
 
-impl OpenAI {
-    pub fn create(api_key: &str) -> Self {
-        OpenAI {
-            api_base: "https://api.openai.com/v1/".to_string(),
+impl AzureOpenAI {
+    pub fn create(api_base: &str, api_key: &str, deployment_id: &str) -> Self {
+        AzureOpenAI {
+            api_base: api_base.to_string(),
             api_key: api_key.to_string(),
+            api_version: "2023-03-15-preview".to_string(),
+            deployment_id: deployment_id.to_string(),
             max_tokens: 4095,
             temperature: 1.0,
             embedding_model: OpenAIEmbeddingModel::TextEmbeddingAda002,
             generate_model: OpenAIGenerateModel::Gpt35,
         }
-    }
-
-    pub fn with_api_base<S: Into<String>>(mut self, api_base: S) -> Self {
-        self.api_base = api_base.into();
-        self
     }
 
     pub fn with_max_tokens(mut self, max_tokens: u16) -> Self {
@@ -101,16 +78,18 @@ impl OpenAI {
         self
     }
 
-    pub fn get_client(&self) -> Client<OpenAIConfig> {
-        let conf = OpenAIConfig::new()
+    pub fn get_client(&self) -> Client<AzureConfig> {
+        let conf = AzureConfig::new()
             .with_api_key(&self.api_key)
-            .with_api_base(&self.api_base);
+            .with_api_base(&self.api_base)
+            .with_deployment_id(&self.deployment_id)
+            .with_api_version(&self.api_version);
         Client::new(conf)
     }
 }
 
 #[async_trait::async_trait]
-impl LLM for OpenAI {
+impl LLM for AzureOpenAI {
     async fn embedding(&self, inputs: Vec<String>) -> Result<EmbeddingResult> {
         let request = CreateEmbeddingRequestArgs::default()
             .model(&self.embedding_model.to_string())
