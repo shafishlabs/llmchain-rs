@@ -8,7 +8,6 @@ categories = ["LLM"]
 keywords = ["LLM"]
 
 [dependencies]
-anyhow = { workspace = true }
 
 [dev-dependencies]
 goldenfile = "1.4"

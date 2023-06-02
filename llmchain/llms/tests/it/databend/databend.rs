@@ -34,3 +34,18 @@ async fn test_llm_databend_embedding() -> Result<()> {
 
     Ok(())
 }
+
+#[tokio::test]
+async fn test_llm_databend_generate() -> Result<()> {
+    let dsn = std::env::var("DATABEND_DSN").unwrap();
+
+    let llm = DatabendLLM::create(&dsn);
+    let result = llm.generate("say Hello").await?;
+    let generation = result.generation;
+    assert!(generation.contains("Hello"));
+    assert_eq!(result.prompt_tokens, 0);
+    assert_eq!(result.completion_tokens, 0);
+    assert_eq!(result.total_tokens, 0);
+
+    Ok(())
+}

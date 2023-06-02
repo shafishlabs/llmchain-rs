@@ -60,7 +60,28 @@ impl LLM for DatabendLLM {
         })
     }
 
-    async fn generate(&self, _input: &str) -> Result<GenerateResult> {
-        todo!()
+    async fn generate(&self, input: &str) -> Result<GenerateResult> {
+        let conn = new_connection(&self.dsn)?;
+        let row = conn
+            .query_row(&format!(
+                "SELECT ai_text_completion('{}')",
+                escape_sql_string(input)
+            ))
+            .await?;
+
+        let mut generation = "".to_string();
+
+        if let Some(res) = row {
+            type RowResult = (String,);
+            let row: RowResult = res.try_into()?;
+            generation = row.0;
+        }
+
+        Ok(GenerateResult {
+            prompt_tokens: 0,
+            completion_tokens: 0,
+            total_tokens: 0,
+            generation,
+        })
     }
 }
