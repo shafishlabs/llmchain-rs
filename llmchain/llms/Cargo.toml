@@ -17,7 +17,7 @@ serde_json = "1.0.96"
 tokio = { workspace = true }
 tokio-stream = "0.1.12"
 
-async-openai = "0.10.3"
+async-openai = { git = "https://github.com/64bit/async-openai", rev = "17e097eecf79c0919100477650163709c833b3fe"}
 
 [dev-dependencies]
 goldenfile = "1.4"

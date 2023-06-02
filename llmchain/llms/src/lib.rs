@@ -12,10 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+mod azure_openai;
 mod databend;
 mod llm;
 mod openai;
 
+pub use azure_openai::AzureOpenAI;
 pub use databend::DatabendLLM;
 pub use llm::LLM;
 pub use openai::OpenAI;
