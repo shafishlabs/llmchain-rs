@@ -19,8 +19,8 @@ use std::time::Instant;
 
 use anyhow::Result;
 use env_logger::Env;
-use llmchain_embeddings::OpenAIEmbedding;
-use llmchain_llms::OpenAI;
+use llmchain_embeddings::DatabendEmbedding;
+use llmchain_llms::DatabendLLM;
 use llmchain_llms::LLM;
 use llmchain_loaders::DirectoryLoader;
 use llmchain_loaders::DocumentLoader;
@@ -34,20 +34,12 @@ use llmchain_vector_stores::DatabendVectorStore;
 use llmchain_vector_stores::VectorStore;
 use log::info;
 
-/// EXPORT OPENAI_API_KEY=<your-openai-api-key>
 /// EXPORT DATABEND_DSN=<your-databend-dsn>
 /// cargo run --bin example_document_qa <embedding|query>
 #[tokio::main]
 async fn main() -> Result<()> {
     env_logger::Builder::from_env(Env::default().default_filter_or("info")).init();
 
-    // Get the key.
-    let api_key = std::env::var("OPENAI_API_KEY")
-        .map_err(|_| {
-            "OPENAI_API_KEY is empty, please EXPORT OPENAI_API_KEY=<your-openai-api-key>"
-                .to_string()
-        })
-        .unwrap();
     let dsn = std::env::var("DATABEND_DSN")
         .map_err(|_| {
             "DATABEND_DSN is empty, please EXPORT DATABEND_DSN=<your-databend-dsn>".to_string()
@@ -58,8 +50,8 @@ async fn main() -> Result<()> {
     if !args.is_empty() {
         let arg = args.get(1).unwrap();
         match arg.as_str() {
-            "embedding" => embeddings(&api_key, &dsn).await?,
-            "query" => query(&api_key, &dsn).await?,
+            "embedding" => embeddings(&dsn).await?,
+            "query" => query(&dsn).await?,
             _ => {
                 info!("cargo run --bin example_document_qa [embedding|query]")
             }
@@ -69,7 +61,7 @@ async fn main() -> Result<()> {
     Ok(())
 }
 
-async fn embeddings(api_key: &str, databend_dsn: &str) -> Result<()> {
+async fn embeddings(databend_dsn: &str) -> Result<()> {
     // dir.
     let curdir = std::env::current_dir()?.to_str().unwrap().to_string();
     let testdata_dir = format!("{}/examples/testdata", curdir);
@@ -108,8 +100,8 @@ async fn embeddings(api_key: &str, databend_dsn: &str) -> Result<()> {
             documents.len()
         );
         let start = Instant::now();
-        let openai_embedding = Arc::new(OpenAIEmbedding::create(api_key));
-        let databend = DatabendVectorStore::create(databend_dsn, openai_embedding);
+        let databend_embedding = Arc::new(DatabendEmbedding::create(databend_dsn));
+        let databend = DatabendVectorStore::create(databend_dsn, databend_embedding);
         databend.init().await?;
 
         // indexing.
@@ -124,12 +116,12 @@ async fn embeddings(api_key: &str, databend_dsn: &str) -> Result<()> {
     }
 }
 
-async fn query(api_key: &str, databend_dsn: &str) -> Result<()> {
+async fn query(databend_dsn: &str) -> Result<()> {
     let start = Instant::now();
     let question = "how to do COPY in databend";
 
-    let openai_embedding = Arc::new(OpenAIEmbedding::create(api_key));
-    let databend = DatabendVectorStore::create(databend_dsn, openai_embedding);
+    let databend_embedding = Arc::new(DatabendEmbedding::create(databend_dsn));
+    let databend = DatabendVectorStore::create(databend_dsn, databend_embedding);
     databend.init().await?;
     let similarities = databend.similarity_search(question, 3).await?;
     info!(
@@ -157,8 +149,8 @@ async fn query(api_key: &str, databend_dsn: &str) -> Result<()> {
     let prompt = prompt_template.format(input_variables)?;
 
     //
-    let openai_llm = OpenAI::create(api_key);
-    let answer = openai_llm.generate(&prompt).await?;
+    let databend_llm = DatabendLLM::create(databend_dsn);
+    let answer = databend_llm.generate(&prompt).await?;
     info!("question: {}", question);
     info!("answer: {:?}", answer);
     Ok(())
