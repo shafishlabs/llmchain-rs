@@ -8,9 +8,14 @@ categories = ["LLMs"]
 keywords = ["LLMs"]
 
 [dependencies]
+llmchain-common = { path = "../common" }
+
 anyhow = { workspace = true }
 async-trait = { workspace = true }
+databend-driver = { workspace = true }
+serde_json = "1.0.96"
 tokio = { workspace = true }
+tokio-stream = "0.1.12"
 
 async-openai = "0.10.3"
 

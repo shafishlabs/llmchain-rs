@@ -8,14 +8,15 @@ categories = ["LLMs"]
 keywords = ["LLMs"]
 
 [dependencies]
+llmchain-common = { path = "../common" }
 llmchain-loaders = { path = "../loaders" }
 llmchain-embeddings = { path = "../embeddings" }
 
 anyhow = { workspace = true }
 async-trait = { workspace = true }
+databend-driver = { workspace = true }
 tokio = { workspace = true }
 
-databend-driver = "0.2.22"
 futures-util = "0.3.28"
 uuid = "1.3.3"
 

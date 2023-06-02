@@ -12,8 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-mod databend;
-mod vector_store;
+use llmchain_common::escape_sql_string;
 
-pub use databend::DatabendVectorStore;
-pub use vector_store::VectorStore;
+#[test]
+fn test_escape_sql_string() {
+    let input = "Hello, World!";
+    let output = escape_sql_string(input);
+    assert_eq!(output, "Hello, World!");
+
+    let input = "Hello, 'World'!";
+    let output = escape_sql_string(input);
+    assert_eq!(output, "Hello, ''World''!");
+
+    let input = "Hello, 'World'! \n";
+    let output = escape_sql_string(input);
+    assert_eq!(output, "Hello, ''World''!  ");
+
+    let input = "Hello, 'World'! \r";
+    let output = escape_sql_string(input);
+    assert_eq!(output, "Hello, ''World''! \\r");
+}

@@ -12,9 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+mod databend;
 mod llm;
 mod openai;
 
+pub use databend::DatabendLLM;
 pub use llm::LLM;
 pub use openai::OpenAI;
 pub use openai::OpenAIEmbeddingModel;
