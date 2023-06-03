@@ -14,6 +14,8 @@
 
 use anyhow::Result;
 
+use crate::DocumentPath;
+
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct Document {
     pub path: String,
@@ -32,5 +34,5 @@ impl Document {
 }
 
 pub trait DocumentLoader: Send + Sync {
-    fn load(&self, path: &str) -> Result<Vec<Document>>;
+    fn load(&self, path: DocumentPath) -> Result<Vec<Document>>;
 }

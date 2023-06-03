@@ -16,6 +16,7 @@ use anyhow::Result;
 use env_logger::Env;
 use llmchain_loaders::DirectoryLoader;
 use llmchain_loaders::DocumentLoader;
+use llmchain_loaders::DocumentPath;
 use llmchain_loaders::LocalDisk;
 use llmchain_loaders::MarkdownLoader;
 use log::info;
@@ -42,7 +43,7 @@ async fn main() -> Result<()> {
         DirectoryLoader::create(LocalDisk::create()?).with_loader("**/*.md", markdown_loader);
 
     // loader all documents.
-    let documents = directory_loader.load(&directory_dir)?;
+    let documents = directory_loader.load(DocumentPath::from_string(&directory_dir))?;
     info!("{:?}", documents);
 
     Ok(())

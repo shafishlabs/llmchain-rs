@@ -24,6 +24,7 @@ use llmchain_llms::DatabendLLM;
 use llmchain_llms::LLM;
 use llmchain_loaders::DirectoryLoader;
 use llmchain_loaders::DocumentLoader;
+use llmchain_loaders::DocumentPath;
 use llmchain_loaders::DocumentSplitter;
 use llmchain_loaders::LocalDisk;
 use llmchain_loaders::MarkdownLoader;
@@ -74,7 +75,7 @@ async fn embeddings(databend_dsn: &str) -> Result<()> {
         info!("Prepare to load all the documents {}", directory_dir);
         let directory_loader = DirectoryLoader::create(LocalDisk::create()?)
             .with_loader("**/*.md", MarkdownLoader::create(LocalDisk::create()?));
-        let documents = directory_loader.load(&directory_dir)?;
+        let documents = directory_loader.load(DocumentPath::from_string(&directory_dir))?;
         info!(
             "Load all the documents {} done, cost: {}",
             directory_dir,

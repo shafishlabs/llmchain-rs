@@ -17,6 +17,7 @@ use std::io::Write;
 use anyhow::Result;
 use goldenfile::Mint;
 use llmchain_loaders::DocumentLoader;
+use llmchain_loaders::DocumentPath;
 use llmchain_loaders::LocalDisk;
 use llmchain_loaders::TextLoader;
 
@@ -29,7 +30,7 @@ fn test_text_loader() -> Result<()> {
 
     // Load
     let text_loader = TextLoader::create(LocalDisk::create()?);
-    let documents = text_loader.load(&text_file)?;
+    let documents = text_loader.load(DocumentPath::from_string(&text_file))?;
 
     // Check.
     let mut mint = Mint::new(&testdata_dir);

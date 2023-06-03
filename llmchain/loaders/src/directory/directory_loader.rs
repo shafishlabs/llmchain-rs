@@ -26,6 +26,7 @@ use rayon::ThreadPoolBuilder;
 use crate::Disk;
 use crate::Document;
 use crate::DocumentLoader;
+use crate::DocumentPath;
 
 pub struct DirectoryLoader {
     disk: Arc<dyn Disk>,
@@ -81,9 +82,9 @@ impl DirectoryLoader {
 }
 
 impl DocumentLoader for DirectoryLoader {
-    fn load(&self, path: &str) -> Result<Vec<Document>> {
+    fn load(&self, path: DocumentPath) -> Result<Vec<Document>> {
         let mut tasks: Vec<(String, Arc<dyn DocumentLoader>)> = Vec::new();
-        self.process_directory(path, &mut tasks)?;
+        self.process_directory(path.as_str()?, &mut tasks)?;
 
         let worker_pool = ThreadPoolBuilder::new()
             .num_threads(self.max_threads)
@@ -91,7 +92,7 @@ impl DocumentLoader for DirectoryLoader {
         let results: Vec<_> = worker_pool.install(|| {
             tasks
                 .par_iter()
-                .map(|(path, loader)| loader.load(path))
+                .map(|(path, loader)| loader.load(DocumentPath::from_string(path)))
                 .collect()
         });
 

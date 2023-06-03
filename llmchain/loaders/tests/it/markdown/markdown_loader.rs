@@ -17,6 +17,7 @@ use std::io::Write;
 use anyhow::Result;
 use goldenfile::Mint;
 use llmchain_loaders::DocumentLoader;
+use llmchain_loaders::DocumentPath;
 use llmchain_loaders::LocalDisk;
 use llmchain_loaders::MarkdownLoader;
 
@@ -29,7 +30,7 @@ fn test_markdown_loader() -> Result<()> {
 
     // Load
     let markdown_loader = MarkdownLoader::create(LocalDisk::create()?);
-    let documents = markdown_loader.load(&markdown_file)?;
+    let documents = markdown_loader.load(DocumentPath::from_string(&markdown_file))?;
 
     // Check.
     let mut mint = Mint::new(&testdata_dir);

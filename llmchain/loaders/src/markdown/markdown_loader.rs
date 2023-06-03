@@ -19,6 +19,7 @@ use anyhow::Result;
 use crate::Disk;
 use crate::Document;
 use crate::DocumentLoader;
+use crate::DocumentPath;
 use crate::TextLoader;
 
 pub struct MarkdownLoader {
@@ -32,7 +33,7 @@ impl MarkdownLoader {
 }
 
 impl DocumentLoader for MarkdownLoader {
-    fn load(&self, path: &str) -> Result<Vec<Document>> {
+    fn load(&self, path: DocumentPath) -> Result<Vec<Document>> {
         let text_loader = TextLoader::create(self.disk.clone());
         text_loader.load(path)
     }
