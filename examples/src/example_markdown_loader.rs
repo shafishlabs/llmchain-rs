@@ -43,7 +43,9 @@ async fn main() -> Result<()> {
         DirectoryLoader::create(LocalDisk::create()?).with_loader("**/*.md", markdown_loader);
 
     // loader all documents.
-    let documents = directory_loader.load(DocumentPath::from_string(&directory_dir))?;
+    let documents = directory_loader
+        .load(DocumentPath::from_string(&directory_dir))
+        .await?;
     info!("{:?}", documents);
 
     Ok(())

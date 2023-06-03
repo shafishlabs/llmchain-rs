@@ -34,8 +34,9 @@ impl GithubPRLoader {
     }
 }
 
+#[async_trait::async_trait]
 impl DocumentLoader for GithubPRLoader {
-    fn load(&self, _path: DocumentPath) -> Result<Vec<Document>> {
+    async fn load(&self, _path: DocumentPath) -> Result<Vec<Document>> {
         let _ = self.repo;
         let _ = self.owner;
         todo!()

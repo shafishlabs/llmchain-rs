@@ -21,8 +21,8 @@ use llmchain_loaders::DocumentPath;
 use llmchain_loaders::LocalDisk;
 use llmchain_loaders::TextLoader;
 
-#[test]
-fn test_text_loader() -> Result<()> {
+#[tokio::test]
+async fn test_text_loader() -> Result<()> {
     // testdata dir.
     let curdir = std::env::current_dir()?.to_str().unwrap().to_string();
     let testdata_dir = format!("{}/tests/testdata", curdir);
@@ -30,7 +30,9 @@ fn test_text_loader() -> Result<()> {
 
     // Load
     let text_loader = TextLoader::create(LocalDisk::create()?);
-    let documents = text_loader.load(DocumentPath::from_string(&text_file))?;
+    let documents = text_loader
+        .load(DocumentPath::from_string(&text_file))
+        .await?;
 
     // Check.
     let mut mint = Mint::new(&testdata_dir);

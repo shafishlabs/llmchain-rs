@@ -33,6 +33,7 @@ impl Document {
     }
 }
 
+#[async_trait::async_trait]
 pub trait DocumentLoader: Send + Sync {
-    fn load(&self, path: DocumentPath) -> Result<Vec<Document>>;
+    async fn load(&self, path: DocumentPath) -> Result<Vec<Document>>;
 }

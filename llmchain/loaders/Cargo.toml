@@ -8,6 +8,7 @@ categories = ["LLM"]
 keywords = ["LLM"]
 
 [dependencies]
+async-trait = { workspace = true }
 anyhow = { workspace = true }
 
 glob-match = "0.2.1"
@@ -15,6 +16,7 @@ octocrab = "0.24.0"
 opendal = "0.33.2"
 rayon = "1.7.0"
 regex = "1.8.1"
+tokio = { workspace = true }
 md5 = "0.7.0"
 
 [dev-dependencies]
