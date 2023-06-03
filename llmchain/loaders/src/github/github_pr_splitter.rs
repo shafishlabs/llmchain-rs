@@ -13,6 +13,7 @@
 // limitations under the License.
 
 use anyhow::Result;
+use log::info;
 
 use crate::text::TextSplitter;
 use crate::Document;
@@ -44,6 +45,13 @@ impl DocumentSplitter for GithubPRSplitter {
         let text_splitter = TextSplitter::create()
             .with_chunk_size(self.splitter_chunk_size)
             .with_separators(self.separators());
-        text_splitter.split_documents(documents)
+        let result = text_splitter.split_documents(documents)?;
+        info!(
+            "Split {} documents into {} chunks",
+            documents.len(),
+            result.len()
+        );
+
+        Ok(result)
     }
 }

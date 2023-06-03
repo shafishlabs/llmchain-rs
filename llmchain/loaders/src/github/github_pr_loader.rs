@@ -42,10 +42,10 @@ impl GithubPRLoader {
 impl DocumentLoader for GithubPRLoader {
     async fn load(&self, path: DocumentPath) -> Result<Vec<Document>> {
         let mut documents = vec![];
-        let (start, end) = path.as_range()?;
-        info!("Loading PRs from {} to {}", start, end);
+        let list = path.as_list()?;
+        info!("Loading PRs from {:?}", list);
 
-        for id in start..=end {
+        for id in list {
             let now = std::time::Instant::now();
             let octocrab = octocrab::initialise(
                 Octocrab::builder()

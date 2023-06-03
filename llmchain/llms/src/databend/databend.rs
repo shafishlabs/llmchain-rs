@@ -15,6 +15,7 @@
 use anyhow::Result;
 use databend_driver::new_connection;
 use llmchain_common::escape_sql_string;
+use log::info;
 use tokio_stream::StreamExt;
 
 use crate::llm::EmbeddingResult;
@@ -38,17 +39,24 @@ impl LLM for DatabendLLM {
     async fn embedding(&self, inputs: Vec<String>) -> Result<EmbeddingResult> {
         let conn = new_connection(&self.dsn)?;
         let mut embeddings = vec![];
-        for input in inputs {
+        for (i, input) in inputs.iter().enumerate() {
+            let now = std::time::Instant::now();
             type RowResult = (String,);
             let mut rows = conn
                 .query_iter(&format!(
                     "SELECT ai_embedding_vector('{}')",
-                    escape_sql_string(&input)
+                    escape_sql_string(input)
                 ))
                 .await?;
             while let Some(row) = rows.next().await {
                 let row: RowResult = row?.try_into()?;
                 let array_vec: Vec<f32> = serde_json::from_str(&row.0)?;
+                info!(
+                    "embedding {}/{},  time: {:?}",
+                    i + 1,
+                    inputs.len(),
+                    now.elapsed()
+                );
                 embeddings.push(array_vec);
             }
         }

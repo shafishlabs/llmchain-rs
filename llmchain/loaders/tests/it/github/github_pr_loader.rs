@@ -30,7 +30,9 @@ async fn test_github_pr_loader() -> Result<()> {
     // Load
     let github_pr_loader = GithubPRLoader::create("datafuselabs", "databend", &token);
     let documents = github_pr_loader
-        .load(DocumentPath::from_range(11450, 11460))
+        .load(DocumentPath::from_list(vec![
+            11450, 11451, 11452, 11453, 11454, 11455, 11456, 11457, 11458, 11459, 11460,
+        ]))
         .await?;
 
     // Check.

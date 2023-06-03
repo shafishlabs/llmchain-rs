@@ -81,6 +81,7 @@ impl VectorStore for DatabendVectorStore {
         let uuids = (0..inputs.len())
             .map(|_| Uuid::new_v4().to_string())
             .collect::<Vec<_>>();
+
         let embeddings = self.embedding.embed_documents(inputs.clone()).await?;
 
         let sql = format!(
