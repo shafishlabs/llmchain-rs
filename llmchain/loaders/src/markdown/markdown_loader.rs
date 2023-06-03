@@ -32,9 +32,10 @@ impl MarkdownLoader {
     }
 }
 
+#[async_trait::async_trait]
 impl DocumentLoader for MarkdownLoader {
-    fn load(&self, path: DocumentPath) -> Result<Vec<Document>> {
+    async fn load(&self, path: DocumentPath) -> Result<Vec<Document>> {
         let text_loader = TextLoader::create(self.disk.clone());
-        text_loader.load(path)
+        text_loader.load(path).await
     }
 }

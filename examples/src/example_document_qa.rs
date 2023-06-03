@@ -75,7 +75,9 @@ async fn embeddings(databend_dsn: &str) -> Result<()> {
         info!("Prepare to load all the documents {}", directory_dir);
         let directory_loader = DirectoryLoader::create(LocalDisk::create()?)
             .with_loader("**/*.md", MarkdownLoader::create(LocalDisk::create()?));
-        let documents = directory_loader.load(DocumentPath::from_string(&directory_dir))?;
+        let documents = directory_loader
+            .load(DocumentPath::from_string(&directory_dir))
+            .await?;
         info!(
             "Load all the documents {} done, cost: {}",
             directory_dir,

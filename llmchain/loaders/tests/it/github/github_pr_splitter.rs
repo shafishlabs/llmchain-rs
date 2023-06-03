@@ -18,33 +18,41 @@ use anyhow::Result;
 use goldenfile::Mint;
 use llmchain_loaders::DocumentLoader;
 use llmchain_loaders::DocumentPath;
-use llmchain_loaders::LocalDisk;
-use llmchain_loaders::TextLoader;
+use llmchain_loaders::DocumentSplitter;
+use llmchain_loaders::GithubPRLoader;
+use llmchain_loaders::GithubPRSplitter;
 
 #[tokio::test]
-async fn test_text_loader() -> Result<()> {
+async fn test_github_pr_splitter_default() -> Result<()> {
+    let token = std::env::var("GITHUB_TOKEN").unwrap();
     // testdata dir.
     let curdir = std::env::current_dir()?.to_str().unwrap().to_string();
     let testdata_dir = format!("{}/tests/testdata", curdir);
-    let text_file = format!("{}/text/example.txt", testdata_dir);
 
     // Load
-    let text_loader = TextLoader::create(LocalDisk::create()?);
-    let documents = text_loader
-        .load(DocumentPath::from_string(&text_file))
+    let github_pr_loader = GithubPRLoader::create("datafuselabs", "databend", &token);
+    let documents = github_pr_loader
+        .load(DocumentPath::from_list(vec![
+            11450, 11451, 11452, 11453, 11454, 11455, 11456, 11457, 11458, 11459,
+        ]))
         .await?;
+
+    let github_pr_splitter = GithubPRSplitter::create();
+    let documents = github_pr_splitter.split_documents(&documents)?;
 
     // Check.
     let mut mint = Mint::new(&testdata_dir);
-    let golden_path = "text/example_txt_loader.golden";
+    let golden_path = "github/github_pr_splitter_default.golden";
     let mut file = mint.new_goldenfile(golden_path)?;
     for (i, doc) in documents.iter().enumerate() {
         writeln!(
             file,
-            "part={}, len={}, md5={}",
+            "part={}, len={}, chunk_size={}, md5={}, path:{}",
             i,
             doc.content.len(),
-            doc.content_md5
+            github_pr_splitter.splitter_chunk_size,
+            doc.content_md5,
+            doc.path
         )?;
         writeln!(
             file,

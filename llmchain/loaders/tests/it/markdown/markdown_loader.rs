@@ -21,8 +21,8 @@ use llmchain_loaders::DocumentPath;
 use llmchain_loaders::LocalDisk;
 use llmchain_loaders::MarkdownLoader;
 
-#[test]
-fn test_markdown_loader() -> Result<()> {
+#[tokio::test]
+async fn test_markdown_loader() -> Result<()> {
     // testdata dir.
     let curdir = std::env::current_dir()?.to_str().unwrap().to_string();
     let testdata_dir = format!("{}/tests/testdata", curdir);
@@ -30,7 +30,9 @@ fn test_markdown_loader() -> Result<()> {
 
     // Load
     let markdown_loader = MarkdownLoader::create(LocalDisk::create()?);
-    let documents = markdown_loader.load(DocumentPath::from_string(&markdown_file))?;
+    let documents = markdown_loader
+        .load(DocumentPath::from_string(&markdown_file))
+        .await?;
 
     // Check.
     let mut mint = Mint::new(&testdata_dir);

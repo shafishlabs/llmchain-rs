@@ -23,8 +23,8 @@ use llmchain_loaders::LocalDisk;
 use llmchain_loaders::MarkdownLoader;
 use llmchain_loaders::MarkdownSplitter;
 
-#[test]
-fn test_markdown_splitter_default() -> Result<()> {
+#[tokio::test]
+async fn test_markdown_splitter_default() -> Result<()> {
     // testdata dir.
     let curdir = std::env::current_dir()?.to_str().unwrap().to_string();
     let testdata_dir = format!("{}/tests/testdata", curdir);
@@ -32,7 +32,9 @@ fn test_markdown_splitter_default() -> Result<()> {
 
     // Load
     let markdown_loader = MarkdownLoader::create(LocalDisk::create()?);
-    let documents = markdown_loader.load(DocumentPath::from_string(&markdown_file))?;
+    let documents = markdown_loader
+        .load(DocumentPath::from_string(&markdown_file))
+        .await?;
 
     let markdown_splitter = MarkdownSplitter::create();
     let documents = markdown_splitter.split_documents(&documents)?;
@@ -60,8 +62,8 @@ fn test_markdown_splitter_default() -> Result<()> {
     Ok(())
 }
 
-#[test]
-fn test_markdown_splitter_100() -> Result<()> {
+#[tokio::test]
+async fn test_markdown_splitter_100() -> Result<()> {
     // testdata dir.
     let curdir = std::env::current_dir()?.to_str().unwrap().to_string();
     let testdata_dir = format!("{}/tests/testdata", curdir);
@@ -69,7 +71,9 @@ fn test_markdown_splitter_100() -> Result<()> {
 
     // Load
     let markdown_loader = MarkdownLoader::create(LocalDisk::create()?);
-    let documents = markdown_loader.load(DocumentPath::from_string(&markdown_file))?;
+    let documents = markdown_loader
+        .load(DocumentPath::from_string(&markdown_file))
+        .await?;
 
     let markdown_splitter = MarkdownSplitter::create().with_chunk_size(100);
     let documents = markdown_splitter.split_documents(&documents)?;

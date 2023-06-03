@@ -12,28 +12,5 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use anyhow::Result;
-
-use crate::DocumentPath;
-
-#[derive(Debug, Clone, Eq, PartialEq)]
-pub struct Document {
-    pub path: String,
-    pub content: String,
-    pub content_md5: String,
-}
-
-impl Document {
-    pub fn create(path: &str, content: &str) -> Self {
-        Document {
-            path: path.to_string(),
-            content: content.to_string(),
-            content_md5: format!("{:x}", md5::compute(content)),
-        }
-    }
-}
-
-#[async_trait::async_trait]
-pub trait DocumentLoader: Send + Sync {
-    async fn load(&self, path: DocumentPath) -> Result<Vec<Document>>;
-}
+mod github_pr_loader;
+mod github_pr_splitter;

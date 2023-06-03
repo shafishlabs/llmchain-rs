@@ -37,6 +37,12 @@ path = "src/example_document_qa.rs"
 doctest = false
 test = false
 
+[[bin]]
+name = "example_github_inspect"
+path = "src/example_github_inspect.rs"
+doctest = false
+test = false
+
 
 [dependencies]
 llmchain-embeddings = { path = "../llmchain/embeddings" }

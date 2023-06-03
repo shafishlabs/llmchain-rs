@@ -23,8 +23,8 @@ use llmchain_loaders::LocalDisk;
 use llmchain_loaders::TextLoader;
 use llmchain_loaders::TextSplitter;
 
-#[test]
-fn test_text_splitter_default() -> Result<()> {
+#[tokio::test]
+async fn test_text_splitter_default() -> Result<()> {
     // testdata dir.
     let curdir = std::env::current_dir()?.to_str().unwrap().to_string();
     let testdata_dir = format!("{}/tests/testdata", curdir);
@@ -32,7 +32,9 @@ fn test_text_splitter_default() -> Result<()> {
 
     // Load
     let text_loader = TextLoader::create(LocalDisk::create()?);
-    let documents = text_loader.load(DocumentPath::from_string(&text_file))?;
+    let documents = text_loader
+        .load(DocumentPath::from_string(&text_file))
+        .await?;
 
     let text_splitter = TextSplitter::create();
     let documents = text_splitter.split_documents(&documents)?;
@@ -60,8 +62,8 @@ fn test_text_splitter_default() -> Result<()> {
     Ok(())
 }
 
-#[test]
-fn test_text_splitter_10() -> Result<()> {
+#[tokio::test]
+async fn test_text_splitter_10() -> Result<()> {
     // testdata dir.
     let curdir = std::env::current_dir()?.to_str().unwrap().to_string();
     let testdata_dir = format!("{}/tests/testdata", curdir);
@@ -69,7 +71,9 @@ fn test_text_splitter_10() -> Result<()> {
 
     // Load
     let text_loader = TextLoader::create(LocalDisk::create()?);
-    let documents = text_loader.load(DocumentPath::from_string(&text_file))?;
+    let documents = text_loader
+        .load(DocumentPath::from_string(&text_file))
+        .await?;
 
     let text_splitter = TextSplitter::create().with_chunk_size(10);
     let documents = text_splitter.split_documents(&documents)?;

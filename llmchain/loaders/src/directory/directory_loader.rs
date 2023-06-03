@@ -81,8 +81,9 @@ impl DirectoryLoader {
     }
 }
 
+#[async_trait::async_trait]
 impl DocumentLoader for DirectoryLoader {
-    fn load(&self, path: DocumentPath) -> Result<Vec<Document>> {
+    async fn load(&self, path: DocumentPath) -> Result<Vec<Document>> {
         let mut tasks: Vec<(String, Arc<dyn DocumentLoader>)> = Vec::new();
         self.process_directory(path.as_str()?, &mut tasks)?;
 
@@ -98,7 +99,7 @@ impl DocumentLoader for DirectoryLoader {
 
         let mut documents = vec![];
         for result in results {
-            let result = result?;
+            let result = result.await?;
             documents.extend(result);
         }
 

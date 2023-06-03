@@ -17,7 +17,7 @@ use anyhow::Result;
 #[derive(Debug)]
 pub enum DocumentPath {
     Str(String),
-    Range(usize, usize),
+    List(Vec<usize>),
 }
 
 impl DocumentPath {
@@ -34,16 +34,16 @@ impl DocumentPath {
         DocumentPath::Str(s.to_string())
     }
 
-    pub fn as_range(&self) -> Result<(usize, usize)> {
+    pub fn as_list(&self) -> Result<Vec<usize>> {
         match self {
-            DocumentPath::Range(start, end) => Ok((*start, *end)),
+            DocumentPath::List(list) => Ok(list.clone()),
             _ => {
-                anyhow::bail!("DocumentPath is not a range, {:?}", self)
+                anyhow::bail!("DocumentPath is not a list, {:?}", self)
             }
         }
     }
 
-    pub fn from_range(start: usize, end: usize) -> Self {
-        DocumentPath::Range(start, end)
+    pub fn from_list(list: Vec<usize>) -> Self {
+        DocumentPath::List(list)
     }
 }
