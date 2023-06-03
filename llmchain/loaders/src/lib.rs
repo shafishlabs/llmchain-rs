@@ -15,6 +15,7 @@
 mod directory;
 mod disk;
 mod document;
+mod document_path;
 mod document_splitter;
 mod markdown;
 mod text;
@@ -25,6 +26,7 @@ pub use disk::LocalDisk;
 pub use disk::RemoteDisk;
 pub use document::Document;
 pub use document::DocumentLoader;
+pub use document_path::DocumentPath;
 pub use document_splitter::DocumentSplitter;
 pub use markdown::MarkdownLoader;
 pub use markdown::MarkdownSplitter;

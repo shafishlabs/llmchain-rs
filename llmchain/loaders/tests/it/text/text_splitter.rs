@@ -17,6 +17,7 @@ use std::io::Write;
 use anyhow::Result;
 use goldenfile::Mint;
 use llmchain_loaders::DocumentLoader;
+use llmchain_loaders::DocumentPath;
 use llmchain_loaders::DocumentSplitter;
 use llmchain_loaders::LocalDisk;
 use llmchain_loaders::TextLoader;
@@ -31,7 +32,7 @@ fn test_text_splitter_default() -> Result<()> {
 
     // Load
     let text_loader = TextLoader::create(LocalDisk::create()?);
-    let documents = text_loader.load(&text_file)?;
+    let documents = text_loader.load(DocumentPath::from_string(&text_file))?;
 
     let text_splitter = TextSplitter::create();
     let documents = text_splitter.split_documents(&documents)?;
@@ -68,7 +69,7 @@ fn test_text_splitter_10() -> Result<()> {
 
     // Load
     let text_loader = TextLoader::create(LocalDisk::create()?);
-    let documents = text_loader.load(&text_file)?;
+    let documents = text_loader.load(DocumentPath::from_string(&text_file))?;
 
     let text_splitter = TextSplitter::create().with_chunk_size(10);
     let documents = text_splitter.split_documents(&documents)?;

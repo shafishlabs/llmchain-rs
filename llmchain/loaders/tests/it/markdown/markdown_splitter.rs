@@ -17,6 +17,7 @@ use std::io::Write;
 use anyhow::Result;
 use goldenfile::Mint;
 use llmchain_loaders::DocumentLoader;
+use llmchain_loaders::DocumentPath;
 use llmchain_loaders::DocumentSplitter;
 use llmchain_loaders::LocalDisk;
 use llmchain_loaders::MarkdownLoader;
@@ -31,7 +32,7 @@ fn test_markdown_splitter_default() -> Result<()> {
 
     // Load
     let markdown_loader = MarkdownLoader::create(LocalDisk::create()?);
-    let documents = markdown_loader.load(&markdown_file)?;
+    let documents = markdown_loader.load(DocumentPath::from_string(&markdown_file))?;
 
     let markdown_splitter = MarkdownSplitter::create();
     let documents = markdown_splitter.split_documents(&documents)?;
@@ -68,7 +69,7 @@ fn test_markdown_splitter_100() -> Result<()> {
 
     // Load
     let markdown_loader = MarkdownLoader::create(LocalDisk::create()?);
-    let documents = markdown_loader.load(&markdown_file)?;
+    let documents = markdown_loader.load(DocumentPath::from_string(&markdown_file))?;
 
     let markdown_splitter = MarkdownSplitter::create().with_chunk_size(100);
     let documents = markdown_splitter.split_documents(&documents)?;

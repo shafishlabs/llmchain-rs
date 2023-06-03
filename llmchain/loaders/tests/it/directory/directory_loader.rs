@@ -18,6 +18,7 @@ use anyhow::Result;
 use goldenfile::Mint;
 use llmchain_loaders::DirectoryLoader;
 use llmchain_loaders::DocumentLoader;
+use llmchain_loaders::DocumentPath;
 use llmchain_loaders::LocalDisk;
 use llmchain_loaders::MarkdownLoader;
 
@@ -32,7 +33,7 @@ fn test_directory_loader() -> Result<()> {
     let markdown_loader = MarkdownLoader::create(LocalDisk::create()?);
     let directory_loader =
         DirectoryLoader::create(LocalDisk::create()?).with_loader("**/*.md", markdown_loader);
-    let documents = directory_loader.load(&directory_dir)?;
+    let documents = directory_loader.load(DocumentPath::from_string(&directory_dir))?;
     assert_eq!(documents.len(), 2);
 
     // Check.
