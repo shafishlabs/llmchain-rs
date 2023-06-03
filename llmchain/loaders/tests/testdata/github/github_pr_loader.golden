@@ -1,0 +1,667 @@
+part=0, len=3401, md5=148722c9945683d84c5e524e6bece10b, path:https://github.com/datafuselabs/databend/pull/11652
+------------------------------------------------------------
+diff --git a/website/blog/2023-06-01-tableau.md b/website/blog/2023-06-01-tableau.md
+new file mode 100644
+index 00000000000..9edbe362f27
+--- /dev/null
++++ b/website/blog/2023-06-01-tableau.md
+@@ -0,0 +1,58 @@
++---
++title: "Databend X Tableau"
++date: 2023-06-01
++slug: 2023-06-01-tableau
++tags: [databend, BI, Tableau]
++description: "Tableau is a popular data visualization and business intelligence tool. This tutorial helps users connect Databend for BI data analysis in Tableau."
++authors:
++  - name: PsiACE
++    url: https://github.com/psiace
++    image_url: https://github.com/psiace.png
++---
++
++Tableau is a popular data visualization and business intelligence tool. It provides an intuitive, interactive way to explore, analyze, and present data, helping users better understand the meaning and insights of their data.
++
++This tutorial helps users connect Databend for BI data analysis in Tableau.
++
++## Databend JDBC
++
++Tableau supports all data sources that implement the JDBC protocol, so you need to prepare the databend jdbc jar file first. You can compile it yourself or download it from the Maven repository as follows.
++
++```bash
++git clone https://github.com/databendcloud/databend-jdbc
++cd databend-jdbc
++mvn clean install -DskipTest
++```
++
++Then copy the compiled databend-jdbc.jar to Tableau's Driver directory:
++- Windows: `C:\Program Files\Tableau\Drivers`
++- Mac: `~/Library/Tableau/Drivers`
++- Linux: `/opt/tableau/tableau_driver/jdbc`
++
++## Connect to Tableau
++
++Click **"Other Databases (JDBC)"** on the Tableau homepage.
++
++![](../static/img/blog/tableau/tableau-1.jpg)
++
++JDBC URL: `jdbc:databend://{user}:{password}@{host}:{port}/database?ssl={status}`
++
++Select MySQL as the dialect.
++
++![](../static/img/blog/tableau/tableau-2.jpg)
++
++## Data Analysis
++
++Select the database and table you want to operate on, and drag the table into the area.
++
++![](../static/img/blog/tableau/tableau-3.jpg)
++
++This way, you can analyze and chart data in databend.
++
++![](../static/img/blog/tableau/tableau-4.jpg)
++
++Please use version 2023.1.0 or above of Tableau, as other versions may have compatibility issues.
++
++## Conclusion
++
++The above is the basic process of using Tableau to analyze Databend data. For more information about connecting with JDBC in Tableau, please refer to [Other Databases (JDBC)](https://help.tableau.com/current/pro/desktop/en-us/examples_otherdatabases_jdbc.htm).
+\ No newline at end of file
+diff --git a/website/static/img/blog/tableau/tableau-1.jpg b/website/static/img/blog/tableau/tableau-1.jpg
+new file mode 100644
+index 00000000000..f5126dfb0ae
+Binary files /dev/null and b/website/static/img/blog/tableau/tableau-1.jpg differ
+diff --git a/website/static/img/blog/tableau/tableau-2.jpg b/website/static/img/blog/tableau/tableau-2.jpg
+new file mode 100644
+index 00000000000..dd6a33a5831
+Binary files /dev/null and b/website/static/img/blog/tableau/tableau-2.jpg differ
+diff --git a/website/static/img/blog/tableau/tableau-3.jpg b/website/static/img/blog/tableau/tableau-3.jpg
+new file mode 100644
+index 00000000000..4133b22fb92
+Binary files /dev/null and b/website/static/img/blog/tableau/tableau-3.jpg differ
+diff --git a/website/static/img/blog/tableau/tableau-4.jpg b/website/static/img/blog/tableau/tableau-4.jpg
+new file mode 100644
+index 00000000000..5e0c98d14f0
+Binary files /dev/null and b/website/static/img/blog/tableau/tableau-4.jpg differ
+
+part=1, len=1543, md5=a62239d2e6c11032441e69b7856d529f, path:https://github.com/datafuselabs/databend/pull/11654
+------------------------------------------------------------
+diff --git a/src/query/service/src/pipelines/processors/transforms/hash_join/hash_join_state_impl.rs b/src/query/service/src/pipelines/processors/transforms/hash_join/hash_join_state_impl.rs
+index 13058461487..39b20d3c061 100644
+--- a/src/query/service/src/pipelines/processors/transforms/hash_join/hash_join_state_impl.rs
++++ b/src/query/service/src/pipelines/processors/transforms/hash_join/hash_join_state_impl.rs
+@@ -433,16 +433,34 @@ impl HashJoinState for JoinHashTable {
+ 
+     #[async_backtrace::framed]
+     async fn wait_build_finish(&self) -> Result<()> {
+-        if !*self.is_built.lock() {
+-            self.built_notify.notified().await;
++        let notified = {
++            let built_guard = self.is_built.lock();
++
++            match *built_guard {
++                true => None,
++                false => Some(self.built_notify.notified()),
++            }
++        };
++
++        if let Some(notified) = notified {
++            notified.await;
+         }
+         Ok(())
+     }
+ 
+     #[async_backtrace::framed]
+     async fn wait_finalize_finish(&self) -> Result<()> {
+-        if !*self.is_finalized.lock() {
+-            self.finalized_notify.notified().await;
++        let notified = {
++            let finalized_guard = self.is_finalized.lock();
++
++            match *finalized_guard {
++                true => None,
++                false => Some(self.finalized_notify.notified()),
++            }
++        };
++
++        if let Some(notified) = notified {
++            notified.await;
+         }
+         Ok(())
+     }
+
+part=2, len=9758, md5=3230f8c203052bde74806a6516af7c04, path:https://github.com/datafuselabs/databend/pull/11655
+------------------------------------------------------------
+diff --git a/docs/doc/13-sql-reference/20-system-tables/system-settings.md b/docs/doc/13-sql-reference/20-system-tables/system-settings.md
+index fcde5d6c6c3..877fec08d6d 100644
+--- a/docs/doc/13-sql-reference/20-system-tables/system-settings.md
++++ b/docs/doc/13-sql-reference/20-system-tables/system-settings.md
+@@ -14,7 +14,7 @@ SELECT * FROM system.settings;
+ | enable_bushy_join                     | 0            | 0            | SESSION | Enables generating a bushy join plan with the optimizer.                                                                                                                            | UInt64 |
+ | enable_cbo                            | 1            | 1            | SESSION | Enables cost-based optimization.                                                                                                                                                    | UInt64 |
+ | enable_distributed_eval_index         | 1            | 1            | SESSION | Enables evaluated indexes to be created and maintained across multiple nodes.                                                                                                       | UInt64 |
+-| enable_dphyp                          | 0            | 0            | SESSION | Enables dphyp join order algorithm.                                                                                                                                                 | UInt64 |
++| enable_dphyp                          | 1            | 1            | SESSION | Enables dphyp join order algorithm.                                                                                                                                                 | UInt64 |
+ | enable_query_result_cache             | 0            | 0            | SESSION | Enables caching query results to improve performance for identical queries.                                                                                                         | UInt64 |
+ | enable_runtime_filter                 | 0            | 0            | SESSION | Enables runtime filter optimization for JOIN.                                                                                                                                       | UInt64 |
+ | flight_client_timeout                 | 60           | 60           | SESSION | Sets the maximum time in seconds that a flight client request can be processed.                                                                                                     | UInt64 |
+diff --git a/docs/doc/14-sql-commands/40-show/show-settings.md b/docs/doc/14-sql-commands/40-show/show-settings.md
+index 2169b76fabf..da9c4808d56 100644
+--- a/docs/doc/14-sql-commands/40-show/show-settings.md
++++ b/docs/doc/14-sql-commands/40-show/show-settings.md
+@@ -25,7 +25,7 @@ SHOW SETTINGS;
+ | enable_bushy_join                     | 0            | 0            | SESSION | Enables generating a bushy join plan with the optimizer.                                                                                                                            | UInt64 |
+ | enable_cbo                            | 1            | 1            | SESSION | Enables cost-based optimization.                                                                                                                                                    | UInt64 |
+ | enable_distributed_eval_index         | 1            | 1            | SESSION | Enables evaluated indexes to be created and maintained across multiple nodes.                                                                                                       | UInt64 |
+-| enable_dphyp                          | 0            | 0            | SESSION | Enables dphyp join order algorithm.                                                                                                                                                 | UInt64 |
++| enable_dphyp                          | 1            | 1            | SESSION | Enables dphyp join order algorithm.                                                                                                                                                 | UInt64 |
+ | enable_query_result_cache             | 0            | 0            | SESSION | Enables caching query results to improve performance for identical queries.                                                                                                         | UInt64 |
+ | enable_runtime_filter                 | 0            | 0            | SESSION | Enables runtime filter optimization for JOIN.                                                                                                                                       | UInt64 |
+ | flight_client_timeout                 | 60           | 60           | SESSION | Sets the maximum time in seconds that a flight client request can be processed.                                                                                                     | UInt64 |
+diff --git a/tests/sqllogictests/suites/tpcds/queries.test b/tests/sqllogictests/suites/tpcds/queries.test
+index 20f6b8e1cbe..69e9e944f1d 100644
+--- a/tests/sqllogictests/suites/tpcds/queries.test
++++ b/tests/sqllogictests/suites/tpcds/queries.test
+@@ -7195,6 +7195,135 @@ LIMIT 100;
+ 11 370.06 176.6527
+ 11 496.17 176.6527
+ 
++# Q64
++onlyif mysql
++query I
++WITH cs_ui AS
++  (SELECT cs_item_sk,
++          sum(cs_ext_list_price) AS sale,
++          sum(cr_refunded_cash+cr_reversed_charge+cr_store_credit) AS refund
++   FROM catalog_sales,
++        catalog_returns
++   WHERE cs_item_sk = cr_item_sk
++     AND cs_order_number = cr_order_number
++   GROUP BY cs_item_sk
++   HAVING sum(cs_ext_list_price)>2*sum(cr_refunded_cash+cr_reversed_charge+cr_store_credit)),
++     cross_sales AS
++  (SELECT i_product_name product_name,
++          i_item_sk item_sk,
++          s_store_name store_name,
++          s_zip store_zip,
++          ad1.ca_street_number b_street_number,
++          ad1.ca_street_name b_street_name,
++          ad1.ca_city b_city,
++          ad1.ca_zip b_zip,
++          ad2.ca_street_number c_street_number,
++          ad2.ca_street_name c_street_name,
++          ad2.ca_city c_city,
++          ad2.ca_zip c_zip,
++          d1.d_year AS syear,
++          d2.d_year AS fsyear,
++          d3.d_year s2year,
++          count(*) cnt,
++          sum(ss_wholesale_cost) s1,
++          sum(ss_list_price) s2,
++          sum(ss_coupon_amt) s3
++   FROM store_sales,
++        store_returns,
++        cs_ui,
++        date_dim d1,
++        date_dim d2,
++        date_dim d3,
++        store,
++        customer,
++        customer_demographics cd1,
++        customer_demographics cd2,
++        promotion,
++        household_demographics hd1,
++        household_demographics hd2,
++        customer_address ad1,
++        customer_address ad2,
++        income_band ib1,
++        income_band ib2,
++        item
++   WHERE ss_store_sk = s_store_sk
++     AND ss_sold_date_sk = d1.d_date_sk
++     AND ss_customer_sk = c_customer_sk
++     AND ss_cdemo_sk= cd1.cd_demo_sk
++     AND ss_hdemo_sk = hd1.hd_demo_sk
++     AND ss_addr_sk = ad1.ca_address_sk
++     AND ss_item_sk = i_item_sk
++     AND ss_item_sk = sr_item_sk
++     AND ss_ticket_number = sr_ticket_number
++     AND ss_item_sk = cs_ui.cs_item_sk
++     AND c_current_cdemo_sk = cd2.cd_demo_sk
++     AND c_current_hdemo_sk = hd2.hd_demo_sk
++     AND c_current_addr_sk = ad2.ca_address_sk
++     AND c_first_sales_date_sk = d2.d_date_sk
++     AND c_first_shipto_date_sk = d3.d_date_sk
++     AND ss_promo_sk = p_promo_sk
++     AND hd1.hd_income_band_sk = ib1.ib_income_band_sk
++     AND hd2.hd_income_band_sk = ib2.ib_income_band_sk
++     AND cd1.cd_marital_status <> cd2.cd_marital_status
++     AND i_color IN ('purple',
++                     'burlywood',
++                     'indian',
++                     'spring',
++                     'floral',
++                     'medium')
++     AND i_current_price BETWEEN 64 AND 64 + 10
++     AND i_current_price BETWEEN 64 + 1 AND 64 + 15
++   GROUP BY i_product_name,
++            i_item_sk,
++            s_store_name,
++            s_zip,
++            ad1.ca_street_number,
++            ad1.ca_street_name,
++            ad1.ca_city,
++            ad1.ca_zip,
++            ad2.ca_street_number,
++            ad2.ca_street_name,
++            ad2.ca_city,
++            ad2.ca_zip,
++            d1.d_year,
++            d2.d_year,
++            d3.d_year)
++SELECT cs1.product_name,
++       cs1.store_name,
++       cs1.store_zip,
++       cs1.b_street_number,
++       cs1.b_street_name,
++       cs1.b_city,
++       cs1.b_zip,
++       cs1.c_street_number,
++       cs1.c_street_name,
++       cs1.c_city,
++       cs1.c_zip,
++       cs1.syear cs1syear,
++       cs1.cnt cs1cnt,
++       cs1.s1 AS s11,
++       cs1.s2 AS s21,
++       cs1.s3 AS s31,
++       cs2.s1 AS s12,
++       cs2.s2 AS s22,
++       cs2.s3 AS s32,
++       cs2.syear,
++       cs2.cnt
++FROM cross_sales cs1,
++     cross_sales cs2
++WHERE cs1.item_sk=cs2.item_sk
++  AND cs1.syear = 1999
++  AND cs2.syear = 1999 + 1
++  AND cs2.cnt <= cs1.cnt
++  AND cs1.store_name = cs2.store_name
++  AND cs1.store_zip = cs2.store_zip
++ORDER BY cs1.product_name,
++         cs1.store_name,
++         cs2.cnt,
++         cs1.s1,
++         cs2.s1;
++----
++
+ # Q65
+ onlyif mysql
+ query I
+diff --git a/tests/sqllogictests/suites/tpcds/tpcds_q64.test b/tests/sqllogictests/suites/tpcds/tpcds_q64.test
+deleted file mode 100644
+index a7796bded6f..00000000000
+--- a/tests/sqllogictests/suites/tpcds/tpcds_q64.test
++++ /dev/null
+@@ -1,12 +0,0 @@
+-statement ok
+-set sandbox_tenant = 'test_tenant';
+-
+-statement ok
+-use tpcds;
+-
+-# Q64
+-statement ok
+-set enable_dphyp=1;
+-
+-statement ok
+-set enable_dphyp=0;
+
+part=3, len=6198, md5=6dc71a67e7fb0af0747b44e3cb66e89d, path:https://github.com/datafuselabs/databend/pull/11657
+------------------------------------------------------------
+diff --git a/Cargo.lock b/Cargo.lock
+index 5f95acafd2d..f6384452b7b 100644
+--- a/Cargo.lock
++++ b/Cargo.lock
+@@ -53,15 +53,6 @@ dependencies = [
+  "version_check",
+ ]
+ 
+-[[package]]
+-name = "aho-corasick"
+-version = "0.7.20"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "cc936419f96fa211c1b9166887b38e5e40b19958e5b895be7c1f93adec7071ac"
+-dependencies = [
+- "memchr",
+-]
+-
+ [[package]]
+ name = "aho-corasick"
+ version = "1.0.1"
+@@ -2032,7 +2023,7 @@ dependencies = [
+ name = "common-io"
+ version = "0.1.0"
+ dependencies = [
+- "aho-corasick 0.7.20",
++ "aho-corasick",
+  "bincode 2.0.0-rc.2",
+  "bytes",
+  "chrono",
+@@ -3559,7 +3550,7 @@ name = "databend-query"
+ version = "0.1.0"
+ dependencies = [
+  "aggregating-index",
+- "aho-corasick 0.7.20",
++ "aho-corasick",
+  "arrow-array",
+  "arrow-cast",
+  "arrow-flight",
+@@ -6221,8 +6212,7 @@ dependencies = [
+ [[package]]
+ name = "jsonb"
+ version = "0.2.2"
+-source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "849510c39fe473decee52dff5cf38c1f57a660b9af08ea910772cd1188c705b4"
++source = "git+https://github.com/datafuselabs/jsonb?rev=2d45417#2d45417fa6a4f08c0cbada4cbfcb08b2274559e8"
+ dependencies = [
+  "byteorder",
+  "fast-float",
+@@ -8584,7 +8574,7 @@ version = "1.8.1"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+ checksum = "af83e617f331cc6ae2da5443c602dfa5af81e517212d9d611a5b3ba1777b5370"
+ dependencies = [
+- "aho-corasick 1.0.1",
++ "aho-corasick",
+  "memchr",
+  "regex-syntax 0.7.1",
+ ]
+diff --git a/Cargo.toml b/Cargo.toml
+index 28a1d7c6ee5..1ebd828abad 100644
+--- a/Cargo.toml
++++ b/Cargo.toml
+@@ -113,7 +113,7 @@ opendal = { version = "0.36", features = [
+ ] }
+ ethnum = { version = "1.3.2" }
+ ordered-float = { version = "3.6.0", default-features = false }
+-jsonb = { version = "0.2.2" }
++jsonb = { git = "https://github.com/datafuselabs/jsonb", rev = "2d45417" }
+ 
+ # openraft = { version = "0.8.2", features = ["compat-07"] }
+ # For debugging
+diff --git a/src/common/io/Cargo.toml b/src/common/io/Cargo.toml
+index 0d0959817fc..5c46c683804 100644
+--- a/src/common/io/Cargo.toml
++++ b/src/common/io/Cargo.toml
+@@ -28,5 +28,5 @@ ordered-float = { workspace = true }
+ serde = { workspace = true }
+ 
+ [dev-dependencies]
+-aho-corasick = { version = "0.7.20" }
++aho-corasick = { version = "1.0.1" }
+ rand = "0.8.5"
+diff --git a/src/common/io/tests/it/cursor_ext/fast_read_text_ext.rs b/src/common/io/tests/it/cursor_ext/fast_read_text_ext.rs
+index e7315358c24..edf336aaae7 100644
+--- a/src/common/io/tests/it/cursor_ext/fast_read_text_ext.rs
++++ b/src/common/io/tests/it/cursor_ext/fast_read_text_ext.rs
+@@ -31,7 +31,7 @@ fn test_positions() -> Result<()> {
+     ];
+ 
+     let patterns = &["'", "\\"];
+-    let ac = AhoCorasick::new(patterns);
++    let ac = AhoCorasick::new(patterns).unwrap();
+     for (data, expect) in cases {
+         let mut positions = VecDeque::new();
+         for mat in ac.find_iter(&data) {
+@@ -47,7 +47,7 @@ fn test_positions() -> Result<()> {
+ fn test_fast_read_text() -> Result<()> {
+     let data = r#"'abc','d\'ef','g\\\'hi'"#.to_string();
+     let patterns = &["'", "\\"];
+-    let ac = AhoCorasick::new(patterns);
++    let ac = AhoCorasick::new(patterns).unwrap();
+     let mut positions = VecDeque::new();
+     for mat in ac.find_iter(&data) {
+         let pos = mat.start();
+diff --git a/src/query/service/Cargo.toml b/src/query/service/Cargo.toml
+index 1c7fbc9797c..a207ced4016 100644
+--- a/src/query/service/Cargo.toml
++++ b/src/query/service/Cargo.toml
+@@ -108,7 +108,7 @@ virtual-columns-handler = { path = "../ee-features/virtual-columns-handler" }
+ # GitHub dependencies
+ 
+ # Crates.io dependencies
+-aho-corasick = { version = "0.7.20" }
++aho-corasick = { version = "1.0.1" }
+ arrow-array = { version = "37.0.0" }
+ arrow-flight = { version = "37.0.0", features = ["flight-sql-experimental", "tls"] }
+ arrow-ipc = { version = "37.0.0" }
+diff --git a/src/query/service/src/interpreters/interpreter_insert.rs b/src/query/service/src/interpreters/interpreter_insert.rs
+index 1ffb4156dbb..655dea78e38 100644
+--- a/src/query/service/src/interpreters/interpreter_insert.rs
++++ b/src/query/service/src/interpreters/interpreter_insert.rs
+@@ -46,6 +46,7 @@ use common_sql::BindContext;
+ use common_sql::Metadata;
+ use common_sql::MetadataRef;
+ use common_sql::NameResolutionContext;
++use once_cell::sync::Lazy;
+ use parking_lot::Mutex;
+ use parking_lot::RwLock;
+ 
+@@ -60,6 +61,11 @@ use crate::schedulers::build_query_pipeline;
+ use crate::sessions::QueryContext;
+ use crate::sessions::TableContext;
+ 
++// Pre-generate the positions of `(`, `'` and `\`
++static PATTERNS: &[&str] = &["(", "'", "\\"];
++
++static INSERT_TOKEN_FINDER: Lazy<AhoCorasick> = Lazy::new(|| AhoCorasick::new(PATTERNS).unwrap());
++
+ pub struct InsertInterpreter {
+     ctx: Arc<QueryContext>,
+     plan: Insert,
+@@ -308,14 +314,11 @@ impl AsyncSource for ValueSource {
+             return Ok(None);
+         }
+ 
+-        // Pre-generate the positions of `(`, `'` and `\`
+-        let patterns = &["(", "'", "\\"];
+-        let ac = AhoCorasick::new(patterns);
+         // Use the number of '(' to estimate the number of rows
+         let mut estimated_rows = 0;
+         let mut positions = VecDeque::new();
+-        for mat in ac.find_iter(&self.data) {
+-            if mat.pattern() == 0 {
++        for mat in INSERT_TOKEN_FINDER.find_iter(&self.data) {
++            if mat.pattern() == 0.into() {
+                 estimated_rows += 1;
+                 continue;
+             }
+diff --git a/tests/sqllogictests/suites/query/02_function/02_0048_function_semi_structureds_parse_json b/tests/sqllogictests/suites/query/02_function/02_0048_function_semi_structureds_parse_json
+index 44023091356..06e414097e7 100644
+--- a/tests/sqllogictests/suites/query/02_function/02_0048_function_semi_structureds_parse_json
++++ b/tests/sqllogictests/suites/query/02_function/02_0048_function_semi_structureds_parse_json
+@@ -58,6 +58,10 @@ select parse_json('{ "x" : "abc", "y" : false, "z": 10} ')
+ ----
+ {"x":"abc","y":false,"z":10}
+ 
++query T
++select parse_json('{ "test" : "\\"abc\\"测试" } ')
++----
++{"test":""abc"测试"}
+ 
+ statement error 1001
+ select parse_json('[1,')
+
+part=4, len=723, md5=d94255918d1571774f15b6ed7f28185b, path:https://github.com/datafuselabs/databend/pull/11658
+------------------------------------------------------------
+diff --git a/src/query/service/src/catalogs/default/immutable_catalog.rs b/src/query/service/src/catalogs/default/immutable_catalog.rs
+index 92b04bf6d2d..82be2a18e6d 100644
+--- a/src/query/service/src/catalogs/default/immutable_catalog.rs
++++ b/src/query/service/src/catalogs/default/immutable_catalog.rs
+@@ -74,8 +74,6 @@ use crate::databases::SystemDatabase;
+ use crate::storages::Table;
+ 
+ /// System Catalog contains ... all the system databases (no surprise :)
+-/// Currently, this is only one database here, the "system" db.
+-/// "information_schema" db is supposed to held here
+ #[derive(Clone)]
+ pub struct ImmutableCatalog {
+     // it's case sensitive, so we will need two same database only with the name's case
+
+part=5, len=6156, md5=6fb01a2cae1d71230c8329489e550abe, path:https://github.com/datafuselabs/databend/pull/11659
+------------------------------------------------------------
+diff --git a/src/query/sql/src/planner/semantic/type_check.rs b/src/query/sql/src/planner/semantic/type_check.rs
+index 4902a4396f8..274137faec5 100644
+--- a/src/query/sql/src/planner/semantic/type_check.rs
++++ b/src/query/sql/src/planner/semantic/type_check.rs
+@@ -287,8 +287,7 @@ impl<'a> TypeChecker<'a> {
+                         },
+                     ])
+                     .await?;
+-                self.resolve_scalar_function_call(*span, "assume_not_null", vec![], vec![scalar])
+-                    .await?
++                self.resolve_scalar_function_call(*span, "assume_not_null", vec![], vec![scalar])?
+             }
+ 
+             Expr::InList {
+@@ -389,8 +388,7 @@ impl<'a> TypeChecker<'a> {
+                     self.resolve_scalar_function_call(*span, "and", vec![], vec![
+                         ge_func.clone(),
+                         le_func.clone(),
+-                    ])
+-                    .await?
++                    ])?
+                 } else {
+                     // Rewrite `expr NOT BETWEEN low AND high`
+                     // into `expr < low OR expr > high`
+@@ -401,8 +399,7 @@ impl<'a> TypeChecker<'a> {
+                         .resolve_binary_op(*span, &BinaryOperator::Gt, expr.as_ref(), high.as_ref())
+                         .await?;
+ 
+-                    self.resolve_scalar_function_call(*span, "or", vec![], vec![lt_func, gt_func])
+-                        .await?
++                    self.resolve_scalar_function_call(*span, "or", vec![], vec![lt_func, gt_func])?
+                 }
+             }
+ 
+@@ -1470,11 +1467,9 @@ impl<'a> TypeChecker<'a> {
+         };
+ 
+         self.resolve_scalar_function_call(span, &func_name, params, args)
+-            .await
+     }
+ 
+-    #[async_backtrace::framed]
+-    pub async fn resolve_scalar_function_call(
++    pub fn resolve_scalar_function_call(
+         &mut self,
+         span: Span,
+         func_name: &str,
+@@ -1532,19 +1527,16 @@ impl<'a> TypeChecker<'a> {
+                     .resolve_binary_op(span, &positive_op, left, right)
+                     .await?;
+                 self.resolve_scalar_function_call(span, "not", vec![], vec![positive])
+-                    .await
+             }
+             BinaryOperator::SoundsLike => {
+                 // rewrite "expr1 SOUNDS LIKE expr2" to "SOUNDEX(expr1) = SOUNDEX(expr2)"
+                 let box (left, _) = self.resolve(left).await?;
+                 let box (right, _) = self.resolve(right).await?;
+ 
+-                let (left, _) = *self
+-                    .resolve_scalar_function_call(span, "soundex", vec![], vec![left])
+-                    .await?;
+-                let (right, _) = *self
+-                    .resolve_scalar_function_call(span, "soundex", vec![], vec![right])
+-                    .await?;
++                let (left, _) =
++                    *self.resolve_scalar_function_call(span, "soundex", vec![], vec![left])?;
++                let (right, _) =
++                    *self.resolve_scalar_function_call(span, "soundex", vec![], vec![right])?;
+ 
+                 self.resolve_scalar_function_call(
+                     span,
+@@ -1552,7 +1544,6 @@ impl<'a> TypeChecker<'a> {
+                     vec![],
+                     vec![left, right],
+                 )
+-                .await
+             }
+             BinaryOperator::Gt
+             | BinaryOperator::Lt
+@@ -1564,12 +1555,11 @@ impl<'a> TypeChecker<'a> {
+                 let box (left, _) = self.resolve(left).await?;
+                 let box (right, _) = self.resolve(right).await?;
+ 
+-                let (_, data_type) = *self
+-                    .resolve_scalar_function_call(span, op.to_func_name(), vec![], vec![
++                let (_, data_type) =
++                    *self.resolve_scalar_function_call(span, op.to_func_name(), vec![], vec![
+                         left.clone(),
+                         right.clone(),
+-                    ])
+-                    .await?;
++                    ])?;
+ 
+                 Ok(Box::new((
+                     FunctionCall {
+@@ -1691,7 +1681,6 @@ impl<'a> TypeChecker<'a> {
+         arg_types.push(interval_type);
+ 
+         self.resolve_scalar_function_call(span, &func_name, vec![], args)
+-            .await
+     }
+ 
+     #[async_recursion::async_recursion]
+@@ -2201,7 +2190,6 @@ impl<'a> TypeChecker<'a> {
+         let args = vec![trim_source, trim_scalar];
+ 
+         self.resolve_scalar_function_call(span, func_name, vec![], args)
+-            .await
+     }
+ 
+     /// Resolve literal values.
+@@ -2277,7 +2265,6 @@ impl<'a> TypeChecker<'a> {
+         }
+ 
+         self.resolve_scalar_function_call(span, "array", vec![], elems)
+-            .await
+     }
+ 
+     #[async_recursion::async_recursion]
+@@ -2295,16 +2282,13 @@ impl<'a> TypeChecker<'a> {
+             let box (val_arg, _data_type) = self.resolve(val_expr).await?;
+             vals.push(val_arg);
+         }
+-        let box (key_arg, _data_type) = self
+-            .resolve_scalar_function_call(span, "array", vec![], keys)
+-            .await?;
+-        let box (val_arg, _data_type) = self
+-            .resolve_scalar_function_call(span, "array", vec![], vals)
+-            .await?;
++        let box (key_arg, _data_type) =
++            self.resolve_scalar_function_call(span, "array", vec![], keys)?;
++        let box (val_arg, _data_type) =
++            self.resolve_scalar_function_call(span, "array", vec![], vals)?;
+         let args = vec![key_arg, val_arg];
+ 
+         self.resolve_scalar_function_call(span, "map", vec![], args)
+-            .await
+     }
+ 
+     #[async_recursion::async_recursion]
+@@ -2321,7 +2305,6 @@ impl<'a> TypeChecker<'a> {
+         }
+ 
+         self.resolve_scalar_function_call(span, "tuple", vec![], args)
+-            .await
+     }
+ 
+     #[async_recursion::async_recursion]
+@@ -2358,7 +2341,6 @@ impl<'a> TypeChecker<'a> {
+                 })
+                 .await?;
+             self.resolve_scalar_function_call(span, "and", vec![], vec![new_left, new_right])
+-                .await
+         } else {
+             let name = op.to_func_name();
+             self.resolve_function(span, name.as_str(), vec![], &[left, right])
+

@@ -15,6 +15,8 @@
 use std::sync::Arc;
 
 use anyhow::Result;
+use log::info;
+use octocrab::Octocrab;
 
 use crate::Document;
 use crate::DocumentLoader;
@@ -23,22 +25,57 @@ use crate::DocumentPath;
 pub struct GithubPRLoader {
     owner: String,
     repo: String,
+    person_token: String,
 }
 
 impl GithubPRLoader {
-    pub fn create(owner: &str, repo: &str) -> Arc<Self> {
+    pub fn create(owner: &str, repo: &str, person_token: &str) -> Arc<Self> {
         Arc::new(GithubPRLoader {
             owner: owner.to_string(),
             repo: repo.to_string(),
+            person_token: person_token.to_string(),
         })
     }
 }
 
 #[async_trait::async_trait]
 impl DocumentLoader for GithubPRLoader {
-    async fn load(&self, _path: DocumentPath) -> Result<Vec<Document>> {
-        let _ = self.repo;
-        let _ = self.owner;
-        todo!()
+    async fn load(&self, path: DocumentPath) -> Result<Vec<Document>> {
+        let mut documents = vec![];
+        let (start, end) = path.as_range()?;
+        info!("Loading PRs from {} to {}", start, end);
+
+        for id in start..=end {
+            let now = std::time::Instant::now();
+            let octocrab = octocrab::initialise(
+                Octocrab::builder()
+                    .personal_token(self.person_token.clone())
+                    .build()?,
+            );
+            let diff = octocrab
+                .pulls(&self.owner, &self.repo)
+                .get_diff(id as u64)
+                .await;
+
+            let path = format!(
+                "https://github.com/{}/{}/pull/{}",
+                self.owner, self.repo, id
+            );
+            if diff.is_err() {
+                info!("PR {} not found", path);
+                continue;
+            }
+
+            let diff = diff?;
+            documents.push(Document::create(&path, &diff));
+            info!(
+                "Loaded PR {}, diff_len {} in {:?}",
+                path,
+                diff.len(),
+                now.elapsed()
+            );
+        }
+
+        Ok(documents)
     }
 }

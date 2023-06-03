@@ -1,0 +1,742 @@
+part=0, len=2001, chunk_size=2000, md5=98c456210599d5621a476e2e8ab5130c, path:https://github.com/datafuselabs/databend/pull/11652
+------------------------------------------------------------
+d i f f   - - g i t   a / w e b s i t e / b l o g / 2 0 2 3 - 0 6 - 0 1 - t a b l e a u . m d   b / w e b s i t e / b l o g / 2 0 2 3 - 0 6 - 0 1 - t a b l e a u . m d 
+ n e w   f i l e   m o d e   1 0 0 6 4 4 
+ i n d e x   0 0 0 0 0 0 0 0 0 0 0 . . 9 e d b e 3 6 2 f 2 7 
+ - - -   / d e v / n u l l 
+ + + +   b / w e b s i t e / b l o g / 2 0 2 3 - 0 6 - 0 1 - t a b l e a u . m d 
+ @ @   - 0 , 0   + 1 , 5 8   @ @ 
+ + - - - 
+ + t i t l e :   " D a t a b e n d   X   T a b l e a u " 
+ + d a t e :   2 0 2 3 - 0 6 - 0 1 
+ + s l u g :   2 0 2 3 - 0 6 - 0 1 - t a b l e a u 
+ + t a g s :   [ d a t a b e n d ,   B I ,   T a b l e a u ] 
+ + d e s c r i p t i o n :   " T a b l e a u   i s   a   p o p u l a r   d a t a   v i s u a l i z a t i o n   a n d   b u s i n e s s   i n t e l l i g e n c e   t o o l .   T h i s   t u t o r i a l   h e l p s   u s e r s   c o n n e c t   D a t a b e n d   f o r   B I   d a t a   a n a l y s i s   i n   T a b l e a u . " 
+ + a u t h o r s : 
+ +     -   n a m e :   P s i A C E 
+ +         u r l :   h t t p s : / / g i t h u b . c o m / p s i a c e 
+ +         i m a g e _ u r l :   h t t p s : / / g i t h u b . c o m / p s i a c e . p n g 
+ + - - - 
+ + 
+ + T a b l e a u   i s   a   p o p u l a r   d a t a   v i s u a l i z a t i o n   a n d   b u s i n e s s   i n t e l l i g e n c e   t o o l .   I t   p r o v i d e s   a n   i n t u i t i v e ,   i n t e r a c t i v e   w a y   t o   e x p l o r e ,   a n a l y z e ,   a n d   p r e s e n t   d a t a ,   h e l p i n g   u s e r s   b e t t e r   u n d e r s t a n d   t h e   m e a n i n g   a n d   i n s i g h t s   o f   t h e i r   d a t a . 
+ + 
+ + T h i s   t u t o r i a l   h e l p s   u s e r s   c o n n e c t   D a t a b e n d   f o r   B I   d a t a   a n a l y s i s   i n   T a b l e a u . 
+ + 
+ + # #   D a t a b e n d   J D B C 
+ + 
+ + T a b l e a u   s u p p o r t s   a l l   d a t a   s o u r c e s   t h a t   i m p l e m e n t   t h e   J D B C   p r o t o c o l ,   s o   y o u
+part=1, len=2001, chunk_size=2000, md5=066ff371a971f03c146f5660b04636c5, path:https://github.com/datafuselabs/databend/pull/11652
+------------------------------------------------------------
+  n e e d   t o   p r e p a r e   t h e   d a t a b e n d   j d b c   j a r   f i l e   f i r s t .   Y o u   c a n   c o m p i l e   i t   y o u r s e l f   o r   d o w n l o a d   i t   f r o m   t h e   M a v e n   r e p o s i t o r y   a s   f o l l o w s . 
+ + 
+ + ` ` ` b a s h 
+ + g i t   c l o n e   h t t p s : / / g i t h u b . c o m / d a t a b e n d c l o u d / d a t a b e n d - j d b c 
+ + c d   d a t a b e n d - j d b c 
+ + m v n   c l e a n   i n s t a l l   - D s k i p T e s t 
+ + ` ` ` 
+ + 
+ + T h e n   c o p y   t h e   c o m p i l e d   d a t a b e n d - j d b c . j a r   t o   T a b l e a u ' s   D r i v e r   d i r e c t o r y : 
+ + -   W i n d o w s :   ` C : \ P r o g r a m   F i l e s \ T a b l e a u \ D r i v e r s ` 
+ + -   M a c :   ` ~ / L i b r a r y / T a b l e a u / D r i v e r s ` 
+ + -   L i n u x :   ` / o p t / t a b l e a u / t a b l e a u _ d r i v e r / j d b c ` 
+ + 
+ + # #   C o n n e c t   t o   T a b l e a u 
+ + 
+ + C l i c k   * * " O t h e r   D a t a b a s e s   ( J D B C ) " * *   o n   t h e   T a b l e a u   h o m e p a g e . 
+ + 
+ + ! [ ] ( . . / s t a t i c / i m g / b l o g / t a b l e a u / t a b l e a u - 1 . j p g ) 
+ + 
+ + J D B C   U R L :   ` j d b c : d a t a b e n d : / / { u s e r } : { p a s s w o r d } @ { h o s t } : { p o r t } / d a t a b a s e ? s s l = { s t a t u s } ` 
+ + 
+ + S e l e c t   M y S Q L   a s   t h e   d i a l e c t . 
+ + 
+ + ! [ ] ( . . / s t a t i c / i m g / b l o g / t a b l e a u / t a b l e a u - 2 . j p g ) 
+ + 
+ + # #   D a t a   A n a l y s i s 
+ + 
+ + S e l e c t   t h e   d a t a b a s e   a n d   t a b l e   y o u   w a n t   t o   o p e r a t e   o n ,   a n d   d r a g   t h e   t a b l e   i n t o   t h e   a r e a . 
+ + 
+ + ! [ ] ( . . / s t a t i c / i m g / b l o g / t a b l e a u / t a b l e a u - 3 . j p g ) 
+ + 
+ + T h i s   w a y ,   y o u   c a n   a n a l y z e   a n d   c h a r t   d a t a   i n   d a t a b e n d . 
+ + 
+ + ! [ ] ( . . / s t a t i c / i m g / b l o
+part=2, len=2001, chunk_size=2000, md5=ddc7a924c633840f75540b568766e6cb, path:https://github.com/datafuselabs/databend/pull/11652
+------------------------------------------------------------
+g / t a b l e a u / t a b l e a u - 4 . j p g ) 
+ + 
+ + P l e a s e   u s e   v e r s i o n   2 0 2 3 . 1 . 0   o r   a b o v e   o f   T a b l e a u ,   a s   o t h e r   v e r s i o n s   m a y   h a v e   c o m p a t i b i l i t y   i s s u e s . 
+ + 
+ + # #   C o n c l u s i o n 
+ + 
+ + T h e   a b o v e   i s   t h e   b a s i c   p r o c e s s   o f   u s i n g   T a b l e a u   t o   a n a l y z e   D a t a b e n d   d a t a .   F o r   m o r e   i n f o r m a t i o n   a b o u t   c o n n e c t i n g   w i t h   J D B C   i n   T a b l e a u ,   p l e a s e   r e f e r   t o   [ O t h e r   D a t a b a s e s   ( J D B C ) ] ( h t t p s : / / h e l p . t a b l e a u . c o m / c u r r e n t / p r o / d e s k t o p / e n - u s / e x a m p l e s _ o t h e r d a t a b a s e s _ j d b c . h t m ) . 
+ \   N o   n e w l i n e   a t   e n d   o f   f i l e 
+ d i f f   - - g i t   a / w e b s i t e / s t a t i c / i m g / b l o g / t a b l e a u / t a b l e a u - 1 . j p g   b / w e b s i t e / s t a t i c / i m g / b l o g / t a b l e a u / t a b l e a u - 1 . j p g 
+ n e w   f i l e   m o d e   1 0 0 6 4 4 
+ i n d e x   0 0 0 0 0 0 0 0 0 0 0 . . f 5 1 2 6 d f b 0 a e 
+ B i n a r y   f i l e s   / d e v / n u l l   a n d   b / w e b s i t e / s t a t i c / i m g / b l o g / t a b l e a u / t a b l e a u - 1 . j p g   d i f f e r 
+ d i f f   - - g i t   a / w e b s i t e / s t a t i c / i m g / b l o g / t a b l e a u / t a b l e a u - 2 . j p g   b / w e b s i t e / s t a t i c / i m g / b l o g / t a b l e a u / t a b l e a u - 2 . j p g 
+ n e w   f i l e   m o d e   1 0 0 6 4 4 
+ i n d e x   0 0 0 0 0 0 0 0 0 0 0 . . d d 6 a 3 3 a 5 8 3 1 
+ B i n a r y   f i l e s   / d e v / n u l l   a n d   b / w e b s i t e / s t a t i c / i m g / b l o g / t a b l e a u / t a b l e a u - 2 . j p g   d i f f e r 
+ d i f f   - - g i t   a / w e b s i t e / s t a t i c / i m g / b l o g / t a b l e a u / t a b l e a u - 3 . j p g   b / w e b s i t e / s t a t i c / i m g / b l o g
+part=3, len=796, chunk_size=2000, md5=37a2cb6a73f2cef3f4fa806581b5c09d, path:https://github.com/datafuselabs/databend/pull/11652
+------------------------------------------------------------
+/ t a b l e a u / t a b l e a u - 3 . j p g 
+ n e w   f i l e   m o d e   1 0 0 6 4 4 
+ i n d e x   0 0 0 0 0 0 0 0 0 0 0 . . 4 1 3 3 b 2 2 f b 9 2 
+ B i n a r y   f i l e s   / d e v / n u l l   a n d   b / w e b s i t e / s t a t i c / i m g / b l o g / t a b l e a u / t a b l e a u - 3 . j p g   d i f f e r 
+ d i f f   - - g i t   a / w e b s i t e / s t a t i c / i m g / b l o g / t a b l e a u / t a b l e a u - 4 . j p g   b / w e b s i t e / s t a t i c / i m g / b l o g / t a b l e a u / t a b l e a u - 4 . j p g 
+ n e w   f i l e   m o d e   1 0 0 6 4 4 
+ i n d e x   0 0 0 0 0 0 0 0 0 0 0 . . 5 e 0 c 9 8 d 1 4 f 0 
+ B i n a r y   f i l e s   / d e v / n u l l   a n d   b / w e b s i t e / s t a t i c / i m g / b l o g / t a b l e a u / t a b l e a u - 4 . j p g   d i f f e r 
+ 
+part=4, len=2001, chunk_size=2000, md5=607c4c13a049e73eebc70a19058a00ea, path:https://github.com/datafuselabs/databend/pull/11654
+------------------------------------------------------------
+d i f f   - - g i t   a / s r c / q u e r y / s e r v i c e / s r c / p i p e l i n e s / p r o c e s s o r s / t r a n s f o r m s / h a s h _ j o i n / h a s h _ j o i n _ s t a t e _ i m p l . r s   b / s r c / q u e r y / s e r v i c e / s r c / p i p e l i n e s / p r o c e s s o r s / t r a n s f o r m s / h a s h _ j o i n / h a s h _ j o i n _ s t a t e _ i m p l . r s 
+ i n d e x   1 3 0 5 8 4 6 1 4 8 7 . . 3 9 b 2 0 d 3 c 0 6 1   1 0 0 6 4 4 
+ - - -   a / s r c / q u e r y / s e r v i c e / s r c / p i p e l i n e s / p r o c e s s o r s / t r a n s f o r m s / h a s h _ j o i n / h a s h _ j o i n _ s t a t e _ i m p l . r s 
+ + + +   b / s r c / q u e r y / s e r v i c e / s r c / p i p e l i n e s / p r o c e s s o r s / t r a n s f o r m s / h a s h _ j o i n / h a s h _ j o i n _ s t a t e _ i m p l . r s 
+ @ @   - 4 3 3 , 1 6   + 4 3 3 , 3 4   @ @   i m p l   H a s h J o i n S t a t e   f o r   J o i n H a s h T a b l e   { 
+   
+           # [ a s y n c _ b a c k t r a c e : : f r a m e d ] 
+           a s y n c   f n   w a i t _ b u i l d _ f i n i s h ( & s e l f )   - >   R e s u l t < ( ) >   { 
+ -                 i f   ! * s e l f . i s _ b u i l t . l o c k ( )   { 
+ -                         s e l f . b u i l t _ n o t i f y . n o t i f i e d ( ) . a w a i t ; 
+ +                 l e t   n o t i f i e d   =   { 
+ +                         l e t   b u i l t _ g u a r d   =   s e l f . i s _ b u i l t . l o c k ( ) ; 
+ + 
+ +                         m a t c h   * b u i l t _ g u a r d   { 
+ +                                 t r u e   = >   N o n e , 
+ +                                 f a l s e   = >   S o m e ( s e l f . b u i l t _ n o t i f y . n o t i f i e d ( ) ) , 
+ +                         } 
+ +                 } ; 
+ + 
+ +                 i f   l e t   S o m e ( n o t i f i e d )   =   n o t i f i e d   { 
+ +                         n o t i f i e d . a w a i t ; 
+                   } 
+                   O k ( ( ) ) 
+           } 
+   
+    
+part=5, len=1084, chunk_size=2000, md5=fe856152955cfe39b0e4d81881a91143, path:https://github.com/datafuselabs/databend/pull/11654
+------------------------------------------------------------
+      # [ a s y n c _ b a c k t r a c e : : f r a m e d ] 
+           a s y n c   f n   w a i t _ f i n a l i z e _ f i n i s h ( & s e l f )   - >   R e s u l t < ( ) >   { 
+ -                 i f   ! * s e l f . i s _ f i n a l i z e d . l o c k ( )   { 
+ -                         s e l f . f i n a l i z e d _ n o t i f y . n o t i f i e d ( ) . a w a i t ; 
+ +                 l e t   n o t i f i e d   =   { 
+ +                         l e t   f i n a l i z e d _ g u a r d   =   s e l f . i s _ f i n a l i z e d . l o c k ( ) ; 
+ + 
+ +                         m a t c h   * f i n a l i z e d _ g u a r d   { 
+ +                                 t r u e   = >   N o n e , 
+ +                                 f a l s e   = >   S o m e ( s e l f . f i n a l i z e d _ n o t i f y . n o t i f i e d ( ) ) , 
+ +                         } 
+ +                 } ; 
+ + 
+ +                 i f   l e t   S o m e ( n o t i f i e d )   =   n o t i f i e d   { 
+ +                         n o t i f i e d . a w a i t ; 
+                   } 
+                   O k ( ( ) ) 
+           } 
+ 
+part=6, len=2001, chunk_size=2000, md5=6274d79cf999d3889f9f95e3b747df1e, path:https://github.com/datafuselabs/databend/pull/11655
+------------------------------------------------------------
+d i f f   - - g i t   a / d o c s / d o c / 1 3 - s q l - r e f e r e n c e / 2 0 - s y s t e m - t a b l e s / s y s t e m - s e t t i n g s . m d   b / d o c s / d o c / 1 3 - s q l - r e f e r e n c e / 2 0 - s y s t e m - t a b l e s / s y s t e m - s e t t i n g s . m d 
+ i n d e x   f c d e 5 d 6 c 6 c 3 . . 8 7 7 f e c 0 8 d 6 d   1 0 0 6 4 4 
+ - - -   a / d o c s / d o c / 1 3 - s q l - r e f e r e n c e / 2 0 - s y s t e m - t a b l e s / s y s t e m - s e t t i n g s . m d 
+ + + +   b / d o c s / d o c / 1 3 - s q l - r e f e r e n c e / 2 0 - s y s t e m - t a b l e s / s y s t e m - s e t t i n g s . m d 
+ @ @   - 1 4 , 7   + 1 4 , 7   @ @   S E L E C T   *   F R O M   s y s t e m . s e t t i n g s ; 
+   |   e n a b l e _ b u s h y _ j o i n                                           |   0                         |   0                         |   S E S S I O N   |   E n a b l e s   g e n e r a t i n g   a   b u s h y   j o i n   p l a n   w i t h   t h e   o p t i m i z e r .                                                                                                                                                                                                                                                         |   U I n t 6 4   | 
+   |   e n a b l e _ c b o                                                         |   1                         |   1                         |   S E S S I O N   |   E n a b l e s   c o s t - b a s e d   o p t i m i z a t i o n .                                                                                                                                                                                                                                                                                                         |   U I n t 6 4   | 
+   |   e n a b l e _ d i s t r i b u t e d _ e v a l _ i n d e x                   |   1                         |   1                         |   S E S S I O N   |   E n a b l e s  
+part=7, len=2001, chunk_size=2000, md5=e609128067077881d2b88bc72b313c5f, path:https://github.com/datafuselabs/databend/pull/11655
+------------------------------------------------------------
+e v a l u a t e d   i n d e x e s   t o   b e   c r e a t e d   a n d   m a i n t a i n e d   a c r o s s   m u l t i p l e   n o d e s .                                                                                                                                                                                                               |   U I n t 6 4   | 
+ - |   e n a b l e _ d p h y p                                                     |   0                         |   0                         |   S E S S I O N   |   E n a b l e s   d p h y p   j o i n   o r d e r   a l g o r i t h m .                                                                                                                                                                                                                                                                                                   |   U I n t 6 4   | 
+ + |   e n a b l e _ d p h y p                                                     |   1                         |   1                         |   S E S S I O N   |   E n a b l e s   d p h y p   j o i n   o r d e r   a l g o r i t h m .                                                                                                                                                                                                                                                                                                   |   U I n t 6 4   | 
+   |   e n a b l e _ q u e r y _ r e s u l t _ c a c h e                           |   0                         |   0                         |   S E S S I O N   |   E n a b l e s   c a c h i n g   q u e r y   r e s u l t s   t o   i m p r o v e   p e r f o r m a n c e   f o r   i d e n t i c a l   q u e r i e s .                                                                                                                                                                                                                   |   U I n t 6
+part=8, len=2001, chunk_size=2000, md5=7a916253489a175d57d7c64b9458399a, path:https://github.com/datafuselabs/databend/pull/11655
+------------------------------------------------------------
+4   | 
+   |   e n a b l e _ r u n t i m e _ f i l t e r                                   |   0                         |   0                         |   S E S S I O N   |   E n a b l e s   r u n t i m e   f i l t e r   o p t i m i z a t i o n   f o r   J O I N .                                                                                                                                                                                                                                                                               |   U I n t 6 4   | 
+   |   f l i g h t _ c l i e n t _ t i m e o u t                                   |   6 0                       |   6 0                       |   S E S S I O N   |   S e t s   t h e   m a x i m u m   t i m e   i n   s e c o n d s   t h a t   a   f l i g h t   c l i e n t   r e q u e s t   c a n   b e   p r o c e s s e d .                                                                                                                                                                                                           |   U I n t 6 4   | 
+ d i f f   - - g i t   a / d o c s / d o c / 1 4 - s q l - c o m m a n d s / 4 0 - s h o w / s h o w - s e t t i n g s . m d   b / d o c s / d o c / 1 4 - s q l - c o m m a n d s / 4 0 - s h o w / s h o w - s e t t i n g s . m d 
+ i n d e x   2 1 6 9 b 7 6 f a b f . . d a 9 c 4 8 0 8 d 5 6   1 0 0 6 4 4 
+ - - -   a / d o c s / d o c / 1 4 - s q l - c o m m a n d s / 4 0 - s h o w / s h o w - s e t t i n g s . m d 
+ + + +   b / d o c s / d o c / 1 4 - s q l - c o m m a n d s / 4 0 - s h o w / s h o w - s e t t i n g s . m d 
+ @ @   - 2 5 , 7   + 2 5 , 7   @ @   S H O W   S E T T I N G S ; 
+   |   e n a b l e _ b u s h y _ j o i n                                           |   0                         |   0                         |   S E S S I O N   |   E n a b l e s   g e n e r a t i n g   a   b u s h y   j o i n   p l a n   w i t h   t h e   o p t i m i z e r .                        
+part=9, len=2001, chunk_size=2000, md5=bf17728c34800607b3cb7a5f0dcae1a5, path:https://github.com/datafuselabs/databend/pull/11655
+------------------------------------------------------------
+                                                                                                                                                                                                                                |   U I n t 6 4   | 
+   |   e n a b l e _ c b o                                                         |   1                         |   1                         |   S E S S I O N   |   E n a b l e s   c o s t - b a s e d   o p t i m i z a t i o n .                                                                                                                                                                                                                                                                                                         |   U I n t 6 4   | 
+   |   e n a b l e _ d i s t r i b u t e d _ e v a l _ i n d e x                   |   1                         |   1                         |   S E S S I O N   |   E n a b l e s   e v a l u a t e d   i n d e x e s   t o   b e   c r e a t e d   a n d   m a i n t a i n e d   a c r o s s   m u l t i p l e   n o d e s .                                                                                                                                                                                                               |   U I n t 6 4   | 
+ - |   e n a b l e _ d p h y p                                                     |   0                         |   0                         |   S E S S I O N   |   E n a b l e s   d p h y p   j o i n   o r d e r   a l g o r i t h m .                                                                                                                                                                                                                                                                                                   |   U I n t 6 4   | 
+ + |   e n a b l e _ d p h y p                                                     |   1                        
+part=10, len=2001, chunk_size=2000, md5=f6789a916570758dc0c30b6be48e7ff0, path:https://github.com/datafuselabs/databend/pull/11655
+------------------------------------------------------------
+|   1                         |   S E S S I O N   |   E n a b l e s   d p h y p   j o i n   o r d e r   a l g o r i t h m .                                                                                                                                                                                                                                                                                                   |   U I n t 6 4   | 
+   |   e n a b l e _ q u e r y _ r e s u l t _ c a c h e                           |   0                         |   0                         |   S E S S I O N   |   E n a b l e s   c a c h i n g   q u e r y   r e s u l t s   t o   i m p r o v e   p e r f o r m a n c e   f o r   i d e n t i c a l   q u e r i e s .                                                                                                                                                                                                                   |   U I n t 6 4   | 
+   |   e n a b l e _ r u n t i m e _ f i l t e r                                   |   0                         |   0                         |   S E S S I O N   |   E n a b l e s   r u n t i m e   f i l t e r   o p t i m i z a t i o n   f o r   J O I N .                                                                                                                                                                                                                                                                               |   U I n t 6 4   | 
+   |   f l i g h t _ c l i e n t _ t i m e o u t                                   |   6 0                       |   6 0                       |   S E S S I O N   |   S e t s   t h e   m a x i m u m   t i m e   i n   s e c o n d s   t h a t   a   f l i g h t   c l i e n t   r e q u e s t   c a n   b e   p r o c e s s e d .                                                                                                                                                  
+part=11, len=2001, chunk_size=2000, md5=0c5309cff5aa8fd21ee0b5abc2bfe740, path:https://github.com/datafuselabs/databend/pull/11655
+------------------------------------------------------------
+                                                        |   U I n t 6 4   | 
+ d i f f   - - g i t   a / t e s t s / s q l l o g i c t e s t s / s u i t e s / t p c d s / q u e r i e s . t e s t   b / t e s t s / s q l l o g i c t e s t s / s u i t e s / t p c d s / q u e r i e s . t e s t 
+ i n d e x   2 0 f 6 b 8 e 1 c b e . . 6 9 e 9 e 9 4 4 f 1 d   1 0 0 6 4 4 
+ - - -   a / t e s t s / s q l l o g i c t e s t s / s u i t e s / t p c d s / q u e r i e s . t e s t 
+ + + +   b / t e s t s / s q l l o g i c t e s t s / s u i t e s / t p c d s / q u e r i e s . t e s t 
+ @ @   - 7 1 9 5 , 6   + 7 1 9 5 , 1 3 5   @ @   L I M I T   1 0 0 ; 
+   1 1   3 7 0 . 0 6   1 7 6 . 6 5 2 7 
+   1 1   4 9 6 . 1 7   1 7 6 . 6 5 2 7 
+   
+ + #   Q 6 4 
+ + o n l y i f   m y s q l 
+ + q u e r y   I 
+ + W I T H   c s _ u i   A S 
+ +     ( S E L E C T   c s _ i t e m _ s k , 
+ +                     s u m ( c s _ e x t _ l i s t _ p r i c e )   A S   s a l e , 
+ +                     s u m ( c r _ r e f u n d e d _ c a s h + c r _ r e v e r s e d _ c h a r g e + c r _ s t o r e _ c r e d i t )   A S   r e f u n d 
+ +       F R O M   c a t a l o g _ s a l e s , 
+ +                 c a t a l o g _ r e t u r n s 
+ +       W H E R E   c s _ i t e m _ s k   =   c r _ i t e m _ s k 
+ +           A N D   c s _ o r d e r _ n u m b e r   =   c r _ o r d e r _ n u m b e r 
+ +       G R O U P   B Y   c s _ i t e m _ s k 
+ +       H A V I N G   s u m ( c s _ e x t _ l i s t _ p r i c e ) > 2 * s u m ( c r _ r e f u n d e d _ c a s h + c r _ r e v e r s e d _ c h a r g e + c r _ s t o r e _ c r e d i t ) ) , 
+ +           c r o s s _ s a l e s   A S 
+ +     ( S E L E C T   i _ p r o d u c t _ n a m e   p r o d u c t _ n a m e , 
+ +                     i _ i t e m _ s k   i t e m _ s k , 
+ +                     s _ s t o r e _ n a m e   s t o r e _ n a m e , 
+ +                     s _ z i p   s t o r e _ z i p , 
+ +                     a d 1 . c a _ s t r e e t _ n u m b e r   b _ s t r e e t _ n u m b e
+part=12, len=2001, chunk_size=2000, md5=2c0183109ebc8d46220abf94ee31a273, path:https://github.com/datafuselabs/databend/pull/11655
+------------------------------------------------------------
+r , 
+ +                     a d 1 . c a _ s t r e e t _ n a m e   b _ s t r e e t _ n a m e , 
+ +                     a d 1 . c a _ c i t y   b _ c i t y , 
+ +                     a d 1 . c a _ z i p   b _ z i p , 
+ +                     a d 2 . c a _ s t r e e t _ n u m b e r   c _ s t r e e t _ n u m b e r , 
+ +                     a d 2 . c a _ s t r e e t _ n a m e   c _ s t r e e t _ n a m e , 
+ +                     a d 2 . c a _ c i t y   c _ c i t y , 
+ +                     a d 2 . c a _ z i p   c _ z i p , 
+ +                     d 1 . d _ y e a r   A S   s y e a r , 
+ +                     d 2 . d _ y e a r   A S   f s y e a r , 
+ +                     d 3 . d _ y e a r   s 2 y e a r , 
+ +                     c o u n t ( * )   c n t , 
+ +                     s u m ( s s _ w h o l e s a l e _ c o s t )   s 1 , 
+ +                     s u m ( s s _ l i s t _ p r i c e )   s 2 , 
+ +                     s u m ( s s _ c o u p o n _ a m t )   s 3 
+ +       F R O M   s t o r e _ s a l e s , 
+ +                 s t o r e _ r e t u r n s , 
+ +                 c s _ u i , 
+ +                 d a t e _ d i m   d 1 , 
+ +                 d a t e _ d i m   d 2 , 
+ +                 d a t e _ d i m   d 3 , 
+ +                 s t o r e , 
+ +                 c u s t o m e r , 
+ +                 c u s t o m e r _ d e m o g r a p h i c s   c d 1 , 
+ +                 c u s t o m e r _ d e m o g r a p h i c s   c d 2 , 
+ +                 p r o m o t i o n , 
+ +                 h o u s e h o l d _ d e m o g r a p h i c s   h d 1 , 
+ +                 h o u s e h o l d _ d e m o g r a p h i c s   h d 2 , 
+ +                 c u s t o m e r _ a d d r e s s   a d 1 , 
+ +                 c u s t o m e r _ a d d r e s s   a d 2 , 
+ +                 i n c o m e _ b a n d   i b 1 , 
+ +                 i n c o m e _ b a n d   i b 2 , 
+ +                 i t e m 
+ +       W H E R E   s s _ s t o r e _ s k   =   s _ s t o r e _ s k 
+ +           A N D   s s _ s o l d _ d a t e _ s k
+part=13, len=2001, chunk_size=2000, md5=0dbeabdbf5cfe617a40ce92c589b4744, path:https://github.com/datafuselabs/databend/pull/11655
+------------------------------------------------------------
+  =   d 1 . d _ d a t e _ s k 
+ +           A N D   s s _ c u s t o m e r _ s k   =   c _ c u s t o m e r _ s k 
+ +           A N D   s s _ c d e m o _ s k =   c d 1 . c d _ d e m o _ s k 
+ +           A N D   s s _ h d e m o _ s k   =   h d 1 . h d _ d e m o _ s k 
+ +           A N D   s s _ a d d r _ s k   =   a d 1 . c a _ a d d r e s s _ s k 
+ +           A N D   s s _ i t e m _ s k   =   i _ i t e m _ s k 
+ +           A N D   s s _ i t e m _ s k   =   s r _ i t e m _ s k 
+ +           A N D   s s _ t i c k e t _ n u m b e r   =   s r _ t i c k e t _ n u m b e r 
+ +           A N D   s s _ i t e m _ s k   =   c s _ u i . c s _ i t e m _ s k 
+ +           A N D   c _ c u r r e n t _ c d e m o _ s k   =   c d 2 . c d _ d e m o _ s k 
+ +           A N D   c _ c u r r e n t _ h d e m o _ s k   =   h d 2 . h d _ d e m o _ s k 
+ +           A N D   c _ c u r r e n t _ a d d r _ s k   =   a d 2 . c a _ a d d r e s s _ s k 
+ +           A N D   c _ f i r s t _ s a l e s _ d a t e _ s k   =   d 2 . d _ d a t e _ s k 
+ +           A N D   c _ f i r s t _ s h i p t o _ d a t e _ s k   =   d 3 . d _ d a t e _ s k 
+ +           A N D   s s _ p r o m o _ s k   =   p _ p r o m o _ s k 
+ +           A N D   h d 1 . h d _ i n c o m e _ b a n d _ s k   =   i b 1 . i b _ i n c o m e _ b a n d _ s k 
+ +           A N D   h d 2 . h d _ i n c o m e _ b a n d _ s k   =   i b 2 . i b _ i n c o m e _ b a n d _ s k 
+ +           A N D   c d 1 . c d _ m a r i t a l _ s t a t u s   < >   c d 2 . c d _ m a r i t a l _ s t a t u s 
+ +           A N D   i _ c o l o r   I N   ( ' p u r p l e ' , 
+ +                                           ' b u r l y w o o d ' , 
+ +                                           ' i n d i a n ' , 
+ +                                           ' s p r i n g ' , 
+ +                                           ' f l o r a l ' , 
+ +                                           ' m e d i u m ' ) 
+ +           A N D   i _ c u r r e n t _ p r i c e   B E T W E E N   6 4   A N
+part=14, len=2001, chunk_size=2000, md5=f2fe2cc6c29a2d2c1d5369a19510c1ca, path:https://github.com/datafuselabs/databend/pull/11655
+------------------------------------------------------------
+D   6 4   +   1 0 
+ +           A N D   i _ c u r r e n t _ p r i c e   B E T W E E N   6 4   +   1   A N D   6 4   +   1 5 
+ +       G R O U P   B Y   i _ p r o d u c t _ n a m e , 
+ +                         i _ i t e m _ s k , 
+ +                         s _ s t o r e _ n a m e , 
+ +                         s _ z i p , 
+ +                         a d 1 . c a _ s t r e e t _ n u m b e r , 
+ +                         a d 1 . c a _ s t r e e t _ n a m e , 
+ +                         a d 1 . c a _ c i t y , 
+ +                         a d 1 . c a _ z i p , 
+ +                         a d 2 . c a _ s t r e e t _ n u m b e r , 
+ +                         a d 2 . c a _ s t r e e t _ n a m e , 
+ +                         a d 2 . c a _ c i t y , 
+ +                         a d 2 . c a _ z i p , 
+ +                         d 1 . d _ y e a r , 
+ +                         d 2 . d _ y e a r , 
+ +                         d 3 . d _ y e a r ) 
+ + S E L E C T   c s 1 . p r o d u c t _ n a m e , 
+ +               c s 1 . s t o r e _ n a m e , 
+ +               c s 1 . s t o r e _ z i p , 
+ +               c s 1 . b _ s t r e e t _ n u m b e r , 
+ +               c s 1 . b _ s t r e e t _ n a m e , 
+ +               c s 1 . b _ c i t y , 
+ +               c s 1 . b _ z i p , 
+ +               c s 1 . c _ s t r e e t _ n u m b e r , 
+ +               c s 1 . c _ s t r e e t _ n a m e , 
+ +               c s 1 . c _ c i t y , 
+ +               c s 1 . c _ z i p , 
+ +               c s 1 . s y e a r   c s 1 s y e a r , 
+ +               c s 1 . c n t   c s 1 c n t , 
+ +               c s 1 . s 1   A S   s 1 1 , 
+ +               c s 1 . s 2   A S   s 2 1 , 
+ +               c s 1 . s 3   A S   s 3 1 , 
+ +               c s 2 . s 1   A S   s 1 2 , 
+ +               c s 2 . s 2   A S   s 2 2 , 
+ +               c s 2 . s 3   A S   s 3 2 , 
+ +               c s 2 . s y e a r , 
+ +               c s 2 . c n t 
+ + F R O M   c r o s s _ s a l e s   c s 1 , 
+ +           c r o s s _ s a l e s
+part=15, len=1498, chunk_size=2000, md5=dcb3b9b06953b6b3e7b7a74901e64f43, path:https://github.com/datafuselabs/databend/pull/11655
+------------------------------------------------------------
+  c s 2 
+ + W H E R E   c s 1 . i t e m _ s k = c s 2 . i t e m _ s k 
+ +     A N D   c s 1 . s y e a r   =   1 9 9 9 
+ +     A N D   c s 2 . s y e a r   =   1 9 9 9   +   1 
+ +     A N D   c s 2 . c n t   < =   c s 1 . c n t 
+ +     A N D   c s 1 . s t o r e _ n a m e   =   c s 2 . s t o r e _ n a m e 
+ +     A N D   c s 1 . s t o r e _ z i p   =   c s 2 . s t o r e _ z i p 
+ + O R D E R   B Y   c s 1 . p r o d u c t _ n a m e , 
+ +                   c s 1 . s t o r e _ n a m e , 
+ +                   c s 2 . c n t , 
+ +                   c s 1 . s 1 , 
+ +                   c s 2 . s 1 ; 
+ + - - - - 
+ + 
+   #   Q 6 5 
+   o n l y i f   m y s q l 
+   q u e r y   I 
+ d i f f   - - g i t   a / t e s t s / s q l l o g i c t e s t s / s u i t e s / t p c d s / t p c d s _ q 6 4 . t e s t   b / t e s t s / s q l l o g i c t e s t s / s u i t e s / t p c d s / t p c d s _ q 6 4 . t e s t 
+ d e l e t e d   f i l e   m o d e   1 0 0 6 4 4 
+ i n d e x   a 7 7 9 6 b d e d 6 f . . 0 0 0 0 0 0 0 0 0 0 0 
+ - - -   a / t e s t s / s q l l o g i c t e s t s / s u i t e s / t p c d s / t p c d s _ q 6 4 . t e s t 
+ + + +   / d e v / n u l l 
+ @ @   - 1 , 1 2   + 0 , 0   @ @ 
+ - s t a t e m e n t   o k 
+ - s e t   s a n d b o x _ t e n a n t   =   ' t e s t _ t e n a n t ' ; 
+ - 
+ - s t a t e m e n t   o k 
+ - u s e   t p c d s ; 
+ - 
+ - #   Q 6 4 
+ - s t a t e m e n t   o k 
+ - s e t   e n a b l e _ d p h y p = 1 ; 
+ - 
+ - s t a t e m e n t   o k 
+ - s e t   e n a b l e _ d p h y p = 0 ; 
+ 
+part=16, len=2001, chunk_size=2000, md5=a6353ea9eb1dae4284687603ec54fe0b, path:https://github.com/datafuselabs/databend/pull/11657
+------------------------------------------------------------
+d i f f   - - g i t   a / C a r g o . l o c k   b / C a r g o . l o c k 
+ i n d e x   5 f 9 5 a c a f d 2 d . . f 6 3 8 4 4 5 2 b 7 b   1 0 0 6 4 4 
+ - - -   a / C a r g o . l o c k 
+ + + +   b / C a r g o . l o c k 
+ @ @   - 5 3 , 1 5   + 5 3 , 6   @ @   d e p e n d e n c i e s   =   [ 
+     " v e r s i o n _ c h e c k " , 
+   ] 
+   
+ - [ [ p a c k a g e ] ] 
+ - n a m e   =   " a h o - c o r a s i c k " 
+ - v e r s i o n   =   " 0 . 7 . 2 0 " 
+ - s o u r c e   =   " r e g i s t r y + h t t p s : / / g i t h u b . c o m / r u s t - l a n g / c r a t e s . i o - i n d e x " 
+ - c h e c k s u m   =   " c c 9 3 6 4 1 9 f 9 6 f a 2 1 1 c 1 b 9 1 6 6 8 8 7 b 3 8 e 5 e 4 0 b 1 9 9 5 8 e 5 b 8 9 5 b e 7 c 1 f 9 3 a d e c 7 0 7 1 a c " 
+ - d e p e n d e n c i e s   =   [ 
+ -   " m e m c h r " , 
+ - ] 
+ - 
+   [ [ p a c k a g e ] ] 
+   n a m e   =   " a h o - c o r a s i c k " 
+   v e r s i o n   =   " 1 . 0 . 1 " 
+ @ @   - 2 0 3 2 , 7   + 2 0 2 3 , 7   @ @   d e p e n d e n c i e s   =   [ 
+   n a m e   =   " c o m m o n - i o " 
+   v e r s i o n   =   " 0 . 1 . 0 " 
+   d e p e n d e n c i e s   =   [ 
+ -   " a h o - c o r a s i c k   0 . 7 . 2 0 " , 
+ +   " a h o - c o r a s i c k " , 
+     " b i n c o d e   2 . 0 . 0 - r c . 2 " , 
+     " b y t e s " , 
+     " c h r o n o " , 
+ @ @   - 3 5 5 9 , 7   + 3 5 5 0 , 7   @ @   n a m e   =   " d a t a b e n d - q u e r y " 
+   v e r s i o n   =   " 0 . 1 . 0 " 
+   d e p e n d e n c i e s   =   [ 
+     " a g g r e g a t i n g - i n d e x " , 
+ -   " a h o - c o r a s i c k   0 . 7 . 2 0 " , 
+ +   " a h o - c o r a s i c k " , 
+     " a r r o w - a r r a y " , 
+     " a r r o w - c a s t " , 
+     " a r r o w - f l i g h t " , 
+ @ @   - 6 2 2 1 , 8   + 6 2 1 2 , 7   @ @   d e p e n d e n c i e s   =   [ 
+   [ [ p a c k a g e ] ] 
+   n a m e   =   " j s o n b " 
+   v e r s i o n   =   " 0 . 2 . 2 " 
+ - s o u r c e   =   " r e g i s t r y + h t t p s : / / g i t h u b . c o m / r u s t - l a n g / c r a t e s . i o - i n d e x " 
+ - c
+part=17, len=2001, chunk_size=2000, md5=16d5e47bfe5803ea28236f04112599d6, path:https://github.com/datafuselabs/databend/pull/11657
+------------------------------------------------------------
+h e c k s u m   =   " 8 4 9 5 1 0 c 3 9 f e 4 7 3 d e c e e 5 2 d f f 5 c f 3 8 c 1 f 5 7 a 6 6 0 b 9 a f 0 8 e a 9 1 0 7 7 2 c d 1 1 8 8 c 7 0 5 b 4 " 
+ + s o u r c e   =   " g i t + h t t p s : / / g i t h u b . c o m / d a t a f u s e l a b s / j s o n b ? r e v = 2 d 4 5 4 1 7 # 2 d 4 5 4 1 7 f a 6 a 4 f 0 8 c 0 c b a d a 4 c b f c b 0 8 b 2 2 7 4 5 5 9 e 8 " 
+   d e p e n d e n c i e s   =   [ 
+     " b y t e o r d e r " , 
+     " f a s t - f l o a t " , 
+ @ @   - 8 5 8 4 , 7   + 8 5 7 4 , 7   @ @   v e r s i o n   =   " 1 . 8 . 1 " 
+   s o u r c e   =   " r e g i s t r y + h t t p s : / / g i t h u b . c o m / r u s t - l a n g / c r a t e s . i o - i n d e x " 
+   c h e c k s u m   =   " a f 8 3 e 6 1 7 f 3 3 1 c c 6 a e 2 d a 5 4 4 3 c 6 0 2 d f a 5 a f 8 1 e 5 1 7 2 1 2 d 9 d 6 1 1 a 5 b 3 b a 1 7 7 7 b 5 3 7 0 " 
+   d e p e n d e n c i e s   =   [ 
+ -   " a h o - c o r a s i c k   1 . 0 . 1 " , 
+ +   " a h o - c o r a s i c k " , 
+     " m e m c h r " , 
+     " r e g e x - s y n t a x   0 . 7 . 1 " , 
+   ] 
+ d i f f   - - g i t   a / C a r g o . t o m l   b / C a r g o . t o m l 
+ i n d e x   2 8 a 1 d 7 c 6 e e 5 . . 1 e b d 8 2 8 a b a d   1 0 0 6 4 4 
+ - - -   a / C a r g o . t o m l 
+ + + +   b / C a r g o . t o m l 
+ @ @   - 1 1 3 , 7   + 1 1 3 , 7   @ @   o p e n d a l   =   {   v e r s i o n   =   " 0 . 3 6 " ,   f e a t u r e s   =   [ 
+   ]   } 
+   e t h n u m   =   {   v e r s i o n   =   " 1 . 3 . 2 "   } 
+   o r d e r e d - f l o a t   =   {   v e r s i o n   =   " 3 . 6 . 0 " ,   d e f a u l t - f e a t u r e s   =   f a l s e   } 
+ - j s o n b   =   {   v e r s i o n   =   " 0 . 2 . 2 "   } 
+ + j s o n b   =   {   g i t   =   " h t t p s : / / g i t h u b . c o m / d a t a f u s e l a b s / j s o n b " ,   r e v   =   " 2 d 4 5 4 1 7 "   } 
+   
+   #   o p e n r a f t   =   {   v e r s i o n   =   " 0 . 8 . 2 " ,   f e a t u r e s   =   [ " c o m p a t - 0 7 " ]   } 
+   #   F o r   d e b u g g i n g 
+ d i f f   - - g i t   a / s r c / c o m m o
+part=18, len=2001, chunk_size=2000, md5=d4de1815be303446246ccd6e2a8d4b1a, path:https://github.com/datafuselabs/databend/pull/11657
+------------------------------------------------------------
+n / i o / C a r g o . t o m l   b / s r c / c o m m o n / i o / C a r g o . t o m l 
+ i n d e x   0 d 0 9 5 9 8 1 7 f c . . 5 c 4 6 c 6 8 3 8 0 4   1 0 0 6 4 4 
+ - - -   a / s r c / c o m m o n / i o / C a r g o . t o m l 
+ + + +   b / s r c / c o m m o n / i o / C a r g o . t o m l 
+ @ @   - 2 8 , 5   + 2 8 , 5   @ @   o r d e r e d - f l o a t   =   {   w o r k s p a c e   =   t r u e   } 
+   s e r d e   =   {   w o r k s p a c e   =   t r u e   } 
+   
+   [ d e v - d e p e n d e n c i e s ] 
+ - a h o - c o r a s i c k   =   {   v e r s i o n   =   " 0 . 7 . 2 0 "   } 
+ + a h o - c o r a s i c k   =   {   v e r s i o n   =   " 1 . 0 . 1 "   } 
+   r a n d   =   " 0 . 8 . 5 " 
+ d i f f   - - g i t   a / s r c / c o m m o n / i o / t e s t s / i t / c u r s o r _ e x t / f a s t _ r e a d _ t e x t _ e x t . r s   b / s r c / c o m m o n / i o / t e s t s / i t / c u r s o r _ e x t / f a s t _ r e a d _ t e x t _ e x t . r s 
+ i n d e x   e 7 3 1 5 3 5 8 c 2 4 . . e d f 3 3 6 a a a e 7   1 0 0 6 4 4 
+ - - -   a / s r c / c o m m o n / i o / t e s t s / i t / c u r s o r _ e x t / f a s t _ r e a d _ t e x t _ e x t . r s 
+ + + +   b / s r c / c o m m o n / i o / t e s t s / i t / c u r s o r _ e x t / f a s t _ r e a d _ t e x t _ e x t . r s 
+ @ @   - 3 1 , 7   + 3 1 , 7   @ @   f n   t e s t _ p o s i t i o n s ( )   - >   R e s u l t < ( ) >   { 
+           ] ; 
+   
+           l e t   p a t t e r n s   =   & [ " ' " ,   " \ \ " ] ; 
+ -         l e t   a c   =   A h o C o r a s i c k : : n e w ( p a t t e r n s ) ; 
+ +         l e t   a c   =   A h o C o r a s i c k : : n e w ( p a t t e r n s ) . u n w r a p ( ) ; 
+           f o r   ( d a t a ,   e x p e c t )   i n   c a s e s   { 
+                   l e t   m u t   p o s i t i o n s   =   V e c D e q u e : : n e w ( ) ; 
+                   f o r   m a t   i n   a c . f i n d _ i t e r ( & d a t a )   { 
+ @ @   - 4 7 , 7   + 4 7 , 7   @ @   f n   t e s t _ p o s i t i o n s ( )   - >   R e s u l t < ( ) >   { 
+  
+part=19, len=2001, chunk_size=2000, md5=3dc2305cfaddcd1c4bfc8c3b503ee520, path:https://github.com/datafuselabs/databend/pull/11657
+------------------------------------------------------------
+f n   t e s t _ f a s t _ r e a d _ t e x t ( )   - >   R e s u l t < ( ) >   { 
+           l e t   d a t a   =   r # " ' a b c ' , ' d \ ' e f ' , ' g \ \ \ ' h i ' " # . t o _ s t r i n g ( ) ; 
+           l e t   p a t t e r n s   =   & [ " ' " ,   " \ \ " ] ; 
+ -         l e t   a c   =   A h o C o r a s i c k : : n e w ( p a t t e r n s ) ; 
+ +         l e t   a c   =   A h o C o r a s i c k : : n e w ( p a t t e r n s ) . u n w r a p ( ) ; 
+           l e t   m u t   p o s i t i o n s   =   V e c D e q u e : : n e w ( ) ; 
+           f o r   m a t   i n   a c . f i n d _ i t e r ( & d a t a )   { 
+                   l e t   p o s   =   m a t . s t a r t ( ) ; 
+ d i f f   - - g i t   a / s r c / q u e r y / s e r v i c e / C a r g o . t o m l   b / s r c / q u e r y / s e r v i c e / C a r g o . t o m l 
+ i n d e x   1 c 7 f b c 9 7 9 7 c . . a 2 0 7 c e d 4 0 1 6   1 0 0 6 4 4 
+ - - -   a / s r c / q u e r y / s e r v i c e / C a r g o . t o m l 
+ + + +   b / s r c / q u e r y / s e r v i c e / C a r g o . t o m l 
+ @ @   - 1 0 8 , 7   + 1 0 8 , 7   @ @   v i r t u a l - c o l u m n s - h a n d l e r   =   {   p a t h   =   " . . / e e - f e a t u r e s / v i r t u a l - c o l u m n s - h a n d l e r "   } 
+   #   G i t H u b   d e p e n d e n c i e s 
+   
+   #   C r a t e s . i o   d e p e n d e n c i e s 
+ - a h o - c o r a s i c k   =   {   v e r s i o n   =   " 0 . 7 . 2 0 "   } 
+ + a h o - c o r a s i c k   =   {   v e r s i o n   =   " 1 . 0 . 1 "   } 
+   a r r o w - a r r a y   =   {   v e r s i o n   =   " 3 7 . 0 . 0 "   } 
+   a r r o w - f l i g h t   =   {   v e r s i o n   =   " 3 7 . 0 . 0 " ,   f e a t u r e s   =   [ " f l i g h t - s q l - e x p e r i m e n t a l " ,   " t l s " ]   } 
+   a r r o w - i p c   =   {   v e r s i o n   =   " 3 7 . 0 . 0 "   } 
+ d i f f   - - g i t   a / s r c / q u e r y / s e r v i c e / s r c / i n t e r p r e t e r s / i n t e r p r e t e r _ i n s e r t . r s   b / s r c / q u e r y / s e r v i c e / s r c / i n
+part=20, len=2001, chunk_size=2000, md5=9d27a4beea2c7433133871f86ceb0ae6, path:https://github.com/datafuselabs/databend/pull/11657
+------------------------------------------------------------
+t e r p r e t e r s / i n t e r p r e t e r _ i n s e r t . r s 
+ i n d e x   1 f f b 4 1 5 6 d b b . . 6 5 5 d e a 7 8 e 3 8   1 0 0 6 4 4 
+ - - -   a / s r c / q u e r y / s e r v i c e / s r c / i n t e r p r e t e r s / i n t e r p r e t e r _ i n s e r t . r s 
+ + + +   b / s r c / q u e r y / s e r v i c e / s r c / i n t e r p r e t e r s / i n t e r p r e t e r _ i n s e r t . r s 
+ @ @   - 4 6 , 6   + 4 6 , 7   @ @   u s e   c o m m o n _ s q l : : B i n d C o n t e x t ; 
+   u s e   c o m m o n _ s q l : : M e t a d a t a ; 
+   u s e   c o m m o n _ s q l : : M e t a d a t a R e f ; 
+   u s e   c o m m o n _ s q l : : N a m e R e s o l u t i o n C o n t e x t ; 
+ + u s e   o n c e _ c e l l : : s y n c : : L a z y ; 
+   u s e   p a r k i n g _ l o t : : M u t e x ; 
+   u s e   p a r k i n g _ l o t : : R w L o c k ; 
+   
+ @ @   - 6 0 , 6   + 6 1 , 1 1   @ @   u s e   c r a t e : : s c h e d u l e r s : : b u i l d _ q u e r y _ p i p e l i n e ; 
+   u s e   c r a t e : : s e s s i o n s : : Q u e r y C o n t e x t ; 
+   u s e   c r a t e : : s e s s i o n s : : T a b l e C o n t e x t ; 
+   
+ + / /   P r e - g e n e r a t e   t h e   p o s i t i o n s   o f   ` ( ` ,   ` ' `   a n d   ` \ ` 
+ + s t a t i c   P A T T E R N S :   & [ & s t r ]   =   & [ " ( " ,   " ' " ,   " \ \ " ] ; 
+ + 
+ + s t a t i c   I N S E R T _ T O K E N _ F I N D E R :   L a z y < A h o C o r a s i c k >   =   L a z y : : n e w ( | |   A h o C o r a s i c k : : n e w ( P A T T E R N S ) . u n w r a p ( ) ) ; 
+ + 
+   p u b   s t r u c t   I n s e r t I n t e r p r e t e r   { 
+           c t x :   A r c < Q u e r y C o n t e x t > , 
+           p l a n :   I n s e r t , 
+ @ @   - 3 0 8 , 1 4   + 3 1 4 , 1 1   @ @   i m p l   A s y n c S o u r c e   f o r   V a l u e S o u r c e   { 
+                           r e t u r n   O k ( N o n e ) ; 
+                   } 
+   
+ -                 / /   P r e - g e n e r a t e   t h e   p o s i t i o n s   o f   ` ( ` ,   ` ' `   a n d   ` \ ` 
+
+part=21, len=2001, chunk_size=2000, md5=fdb2ad0da2f1bf97e4982c0555d64172, path:https://github.com/datafuselabs/databend/pull/11657
+------------------------------------------------------------
+-                 l e t   p a t t e r n s   =   & [ " ( " ,   " ' " ,   " \ \ " ] ; 
+ -                 l e t   a c   =   A h o C o r a s i c k : : n e w ( p a t t e r n s ) ; 
+                   / /   U s e   t h e   n u m b e r   o f   ' ( '   t o   e s t i m a t e   t h e   n u m b e r   o f   r o w s 
+                   l e t   m u t   e s t i m a t e d _ r o w s   =   0 ; 
+                   l e t   m u t   p o s i t i o n s   =   V e c D e q u e : : n e w ( ) ; 
+ -                 f o r   m a t   i n   a c . f i n d _ i t e r ( & s e l f . d a t a )   { 
+ -                         i f   m a t . p a t t e r n ( )   = =   0   { 
+ +                 f o r   m a t   i n   I N S E R T _ T O K E N _ F I N D E R . f i n d _ i t e r ( & s e l f . d a t a )   { 
+ +                         i f   m a t . p a t t e r n ( )   = =   0 . i n t o ( )   { 
+                                   e s t i m a t e d _ r o w s   + =   1 ; 
+                                   c o n t i n u e ; 
+                           } 
+ d i f f   - - g i t   a / t e s t s / s q l l o g i c t e s t s / s u i t e s / q u e r y / 0 2 _ f u n c t i o n / 0 2 _ 0 0 4 8 _ f u n c t i o n _ s e m i _ s t r u c t u r e d s _ p a r s e _ j s o n   b / t e s t s / s q l l o g i c t e s t s / s u i t e s / q u e r y / 0 2 _ f u n c t i o n / 0 2 _ 0 0 4 8 _ f u n c t i o n _ s e m i _ s t r u c t u r e d s _ p a r s e _ j s o n 
+ i n d e x   4 4 0 2 3 0 9 1 3 5 6 . . 0 6 e 4 1 4 0 9 7 e 7   1 0 0 6 4 4 
+ - - -   a / t e s t s / s q l l o g i c t e s t s / s u i t e s / q u e r y / 0 2 _ f u n c t i o n / 0 2 _ 0 0 4 8 _ f u n c t i o n _ s e m i _ s t r u c t u r e d s _ p a r s e _ j s o n 
+ + + +   b / t e s t s / s q l l o g i c t e s t s / s u i t e s / q u e r y / 0 2 _ f u n c t i o n / 0 2 _ 0 0 4 8 _ f u n c t i o n _ s e m i _ s t r u c t u r e d s _ p a r s e _ j s o n 
+ @ @   - 5 8 , 6   + 5 8 , 1 0   @ @   s e l e c t   p a r s e _ j s o n ( ' {   " x "   :   " a b c " ,   " y "   :   f a l s e ,   "
+part=22, len=376, chunk_size=2000, md5=f0ded4433086045322e48095e4a06a0e, path:https://github.com/datafuselabs/databend/pull/11657
+------------------------------------------------------------
+z " :   1 0 }   ' ) 
+   - - - - 
+   { " x " : " a b c " , " y " : f a l s e , " z " : 1 0 } 
+   
+ + q u e r y   T 
+ + s e l e c t   p a r s e _ j s o n ( ' {   " t e s t "   :   " \ \ " a b c \ \ " 测 试 "   }   ' ) 
+ + - - - - 
+ + { " t e s t " : " " a b c " 测 试 " } 
+   
+   s t a t e m e n t   e r r o r   1 0 0 1 
+   s e l e c t   p a r s e _ j s o n ( ' [ 1 , ' ) 
+ 
+part=23, len=1446, chunk_size=2000, md5=025ad4078caf36e2164e7f3a32f1de8a, path:https://github.com/datafuselabs/databend/pull/11658
+------------------------------------------------------------
+d i f f   - - g i t   a / s r c / q u e r y / s e r v i c e / s r c / c a t a l o g s / d e f a u l t / i m m u t a b l e _ c a t a l o g . r s   b / s r c / q u e r y / s e r v i c e / s r c / c a t a l o g s / d e f a u l t / i m m u t a b l e _ c a t a l o g . r s 
+ i n d e x   9 2 b 0 4 b f 6 d 2 d . . 8 2 b e 2 a 1 8 e 6 d   1 0 0 6 4 4 
+ - - -   a / s r c / q u e r y / s e r v i c e / s r c / c a t a l o g s / d e f a u l t / i m m u t a b l e _ c a t a l o g . r s 
+ + + +   b / s r c / q u e r y / s e r v i c e / s r c / c a t a l o g s / d e f a u l t / i m m u t a b l e _ c a t a l o g . r s 
+ @ @   - 7 4 , 8   + 7 4 , 6   @ @   u s e   c r a t e : : d a t a b a s e s : : S y s t e m D a t a b a s e ; 
+   u s e   c r a t e : : s t o r a g e s : : T a b l e ; 
+   
+   / / /   S y s t e m   C a t a l o g   c o n t a i n s   . . .   a l l   t h e   s y s t e m   d a t a b a s e s   ( n o   s u r p r i s e   : ) 
+ - / / /   C u r r e n t l y ,   t h i s   i s   o n l y   o n e   d a t a b a s e   h e r e ,   t h e   " s y s t e m "   d b . 
+ - / / /   " i n f o r m a t i o n _ s c h e m a "   d b   i s   s u p p o s e d   t o   h e l d   h e r e 
+   # [ d e r i v e ( C l o n e ) ] 
+   p u b   s t r u c t   I m m u t a b l e C a t a l o g   { 
+           / /   i t ' s   c a s e   s e n s i t i v e ,   s o   w e   w i l l   n e e d   t w o   s a m e   d a t a b a s e   o n l y   w i t h   t h e   n a m e ' s   c a s e 
+ 
+part=24, len=2001, chunk_size=2000, md5=1f31e4e995d7dcfc146fa866a0f8a6f3, path:https://github.com/datafuselabs/databend/pull/11659
+------------------------------------------------------------
+d i f f   - - g i t   a / s r c / q u e r y / s q l / s r c / p l a n n e r / s e m a n t i c / t y p e _ c h e c k . r s   b / s r c / q u e r y / s q l / s r c / p l a n n e r / s e m a n t i c / t y p e _ c h e c k . r s 
+ i n d e x   4 9 0 2 a 4 3 9 6 f 8 . . 2 7 4 1 3 7 f a e c 5   1 0 0 6 4 4 
+ - - -   a / s r c / q u e r y / s q l / s r c / p l a n n e r / s e m a n t i c / t y p e _ c h e c k . r s 
+ + + +   b / s r c / q u e r y / s q l / s r c / p l a n n e r / s e m a n t i c / t y p e _ c h e c k . r s 
+ @ @   - 2 8 7 , 8   + 2 8 7 , 7   @ @   i m p l < ' a >   T y p e C h e c k e r < ' a >   { 
+                                                   } , 
+                                           ] ) 
+                                           . a w a i t ? ; 
+ -                                 s e l f . r e s o l v e _ s c a l a r _ f u n c t i o n _ c a l l ( * s p a n ,   " a s s u m e _ n o t _ n u l l " ,   v e c ! [ ] ,   v e c ! [ s c a l a r ] ) 
+ -                                         . a w a i t ? 
+ +                                 s e l f . r e s o l v e _ s c a l a r _ f u n c t i o n _ c a l l ( * s p a n ,   " a s s u m e _ n o t _ n u l l " ,   v e c ! [ ] ,   v e c ! [ s c a l a r ] ) ? 
+                           } 
+   
+                           E x p r : : I n L i s t   { 
+ @ @   - 3 8 9 , 8   + 3 8 8 , 7   @ @   i m p l < ' a >   T y p e C h e c k e r < ' a >   { 
+                                           s e l f . r e s o l v e _ s c a l a r _ f u n c t i o n _ c a l l ( * s p a n ,   " a n d " ,   v e c ! [ ] ,   v e c ! [ 
+                                                   g e _ f u n c . c l o n e ( ) , 
+                                                   l e _ f u n c . c l o n e ( ) , 
+ -                                         ] ) 
+ -                                         . a w a i t ? 
+ +                                         ] ) ? 
+                                   }   e l s e   { 
+                                        
+part=25, len=2001, chunk_size=2000, md5=0914e458ed34ecf26510103cf8b40b76, path:https://github.com/datafuselabs/databend/pull/11659
+------------------------------------------------------------
+  / /   R e w r i t e   ` e x p r   N O T   B E T W E E N   l o w   A N D   h i g h ` 
+                                           / /   i n t o   ` e x p r   <   l o w   O R   e x p r   >   h i g h ` 
+ @ @   - 4 0 1 , 8   + 3 9 9 , 7   @ @   i m p l < ' a >   T y p e C h e c k e r < ' a >   { 
+                                                   . r e s o l v e _ b i n a r y _ o p ( * s p a n ,   & B i n a r y O p e r a t o r : : G t ,   e x p r . a s _ r e f ( ) ,   h i g h . a s _ r e f ( ) ) 
+                                                   . a w a i t ? ; 
+   
+ -                                         s e l f . r e s o l v e _ s c a l a r _ f u n c t i o n _ c a l l ( * s p a n ,   " o r " ,   v e c ! [ ] ,   v e c ! [ l t _ f u n c ,   g t _ f u n c ] ) 
+ -                                                 . a w a i t ? 
+ +                                         s e l f . r e s o l v e _ s c a l a r _ f u n c t i o n _ c a l l ( * s p a n ,   " o r " ,   v e c ! [ ] ,   v e c ! [ l t _ f u n c ,   g t _ f u n c ] ) ? 
+                                   } 
+                           } 
+   
+ @ @   - 1 4 7 0 , 1 1   + 1 4 6 7 , 9   @ @   i m p l < ' a >   T y p e C h e c k e r < ' a >   { 
+                   } ; 
+   
+                   s e l f . r e s o l v e _ s c a l a r _ f u n c t i o n _ c a l l ( s p a n ,   & f u n c _ n a m e ,   p a r a m s ,   a r g s ) 
+ -                         . a w a i t 
+           } 
+   
+ -         # [ a s y n c _ b a c k t r a c e : : f r a m e d ] 
+ -         p u b   a s y n c   f n   r e s o l v e _ s c a l a r _ f u n c t i o n _ c a l l ( 
+ +         p u b   f n   r e s o l v e _ s c a l a r _ f u n c t i o n _ c a l l ( 
+                   & m u t   s e l f , 
+                   s p a n :   S p a n , 
+                   f u n c _ n a m e :   & s t r , 
+ @ @   - 1 5 3 2 , 1 9   + 1 5 2 7 , 1 6   @ @   i m p l < ' a >   T y p e C h e c k e r < ' a >   { 
+                                           . r e s o l v e _ b i n a r y _
+part=26, len=2001, chunk_size=2000, md5=277db0ab361b39dbcd24af2ee4094308, path:https://github.com/datafuselabs/databend/pull/11659
+------------------------------------------------------------
+o p ( s p a n ,   & p o s i t i v e _ o p ,   l e f t ,   r i g h t ) 
+                                           . a w a i t ? ; 
+                                   s e l f . r e s o l v e _ s c a l a r _ f u n c t i o n _ c a l l ( s p a n ,   " n o t " ,   v e c ! [ ] ,   v e c ! [ p o s i t i v e ] ) 
+ -                                         . a w a i t 
+                           } 
+                           B i n a r y O p e r a t o r : : S o u n d s L i k e   = >   { 
+                                   / /   r e w r i t e   " e x p r 1   S O U N D S   L I K E   e x p r 2 "   t o   " S O U N D E X ( e x p r 1 )   =   S O U N D E X ( e x p r 2 ) " 
+                                   l e t   b o x   ( l e f t ,   _ )   =   s e l f . r e s o l v e ( l e f t ) . a w a i t ? ; 
+                                   l e t   b o x   ( r i g h t ,   _ )   =   s e l f . r e s o l v e ( r i g h t ) . a w a i t ? ; 
+   
+ -                                 l e t   ( l e f t ,   _ )   =   * s e l f 
+ -                                         . r e s o l v e _ s c a l a r _ f u n c t i o n _ c a l l ( s p a n ,   " s o u n d e x " ,   v e c ! [ ] ,   v e c ! [ l e f t ] ) 
+ -                                         . a w a i t ? ; 
+ -                                 l e t   ( r i g h t ,   _ )   =   * s e l f 
+ -                                         . r e s o l v e _ s c a l a r _ f u n c t i o n _ c a l l ( s p a n ,   " s o u n d e x " ,   v e c ! [ ] ,   v e c ! [ r i g h t ] ) 
+ -                                         . a w a i t ? ; 
+ +                                 l e t   ( l e f t ,   _ )   = 
+ +                                         * s e l f . r e s o l v e _ s c a l a r _ f u n c t i o n _ c a l l ( s p a n ,   " s o u n d e x " ,   v e c ! [ ] ,   v e c ! [ l e f t ] ) ? ; 
+ +                                 l e t   ( r i g h t ,   _ )   = 
+ +                                         * s e l f . r e s o l v e _ s c a l a r _ f u n c t i o n _ c a l l ( s p
+part=27, len=2001, chunk_size=2000, md5=e2c3121d8db3557ac90b5e376cc264c4, path:https://github.com/datafuselabs/databend/pull/11659
+------------------------------------------------------------
+a n ,   " s o u n d e x " ,   v e c ! [ ] ,   v e c ! [ r i g h t ] ) ? ; 
+   
+                                   s e l f . r e s o l v e _ s c a l a r _ f u n c t i o n _ c a l l ( 
+                                           s p a n , 
+ @ @   - 1 5 5 2 , 7   + 1 5 4 4 , 6   @ @   i m p l < ' a >   T y p e C h e c k e r < ' a >   { 
+                                           v e c ! [ ] , 
+                                           v e c ! [ l e f t ,   r i g h t ] , 
+                                   ) 
+ -                                 . a w a i t 
+                           } 
+                           B i n a r y O p e r a t o r : : G t 
+                           |   B i n a r y O p e r a t o r : : L t 
+ @ @   - 1 5 6 4 , 1 2   + 1 5 5 5 , 1 1   @ @   i m p l < ' a >   T y p e C h e c k e r < ' a >   { 
+                                   l e t   b o x   ( l e f t ,   _ )   =   s e l f . r e s o l v e ( l e f t ) . a w a i t ? ; 
+                                   l e t   b o x   ( r i g h t ,   _ )   =   s e l f . r e s o l v e ( r i g h t ) . a w a i t ? ; 
+   
+ -                                 l e t   ( _ ,   d a t a _ t y p e )   =   * s e l f 
+ -                                         . r e s o l v e _ s c a l a r _ f u n c t i o n _ c a l l ( s p a n ,   o p . t o _ f u n c _ n a m e ( ) ,   v e c ! [ ] ,   v e c ! [ 
+ +                                 l e t   ( _ ,   d a t a _ t y p e )   = 
+ +                                         * s e l f . r e s o l v e _ s c a l a r _ f u n c t i o n _ c a l l ( s p a n ,   o p . t o _ f u n c _ n a m e ( ) ,   v e c ! [ ] ,   v e c ! [ 
+                                                   l e f t . c l o n e ( ) , 
+                                                   r i g h t . c l o n e ( ) , 
+ -                                         ] ) 
+ -                                         . a w a i t ? ; 
+ +                                         ] ) ? ; 
+   
+                                   O k ( B o x : : n e w (
+part=28, len=2001, chunk_size=2000, md5=de649c6de1ce3ecb3a8c1bb442f498b5, path:https://github.com/datafuselabs/databend/pull/11659
+------------------------------------------------------------
+( 
+                                           F u n c t i o n C a l l   { 
+ @ @   - 1 6 9 1 , 7   + 1 6 8 1 , 6   @ @   i m p l < ' a >   T y p e C h e c k e r < ' a >   { 
+                   a r g _ t y p e s . p u s h ( i n t e r v a l _ t y p e ) ; 
+   
+                   s e l f . r e s o l v e _ s c a l a r _ f u n c t i o n _ c a l l ( s p a n ,   & f u n c _ n a m e ,   v e c ! [ ] ,   a r g s ) 
+ -                         . a w a i t 
+           } 
+   
+           # [ a s y n c _ r e c u r s i o n : : a s y n c _ r e c u r s i o n ] 
+ @ @   - 2 2 0 1 , 7   + 2 1 9 0 , 6   @ @   i m p l < ' a >   T y p e C h e c k e r < ' a >   { 
+                   l e t   a r g s   =   v e c ! [ t r i m _ s o u r c e ,   t r i m _ s c a l a r ] ; 
+   
+                   s e l f . r e s o l v e _ s c a l a r _ f u n c t i o n _ c a l l ( s p a n ,   f u n c _ n a m e ,   v e c ! [ ] ,   a r g s ) 
+ -                         . a w a i t 
+           } 
+   
+           / / /   R e s o l v e   l i t e r a l   v a l u e s . 
+ @ @   - 2 2 7 7 , 7   + 2 2 6 5 , 6   @ @   i m p l < ' a >   T y p e C h e c k e r < ' a >   { 
+                   } 
+   
+                   s e l f . r e s o l v e _ s c a l a r _ f u n c t i o n _ c a l l ( s p a n ,   " a r r a y " ,   v e c ! [ ] ,   e l e m s ) 
+ -                         . a w a i t 
+           } 
+   
+           # [ a s y n c _ r e c u r s i o n : : a s y n c _ r e c u r s i o n ] 
+ @ @   - 2 2 9 5 , 1 6   + 2 2 8 2 , 1 3   @ @   i m p l < ' a >   T y p e C h e c k e r < ' a >   { 
+                           l e t   b o x   ( v a l _ a r g ,   _ d a t a _ t y p e )   =   s e l f . r e s o l v e ( v a l _ e x p r ) . a w a i t ? ; 
+                           v a l s . p u s h ( v a l _ a r g ) ; 
+                   } 
+ -                 l e t   b o x   ( k e y _ a r g ,   _ d a t a _ t y p e )   =   s e l f 
+ -                         . r e s o l v e _ s c a l a r _ f u n c t i o n _ c a l l ( s p a n ,   " a r r a y " ,   v e c ! [ ] ,  
+part=29, len=2001, chunk_size=2000, md5=d298f0a729d04350483de597aa9cb37b, path:https://github.com/datafuselabs/databend/pull/11659
+------------------------------------------------------------
+k e y s ) 
+ -                         . a w a i t ? ; 
+ -                 l e t   b o x   ( v a l _ a r g ,   _ d a t a _ t y p e )   =   s e l f 
+ -                         . r e s o l v e _ s c a l a r _ f u n c t i o n _ c a l l ( s p a n ,   " a r r a y " ,   v e c ! [ ] ,   v a l s ) 
+ -                         . a w a i t ? ; 
+ +                 l e t   b o x   ( k e y _ a r g ,   _ d a t a _ t y p e )   = 
+ +                         s e l f . r e s o l v e _ s c a l a r _ f u n c t i o n _ c a l l ( s p a n ,   " a r r a y " ,   v e c ! [ ] ,   k e y s ) ? ; 
+ +                 l e t   b o x   ( v a l _ a r g ,   _ d a t a _ t y p e )   = 
+ +                         s e l f . r e s o l v e _ s c a l a r _ f u n c t i o n _ c a l l ( s p a n ,   " a r r a y " ,   v e c ! [ ] ,   v a l s ) ? ; 
+                   l e t   a r g s   =   v e c ! [ k e y _ a r g ,   v a l _ a r g ] ; 
+   
+                   s e l f . r e s o l v e _ s c a l a r _ f u n c t i o n _ c a l l ( s p a n ,   " m a p " ,   v e c ! [ ] ,   a r g s ) 
+ -                         . a w a i t 
+           } 
+   
+           # [ a s y n c _ r e c u r s i o n : : a s y n c _ r e c u r s i o n ] 
+ @ @   - 2 3 2 1 , 7   + 2 3 0 5 , 6   @ @   i m p l < ' a >   T y p e C h e c k e r < ' a >   { 
+                   } 
+   
+                   s e l f . r e s o l v e _ s c a l a r _ f u n c t i o n _ c a l l ( s p a n ,   " t u p l e " ,   v e c ! [ ] ,   a r g s ) 
+ -                         . a w a i t 
+           } 
+   
+           # [ a s y n c _ r e c u r s i o n : : a s y n c _ r e c u r s i o n ] 
+ @ @   - 2 3 5 8 , 7   + 2 3 4 1 , 6   @ @   i m p l < ' a >   T y p e C h e c k e r < ' a >   { 
+                                   } ) 
+                                   . a w a i t ? ; 
+                           s e l f . r e s o l v e _ s c a l a r _ f u n c t i o n _ c a l l ( s p a n ,   " a n d " ,   v e c ! [ ] ,   v e c ! [ n e w _ l e f t ,   n e w _ r i g h t ] ) 
+ -                            
+part=30, len=300, chunk_size=2000, md5=0a92e20132f810cd11d1ea93242cd4dc, path:https://github.com/datafuselabs/databend/pull/11659
+------------------------------------------------------------
+    . a w a i t 
+                   }   e l s e   { 
+                           l e t   n a m e   =   o p . t o _ f u n c _ n a m e ( ) ; 
+                           s e l f . r e s o l v e _ f u n c t i o n ( s p a n ,   n a m e . a s _ s t r ( ) ,   v e c ! [ ] ,   & [ l e f t ,   r i g h t ] ) 
+ 

@@ -13,5 +13,7 @@
 // limitations under the License.
 
 mod github_pr_loader;
+mod github_pr_splitter;
 
 pub use github_pr_loader::GithubPRLoader;
+pub use github_pr_splitter::GithubPRSplitter;

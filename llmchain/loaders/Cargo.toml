@@ -12,6 +12,7 @@ async-trait = { workspace = true }
 anyhow = { workspace = true }
 
 glob-match = "0.2.1"
+log = { workspace = true }
 octocrab = "0.24.0"
 opendal = "0.33.2"
 rayon = "1.7.0"
