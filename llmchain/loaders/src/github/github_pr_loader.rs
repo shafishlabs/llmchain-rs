@@ -12,25 +12,32 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-mod directory;
-mod disk;
-mod document;
-mod document_path;
-mod document_splitter;
-mod github;
-mod markdown;
-mod text;
+use std::sync::Arc;
 
-pub use directory::DirectoryLoader;
-pub use disk::Disk;
-pub use disk::LocalDisk;
-pub use disk::RemoteDisk;
-pub use document::Document;
-pub use document::DocumentLoader;
-pub use document_path::DocumentPath;
-pub use document_splitter::DocumentSplitter;
-pub use github::GithubPRLoader;
-pub use markdown::MarkdownLoader;
-pub use markdown::MarkdownSplitter;
-pub use text::TextLoader;
-pub use text::TextSplitter;
+use anyhow::Result;
+
+use crate::Document;
+use crate::DocumentLoader;
+use crate::DocumentPath;
+
+pub struct GithubPRLoader {
+    owner: String,
+    repo: String,
+}
+
+impl GithubPRLoader {
+    pub fn create(owner: &str, repo: &str) -> Arc<Self> {
+        Arc::new(GithubPRLoader {
+            owner: owner.to_string(),
+            repo: repo.to_string(),
+        })
+    }
+}
+
+impl DocumentLoader for GithubPRLoader {
+    fn load(&self, _path: DocumentPath) -> Result<Vec<Document>> {
+        let _ = self.repo;
+        let _ = self.owner;
+        todo!()
+    }
+}
