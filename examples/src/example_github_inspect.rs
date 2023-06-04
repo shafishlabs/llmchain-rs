@@ -89,7 +89,7 @@ async fn main() -> Result<()> {
         let _ = databend.add_documents(documents).await?;
     }
 
-    // query a similarity document.
+    // query.
     {
         let similarities = databend.similarity_search(question, 1).await?;
         info!(
@@ -101,20 +101,22 @@ async fn main() -> Result<()> {
         // get the final result.
         let contexts = similarities
             .iter()
-            .map(|x| format!("context:{}\nsource:{}", x.path, x.content))
+            .map(|x| format!("context:{}\nsource:{}", x.content, x.path))
             .collect::<Vec<_>>()
             .join("");
         let prompt_template = DocumentRetrievalPrompt::create().with_instructions(vec!["Present your answer in markdown format, including code snippets if have, format the code snippets with SQL type if necessary.",
-                                                                                       "Only give the pr path(SOURCE) to the answer.\n",
+                                                                                       "Give the summary of this code\n",
+                                                                                       "Give the SOURCE to the answer.\n",
         ]);
         let mut input_variables = HashMap::new();
         input_variables.insert("question", question);
         input_variables.insert("contexts", &contexts);
         let prompt = prompt_template.format(input_variables)?;
 
-        // genrate answer.
+        // generate answer.
         let databend_llm = DatabendLLM::create(&databend_dsn);
         let answer = databend_llm.generate(&prompt).await?;
+        info!("question: {}", question);
         info!("answer: {:?}", answer);
     }
 
