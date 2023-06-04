@@ -5,12 +5,12 @@
 ## Features
 
 - **Models**: LLMs & Chat Models & Embedding Models
-    - **LLMS**: OpenAI/AzureOpenAI/DatabendCloud
+    - **LLMS**: OpenAI/AzureOpenAI/[DatabendCloud](https://app.databend.com)
 
 - **Prompts**: LLMs & Chat Prompt Templates
 
 - **Indexes**: Documents Loaders & Text Splitters & Vector Store & Retrievers
-  - **Documents Loaders**: MarkdownLoader, DirectoryLoader, TextLoader
+  - **Documents Loaders**: MarkdownLoader/DirectoryLoader/TextLoader/GithubPullRequestLoader
   - **Documents Splitters**: MarkdownSplitter, TextSplitter
   - **Vector Store**: [DatabendCloud](https://app.databend.com)
 
