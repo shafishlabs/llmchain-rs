@@ -13,5 +13,6 @@
 // limitations under the License.
 
 mod pdf_loader;
+mod pdf_splitter;
 
 pub use pdf_loader::PdfLoader;
