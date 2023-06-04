@@ -5,8 +5,9 @@ members = [
     "llmchain/loaders",
     "llmchain/llms",
     "llmchain/prompts",
-    "llmchain/test_kits",
+    "llmchain/transformers",
     "llmchain/vector_stores",
+    "llmchain/test_kits",
     "examples",
 ]
 
