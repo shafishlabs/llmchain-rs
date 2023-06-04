@@ -136,7 +136,7 @@ async fn query(databend_dsn: &str) -> Result<()> {
 
     let contexts = similarities
         .iter()
-        .map(|x| format!("context:{}\nsource:{}", x.path, x.content))
+        .map(|x| format!("context:{}\nsource:{}", x.content, x.path))
         .collect::<Vec<_>>()
         .join("");
     let prompt_template = DocumentRetrievalPrompt::create().with_instructions(vec!["Present your answer in markdown format, including code snippets if have, format the code snippets with SQL type if necessary.",
