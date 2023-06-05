@@ -37,8 +37,7 @@ impl PdfSplitter {
 
 impl DocumentSplitter for PdfSplitter {
     fn separators(&self) -> Vec<String> {
-        vec![
-        ]
+        vec![]
     }
 
     fn split_documents(&self, documents: &[Document]) -> Result<Vec<Document>> {

@@ -35,5 +35,6 @@ pub use github::GithubPRSplitter;
 pub use markdown::MarkdownLoader;
 pub use markdown::MarkdownSplitter;
 pub use pdf::PdfLoader;
+pub use pdf::PdfSplitter;
 pub use text::TextLoader;
 pub use text::TextSplitter;
