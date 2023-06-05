@@ -15,4 +15,5 @@
 mod directory;
 mod github;
 mod markdown;
+mod pdf;
 mod text;
