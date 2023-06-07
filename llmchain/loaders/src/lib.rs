@@ -19,7 +19,6 @@ mod document_path;
 mod document_splitter;
 mod github;
 mod markdown;
-mod pdf;
 mod text;
 
 pub use directory::DirectoryLoader;
@@ -34,6 +33,5 @@ pub use github::GithubPRLoader;
 pub use github::GithubPRSplitter;
 pub use markdown::MarkdownLoader;
 pub use markdown::MarkdownSplitter;
-pub use pdf::PdfLoader;
 pub use text::TextLoader;
 pub use text::TextSplitter;

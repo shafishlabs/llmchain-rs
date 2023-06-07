@@ -19,7 +19,6 @@ rayon = "1.7.0"
 regex = "1.8.1"
 tokio = { workspace = true }
 md5 = "0.7.0"
-pdf-extract = "0.6.5"
 
 [dev-dependencies]
 goldenfile = "1.4"
