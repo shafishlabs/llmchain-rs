@@ -1,0 +1,11 @@
+[package]
+name = "llmchain"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+llmchain-embeddings = { path = "../llmchain/embeddings" }
+llmchain-loaders = { path = "../llmchain/loaders" }
+llmchain-llms = { path = "../llmchain/llms" }
+llmchain-prompts = { path = "../llmchain/prompts" }
+llmchain-vector-stores = { path = "../llmchain/vector_stores" }
