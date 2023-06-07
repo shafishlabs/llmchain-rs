@@ -77,6 +77,8 @@ impl LLM for DatabendLLM {
             ))
             .await?;
 
+        info!("generate sql: {}", input);
+
         let mut generation = "".to_string();
 
         if let Some(res) = row {
@@ -84,6 +86,8 @@ impl LLM for DatabendLLM {
             let row: RowResult = res.try_into()?;
             generation = row.0;
         }
+
+        info!("generate result: {}", generation);
 
         Ok(GenerateResult {
             prompt_tokens: 0,

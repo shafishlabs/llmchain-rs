@@ -15,6 +15,7 @@ llmchain-embeddings = { path = "../embeddings" }
 anyhow = { workspace = true }
 async-trait = { workspace = true }
 databend-driver = { workspace = true }
+log = { workspace = true }
 tokio = { workspace = true }
 
 futures-util = "^0.3.17"

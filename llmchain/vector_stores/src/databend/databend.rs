@@ -20,6 +20,7 @@ use futures_util::StreamExt;
 use llmchain_common::escape_sql_string;
 use llmchain_embeddings::Embedding;
 use llmchain_loaders::Document;
+use log::info;
 use uuid::Uuid;
 
 use crate::VectorStore;
@@ -116,6 +117,7 @@ impl VectorStore for DatabendVectorStore {
              WHERE length(embedding) > 0 AND length(content) > 0 AND similarity > {} ORDER BY similarity DESC LIMIT {}",
             query_embedding, self.database, self.table, self.min_similarity, k
         );
+        info!("SQL: {}", sql);
 
         let mut documents = vec![];
         type RowResult = (String, String, String, f32);
@@ -123,12 +125,16 @@ impl VectorStore for DatabendVectorStore {
         let mut rows = conn.query_iter(&sql).await?;
         while let Some(row) = rows.next().await {
             let row: RowResult = row?.try_into()?;
+
+            info!("document: {:?}", row);
+
             documents.push(Document {
                 path: row.0,
                 content: row.1,
                 content_md5: row.2,
             });
         }
+        info!("Found {} documents", documents.len());
 
         Ok(documents)
     }
