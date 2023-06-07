@@ -117,7 +117,8 @@ impl VectorStore for DatabendVectorStore {
              WHERE length(embedding) > 0 AND length(content) > 0 AND similarity > {} ORDER BY similarity DESC LIMIT {}",
             query_embedding, self.database, self.table, self.min_similarity, k
         );
-        info!("SQL: {}", sql);
+
+        info!("similarity_search from {}.{}", self.database, self.table);
 
         let mut documents = vec![];
         type RowResult = (String, String, String, f32);
