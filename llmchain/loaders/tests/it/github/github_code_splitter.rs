@@ -19,8 +19,8 @@ use goldenfile::Mint;
 use llmchain_loaders::DocumentLoader;
 use llmchain_loaders::DocumentPath;
 use llmchain_loaders::DocumentSplitter;
+use llmchain_loaders::GithubCodeSplitter;
 use llmchain_loaders::GithubPRLoader;
-use llmchain_loaders::GithubPRSplitter;
 
 #[tokio::test]
 async fn test_github_pr_splitter_default() -> Result<()> {
@@ -37,7 +37,7 @@ async fn test_github_pr_splitter_default() -> Result<()> {
         ]))
         .await?;
 
-    let github_pr_splitter = GithubPRSplitter::create();
+    let github_pr_splitter = GithubCodeSplitter::create();
     let documents = github_pr_splitter.split_documents(&documents)?;
 
     // Check.

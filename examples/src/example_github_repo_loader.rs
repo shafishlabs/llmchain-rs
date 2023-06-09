@@ -12,10 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-mod github_code_splitter;
-mod github_pr_loader;
-mod github_repo_loader;
+use anyhow::Result;
+use env_logger::Env;
+use llmchain_loaders::DocumentLoader;
+use llmchain_loaders::DocumentPath;
+use llmchain_loaders::GithubRepoLoader;
+use log::info;
 
-pub use github_code_splitter::GithubCodeSplitter;
-pub use github_pr_loader::GithubPRLoader;
-pub use github_repo_loader::GithubRepoLoader;
+/// cargo run --bin example_github_repo_loader
+#[tokio::main]
+async fn main() -> Result<()> {
+    env_logger::Builder::from_env(Env::default().default_filter_or("info")).init();
+
+    // documents
+    let documents = GithubRepoLoader::create()
+        .load(DocumentPath::from_string(
+            "https://github.com/shafishlabs/llmchain.rs",
+        ))
+        .await?;
+
+    info!("{:?}", documents);
+
+    Ok(())
+}

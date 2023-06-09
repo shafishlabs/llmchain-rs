@@ -12,10 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-mod github_code_splitter;
-mod github_pr_loader;
-mod github_repo_loader;
+use anyhow::Result;
+use llmchain_loaders::DocumentLoader;
+use llmchain_loaders::DocumentPath;
+use llmchain_loaders::GithubRepoLoader;
 
-pub use github_code_splitter::GithubCodeSplitter;
-pub use github_pr_loader::GithubPRLoader;
-pub use github_repo_loader::GithubRepoLoader;
+#[tokio::test]
+async fn test_github_repo_loader() -> Result<()> {
+    env_logger::init();
+
+    // Load
+    let github_repo_loader = GithubRepoLoader::create();
+    let documents = github_repo_loader
+        .load(DocumentPath::from_string(
+            "https://github.com/shafishlabs/llmchain.rs",
+        ))
+        .await?;
+
+    assert!(documents.len() > 10);
+    assert!(documents[0].path.starts_with("https://github.com"));
+
+    Ok(())
+}

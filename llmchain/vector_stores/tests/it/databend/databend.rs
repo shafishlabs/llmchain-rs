@@ -15,18 +15,17 @@
 use std::sync::Arc;
 
 use anyhow::Result;
-use llmchain_embeddings::OpenAIEmbedding;
+use llmchain_embeddings::DatabendEmbedding;
 use llmchain_loaders::Document;
 use llmchain_vector_stores::DatabendVectorStore;
 use llmchain_vector_stores::VectorStore;
 
 #[tokio::test]
 async fn test_vector_stores_databend() -> Result<()> {
-    let api_key = std::env::var("OPENAI_API_KEY").unwrap();
-    let dsn = std::env::var("DATABEND_DSN").unwrap();
+    let dsn = std::env::var("DATABEND_DSN").expect("DATABEND_DSN is not set");
 
-    let openai_embedding = Arc::new(OpenAIEmbedding::create(&api_key));
-    let databend = DatabendVectorStore::create(&dsn, openai_embedding);
+    let databend_embedding = Arc::new(DatabendEmbedding::create(&dsn));
+    let databend = DatabendVectorStore::create(&dsn, databend_embedding);
     databend.init().await?;
 
     let documents = vec![

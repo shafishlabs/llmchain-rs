@@ -17,27 +17,26 @@ use std::sync::Arc;
 
 use anyhow::Result;
 use opendal::services::Fs;
-use opendal::BlockingOperator;
 use opendal::Operator;
 
 use crate::disk::Disk;
 
 pub struct LocalDisk {
-    op: BlockingOperator,
+    op: Operator,
 }
 
 impl LocalDisk {
     pub fn create() -> Result<Arc<Self>> {
         let mut builder = Fs::default();
         builder.root("/");
-        let op: BlockingOperator = Operator::new(builder)?.finish().blocking();
+        let op = Operator::new(builder)?.finish();
 
         Ok(Arc::new(LocalDisk { op }))
     }
 }
 
 impl Disk for LocalDisk {
-    fn get_operator(&self) -> Result<BlockingOperator> {
+    fn get_operator(&self) -> Result<Operator> {
         Ok(self.op.clone())
     }
 }

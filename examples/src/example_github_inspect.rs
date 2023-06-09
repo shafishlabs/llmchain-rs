@@ -23,8 +23,8 @@ use llmchain_llms::LLM;
 use llmchain_loaders::DocumentLoader;
 use llmchain_loaders::DocumentPath;
 use llmchain_loaders::DocumentSplitter;
+use llmchain_loaders::GithubCodeSplitter;
 use llmchain_loaders::GithubPRLoader;
-use llmchain_loaders::GithubPRSplitter;
 use llmchain_prompts::DocumentRetrievalPrompt;
 use llmchain_prompts::Prompt;
 use llmchain_vector_stores::DatabendVectorStore;
@@ -80,7 +80,7 @@ async fn main() -> Result<()> {
     let documents = GithubPRLoader::create("datafuselabs", "databend", &github_token)
         .load(DocumentPath::from_list(vec![11347, 11391, 11435]))
         .await?;
-    let documents = GithubPRSplitter::create()
+    let documents = GithubCodeSplitter::create()
         .with_chunk_size(8000)
         .split_documents(&documents)?;
 

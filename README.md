@@ -1,4 +1,4 @@
-# llmchain
+# llmchain: Modern Data Transformations with LLM
 
 🦀 + Large Language Models, inspired by LangChain.
 

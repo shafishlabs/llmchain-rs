@@ -19,7 +19,7 @@ use llmchain_loaders::Document;
 
 #[tokio::test]
 async fn test_embedding_databend() -> Result<()> {
-    let dsn = std::env::var("DATABEND_DSN").unwrap();
+    let dsn = std::env::var("DATABEND_DSN").expect("DATABEND_DSN is not set");
 
     // embeddings query.
     {
