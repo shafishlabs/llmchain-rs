@@ -13,8 +13,8 @@
 // limitations under the License.
 
 use anyhow::Result;
-use opendal::BlockingOperator;
+use opendal::Operator;
 
 pub trait Disk: Send + Sync {
-    fn get_operator(&self) -> Result<BlockingOperator>;
+    fn get_operator(&self) -> Result<Operator>;
 }

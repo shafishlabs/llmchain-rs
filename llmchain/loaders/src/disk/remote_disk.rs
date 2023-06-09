@@ -26,7 +26,7 @@
 use std::sync::Arc;
 
 use anyhow::Result;
-use opendal::BlockingOperator;
+use opendal::Operator;
 
 use crate::disk::Disk;
 
@@ -39,7 +39,7 @@ impl RemoteDisk {
 }
 
 impl Disk for RemoteDisk {
-    fn get_operator(&self) -> Result<BlockingOperator> {
+    fn get_operator(&self) -> Result<Operator> {
         todo!()
     }
 }

@@ -16,7 +16,8 @@ use std::collections::HashMap;
 use std::sync::Arc;
 
 use anyhow::Result;
-use glob_match::glob_match;
+use futures::TryStreamExt;
+use glob::Pattern;
 use opendal::EntryMode;
 use opendal::Metakey;
 use rayon::iter::ParallelIterator;
@@ -53,22 +54,21 @@ impl DirectoryLoader {
         self
     }
 
-    fn process_directory(
+    async fn process_directory(
         &self,
         path: &str,
         tasks: &mut Vec<(String, Arc<dyn DocumentLoader>)>,
     ) -> Result<()> {
         let op = self.disk.get_operator()?;
-        let ds = op.scan(path)?;
-        for de in ds {
-            let de = de?;
-            let path_buf = de.path();
-            let path_str = path_buf.to_string();
-            let meta = op.metadata(&de, Metakey::Mode)?;
+        let mut ds = op.scan(path).await?;
+        while let Some(de) = ds.try_next().await? {
+            let meta = op.metadata(&de, Metakey::Mode).await?;
             match meta.mode() {
                 EntryMode::FILE => {
                     for loader in &self.loaders {
-                        if glob_match(loader.0, &path_str) {
+                        let path_str = format!("{}{}", op.info().root(), de.path());
+                        let pattern = Pattern::new(loader.0)?;
+                        if pattern.matches(&path_str) {
                             tasks.push((path_str, loader.1.clone()));
                             break;
                         }
@@ -85,7 +85,7 @@ impl DirectoryLoader {
 impl DocumentLoader for DirectoryLoader {
     async fn load(&self, path: DocumentPath) -> Result<Vec<Document>> {
         let mut tasks: Vec<(String, Arc<dyn DocumentLoader>)> = Vec::new();
-        self.process_directory(path.as_str()?, &mut tasks)?;
+        self.process_directory(path.as_str()?, &mut tasks).await?;
 
         let worker_pool = ThreadPoolBuilder::new()
             .num_threads(self.max_threads)

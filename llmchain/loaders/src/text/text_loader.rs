@@ -34,7 +34,7 @@ impl TextLoader {
 #[async_trait::async_trait]
 impl DocumentLoader for TextLoader {
     async fn load(&self, path: DocumentPath) -> Result<Vec<Document>> {
-        let bs = self.disk.get_operator()?.read(path.as_str()?)?;
+        let bs = self.disk.get_operator()?.read(path.as_str()?).await?;
         let content = String::from_utf8_lossy(&bs).to_string();
 
         Ok(vec![Document::create(path.as_str()?, &content)])

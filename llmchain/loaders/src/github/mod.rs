@@ -14,6 +14,8 @@
 
 mod github_pr_loader;
 mod github_pr_splitter;
+mod github_repo_loader;
 
 pub use github_pr_loader::GithubPRLoader;
 pub use github_pr_splitter::GithubPRSplitter;
+pub use github_repo_loader::GithubRepoLoader;

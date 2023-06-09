@@ -12,3 +12,4 @@ anyhow = { workspace = true }
 goldenfile = "1.4"
 
 [dev-dependencies]
+env_logger = "*"

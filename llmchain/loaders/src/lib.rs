@@ -31,6 +31,7 @@ pub use document_path::DocumentPath;
 pub use document_splitter::DocumentSplitter;
 pub use github::GithubPRLoader;
 pub use github::GithubPRSplitter;
+pub use github::GithubRepoLoader;
 pub use markdown::MarkdownLoader;
 pub use markdown::MarkdownSplitter;
 pub use text::TextLoader;
