@@ -27,45 +27,29 @@ use crate::LocalDisk;
 use crate::MarkdownLoader;
 use crate::TextLoader;
 
-pub struct GithubRepoLoader {
-    owner: String,
-    repo: String,
-    domain: String,
-}
+pub struct GithubRepoLoader {}
 
 impl GithubRepoLoader {
-    pub fn create(owner: &str, repo: &str, _person_token: &str) -> Arc<Self> {
-        Arc::new(GithubRepoLoader {
-            owner: owner.to_string(),
-            repo: repo.to_string(),
-            domain: "github.com".to_string(),
-        })
+    pub fn create() -> Arc<Self> {
+        Arc::new(GithubRepoLoader {})
     }
 }
 
 #[async_trait::async_trait]
 impl DocumentLoader for GithubRepoLoader {
-    async fn load(&self, _path: DocumentPath) -> Result<Vec<Document>> {
-        let prefix_path = format!("/tmp/{}/", uuid::Uuid::new_v4());
-        let repo_clone_path = format!(
-            "{}{}/{}/{}/",
-            prefix_path, self.domain, self.owner, self.repo
-        );
+    async fn load(&self, path: DocumentPath) -> Result<Vec<Document>> {
+        let repo_url = path.as_str()?;
+        let local_path = format!("/tmp/{}/", uuid::Uuid::new_v4());
         let local_disk = LocalDisk::create()?;
 
         {
-            local_disk
-                .get_operator()?
-                .remove_all(&repo_clone_path)
-                .await?;
-            info!("remove {}", repo_clone_path);
+            local_disk.get_operator()?.remove_all(&local_path).await?;
+            info!("remove {}", local_path);
         }
 
-        let url = format!("https://{}/{}/{}", self.domain, self.owner, self.repo);
-
         {
-            info!("Cloning {} to {}", url, repo_clone_path);
-            let _ = Repository::clone(&url, &repo_clone_path)?;
+            info!("Cloning {} to {}", repo_url, local_path);
+            let _ = Repository::clone(repo_url, &local_path)?;
         }
 
         let directory = DirectoryLoader::create(local_disk.clone())
@@ -73,7 +57,7 @@ impl DocumentLoader for GithubRepoLoader {
             .with_loader("**/*.md", MarkdownLoader::create(local_disk.clone()));
 
         let result = directory
-            .load(DocumentPath::Str(repo_clone_path.clone()))
+            .load(DocumentPath::Str(local_path.clone()))
             .await?;
         info!("DirectoryLoader result: {:?}", result.len());
 
@@ -81,17 +65,14 @@ impl DocumentLoader for GithubRepoLoader {
             .iter()
             .map(|x| {
                 let mut x = x.clone();
-                x.path = x.path.replace(&prefix_path, "https://");
+                x.path = x.path.replace(&local_path, repo_url);
                 x
             })
             .collect::<Vec<_>>();
 
         {
-            local_disk
-                .get_operator()?
-                .remove_all(&repo_clone_path)
-                .await?;
-            info!("remove {}", repo_clone_path);
+            local_disk.get_operator()?.remove_all(&local_path).await?;
+            info!("remove {}", local_path);
         }
 
         Ok(result)

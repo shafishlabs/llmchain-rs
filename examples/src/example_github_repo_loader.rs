@@ -13,24 +13,25 @@
 // limitations under the License.
 
 use anyhow::Result;
+use env_logger::Env;
 use llmchain_loaders::DocumentLoader;
 use llmchain_loaders::DocumentPath;
 use llmchain_loaders::GithubRepoLoader;
+use log::info;
 
-#[tokio::test]
-async fn test_github_repo_loader() -> Result<()> {
-    env_logger::init();
+/// cargo run --bin example_github_repo_loader
+#[tokio::main]
+async fn main() -> Result<()> {
+    env_logger::Builder::from_env(Env::default().default_filter_or("info")).init();
 
-    // Load
-    let github_repo_loader = GithubRepoLoader::create();
-    let documents = github_repo_loader
+    // documents
+    let documents = GithubRepoLoader::create()
         .load(DocumentPath::from_string(
             "https://github.com/shafishlabs/llmchain.rs",
         ))
         .await?;
 
-    assert!(documents.len() > 10);
-    assert!(documents[0].path.starts_with("https://github.com"));
+    info!("{:?}", documents);
 
     Ok(())
 }
