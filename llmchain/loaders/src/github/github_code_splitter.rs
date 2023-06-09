@@ -26,7 +26,7 @@ pub struct GithubCodeSplitter {
 impl GithubCodeSplitter {
     pub fn create() -> Self {
         GithubCodeSplitter {
-            splitter_chunk_size: 1000,
+            splitter_chunk_size: 2000,
         }
     }
 

@@ -17,6 +17,7 @@ use llmchain_llms::OpenAI;
 use llmchain_llms::OpenAIGenerateModel;
 use llmchain_llms::LLM;
 
+#[ignore]
 #[tokio::test]
 async fn test_llm_openai_generate_gpt35() -> Result<()> {
     let api_key = std::env::var("OPENAI_API_KEY").unwrap_or("".to_string());
@@ -32,6 +33,7 @@ async fn test_llm_openai_generate_gpt35() -> Result<()> {
     Ok(())
 }
 
+#[ignore]
 #[tokio::test]
 async fn test_llm_openai_generate_gpt4() -> Result<()> {
     let api_key = std::env::var("OPENAI_API_KEY").unwrap_or("".to_string());
@@ -47,6 +49,7 @@ async fn test_llm_openai_generate_gpt4() -> Result<()> {
     Ok(())
 }
 
+#[ignore]
 #[tokio::test]
 async fn test_llm_openai_embedding() -> Result<()> {
     let api_key = std::env::var("OPENAI_API_KEY").unwrap_or("".to_string());

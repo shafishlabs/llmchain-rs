@@ -17,6 +17,7 @@ use llmchain_embeddings::Embedding;
 use llmchain_embeddings::OpenAIEmbedding;
 use llmchain_loaders::Document;
 
+#[ignore]
 #[tokio::test]
 async fn test_embedding_openai() -> Result<()> {
     let api_key = std::env::var("OPENAI_API_KEY").unwrap_or("".to_string());
