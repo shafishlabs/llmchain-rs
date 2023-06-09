@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+mod github_code_splitter;
 mod github_pr_loader;
-mod github_pr_splitter;
 mod github_repo_loader;
 
+pub use github_code_splitter::GithubCodeSplitter;
 pub use github_pr_loader::GithubPRLoader;
-pub use github_pr_splitter::GithubPRSplitter;
 pub use github_repo_loader::GithubRepoLoader;

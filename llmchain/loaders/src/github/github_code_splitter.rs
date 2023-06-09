@@ -19,14 +19,14 @@ use crate::text::TextSplitter;
 use crate::Document;
 use crate::DocumentSplitter;
 
-pub struct GithubPRSplitter {
+pub struct GithubCodeSplitter {
     pub splitter_chunk_size: usize,
 }
 
-impl GithubPRSplitter {
+impl GithubCodeSplitter {
     pub fn create() -> Self {
-        GithubPRSplitter {
-            splitter_chunk_size: 2000,
+        GithubCodeSplitter {
+            splitter_chunk_size: 1000,
         }
     }
 
@@ -36,7 +36,7 @@ impl GithubPRSplitter {
     }
 }
 
-impl DocumentSplitter for GithubPRSplitter {
+impl DocumentSplitter for GithubCodeSplitter {
     fn separators(&self) -> Vec<String> {
         vec![]
     }
