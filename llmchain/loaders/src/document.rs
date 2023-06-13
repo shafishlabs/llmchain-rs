@@ -31,6 +31,10 @@ impl Document {
             content_md5: format!("{:x}", md5::compute(content)),
         }
     }
+
+    pub fn size(&self) -> usize {
+        self.content.len()
+    }
 }
 
 #[async_trait::async_trait]

@@ -49,6 +49,11 @@ path = "src/example_github_repo_loader.rs"
 doctest = false
 test = false
 
+[[bin]]
+name = "example_github_pr_summary"
+path = "src/example_github_pr_summary.rs"
+doctest = false
+test = false
 
 [dependencies]
 llmchain-embeddings = { path = "../llmchain/embeddings" }
@@ -56,6 +61,7 @@ llmchain-loaders = { path = "../llmchain/loaders" }
 llmchain-llms = { path = "../llmchain/llms" }
 llmchain-prompts = { path = "../llmchain/prompts" }
 llmchain-vector-stores = { path = "../llmchain/vector_stores" }
+llmchain-test-kits = { path = "../llmchain/test_kits" }
 
 anyhow = { workspace = true }
 env_logger = { workspace = true }
