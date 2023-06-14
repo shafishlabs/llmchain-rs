@@ -29,7 +29,7 @@ pub use document::Document;
 pub use document::DocumentLoader;
 pub use document_path::DocumentPath;
 pub use document_splitter::DocumentSplitter;
-pub use github::GithubCodeSplitter;
+pub use github::GithubPRDiffSplitter;
 pub use github::GithubPRLoader;
 pub use github::GithubRepoLoader;
 pub use markdown::MarkdownLoader;
