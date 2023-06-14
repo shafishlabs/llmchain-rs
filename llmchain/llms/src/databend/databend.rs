@@ -71,7 +71,6 @@ impl LLM for DatabendLLM {
     }
 
     async fn generate(&self, input: &str) -> Result<GenerateResult> {
-        info!("generate input: {}", input);
         let conn = new_connection(&self.dsn)?;
         let row = conn
             .query_row(&format!(
