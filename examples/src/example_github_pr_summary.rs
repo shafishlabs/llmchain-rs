@@ -30,5 +30,28 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 
 async fn fake_pr_summary(pr: String) -> String {
+    env_logger::Builder::from_env(Env::default().default_filter_or("info")).init();
+    let _databend_dsn = std::env::var("DATABEND_DSN")
+        .map_err(|_| {
+            "DATABEND_DSN is empty, please EXPORT DATABEND_DSN=<your-databend-dsn>".to_string()
+        })
+        .unwrap();
+
+    let _github_token = std::env::var("GITHUB_TOKEN")
+        .map_err(|_| {
+            "GITHUB_TOKEN is empty, please EXPORT GITHUB_TOKEN=<your-personal-github-token>"
+                .to_string()
+        })
+        .unwrap();
+
+    // let documents = GithubPRLoader::create("datafuselabs", "databend", &github_token)
+    // .load(DocumentPath::from_list(vec![11634]))
+    // .await?;
+    //
+    // let documents = GithubPRDiffSplitter::create()
+    // .with_chunk_size(8000)
+    // .split_documents(&documents)?;
+    //
+
     format!("pr: {}", pr)
 }
