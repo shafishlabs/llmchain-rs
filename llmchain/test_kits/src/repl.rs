@@ -38,7 +38,7 @@ pub async fn handle_repl(
     loop {
         match rl.readline(hint) {
             Ok(line) => {
-                println!("{}", (callback)(line).await?);
+                color_print::cprintln!("<green>{}</green>", (callback)(line).await?);
             }
             Err(e) => match e {
                 ReadlineError::Io(err) => {
