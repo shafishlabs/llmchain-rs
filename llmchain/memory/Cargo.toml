@@ -9,9 +9,11 @@ keywords = ["LLM"]
 
 [dependencies]
 llmchain-llms = { path = "../llms" }
+llmchain-loaders = { path = "../loaders" }
 llmchain-prompts = { path = "../prompts" }
 
 anyhow = { workspace = true }
+parking_lot = "0.12.1"
 
 [dev-dependencies]
 goldenfile = "1.4"

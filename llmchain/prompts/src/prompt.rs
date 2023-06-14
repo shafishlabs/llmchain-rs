@@ -13,6 +13,7 @@
 // limitations under the License.
 
 use std::collections::HashMap;
+use std::sync::Arc;
 
 use anyhow::anyhow;
 use anyhow::Result;
@@ -29,11 +30,11 @@ pub struct PromptTemplate {
 }
 
 impl PromptTemplate {
-    pub fn create(template: &str, variables: Vec<String>) -> PromptTemplate {
-        PromptTemplate {
+    pub fn create(template: &str, variables: Vec<String>) -> Arc<PromptTemplate> {
+        Arc::new(PromptTemplate {
             template: template.to_string(),
             variables,
-        }
+        })
     }
 }
 

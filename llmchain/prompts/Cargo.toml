@@ -9,6 +9,7 @@ keywords = ["LLM"]
 
 [dependencies]
 anyhow = { workspace = true }
+parking_lot = "0.12.1"
 
 [dev-dependencies]
 goldenfile = "1.4"

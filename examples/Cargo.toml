@@ -60,6 +60,7 @@ llmchain-embeddings = { path = "../llmchain/embeddings" }
 llmchain-loaders = { path = "../llmchain/loaders" }
 llmchain-llms = { path = "../llmchain/llms" }
 llmchain-prompts = { path = "../llmchain/prompts" }
+llmchain-memory = { path = "../llmchain/memory" }
 llmchain-vector-stores = { path = "../llmchain/vector_stores" }
 llmchain-test-kits = { path = "../llmchain/test_kits" }
 
@@ -67,5 +68,6 @@ anyhow = { workspace = true }
 env_logger = { workspace = true }
 log = { workspace = true }
 tokio = { workspace = true }
+url = "2.4.0"
 
 [dev-dependencies]

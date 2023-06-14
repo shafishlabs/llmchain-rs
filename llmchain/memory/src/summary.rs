@@ -17,53 +17,55 @@ use std::sync::Arc;
 
 use anyhow::Result;
 use llmchain_llms::LLM;
+use llmchain_loaders::Document;
 use llmchain_prompts::Prompt;
 use llmchain_prompts::PromptTemplate;
+use parking_lot::RwLock;
 
 pub struct Summary {
     llm: Arc<dyn LLM>,
-    summaries: Vec<String>,
+    summaries: RwLock<Vec<String>>,
 }
 
 impl Summary {
-    pub fn create(llm: Arc<dyn LLM>) -> Self {
-        Self {
+    pub fn create(llm: Arc<dyn LLM>) -> Arc<Self> {
+        Arc::new(Self {
             llm,
-            summaries: vec![],
-        }
+            summaries: RwLock::new(Vec::new()),
+        })
     }
 
-    pub async fn add(&mut self, value: &str) -> Result<()> {
-        let prompt_template =
-            PromptTemplate::create("Summarize the following text: {{text}}", vec![
-                "text".to_string(),
-            ]);
+    pub async fn add_document(&self, document: &Document) -> Result<()> {
+        let prompt_template = PromptTemplate::create(
+            "Summarize the following text within 100 words: {{text}}",
+            vec!["text".to_string()],
+        );
         let mut input_variables = HashMap::new();
-        input_variables.insert("text", value);
+        input_variables.insert("text", document.content.as_str());
         let prompt = prompt_template.format(input_variables)?;
 
         let summary = self.llm.generate(&prompt).await?;
 
-        self.summaries.push(summary.generation);
+        self.summaries.write().push(summary.generation);
 
         Ok(())
     }
 
-    pub async fn summary(&self) -> Result<String> {
-        let instruction =
-            " Format the following text into a Pull Request Body with the following sections:
-             - Summary
-             - List of changes
-             - Refactoring Target
-             Remove duplicate information.
+    pub async fn add_documents(&self, documents: &[Document]) -> Result<()> {
+        for document in documents {
+            self.add_document(document).await?;
+        }
 
-            Text to format: ";
+        Ok(())
+    }
 
-        let contents = self.summaries.join("----\n");
+    pub async fn final_summary(&self, prompt: Arc<dyn Prompt>) -> Result<String> {
+        let prompts = prompt.format(HashMap::new())?;
+        let contents = self.summaries.read().join("----\n");
 
         let summary = self
             .llm
-            .generate(&(instruction.to_string() + &*contents))
+            .generate(&(prompts.to_string() + &*contents))
             .await?;
 
         Ok(summary.generation)

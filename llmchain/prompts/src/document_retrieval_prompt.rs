@@ -15,24 +15,25 @@
 use std::collections::HashMap;
 
 use anyhow::Result;
+use parking_lot::RwLock;
 
 use crate::Prompt;
 use crate::PromptTemplate;
 
 pub struct DocumentRetrievalPrompt {
-    instructions: Vec<String>,
+    instructions: RwLock<Vec<String>>,
 }
 
 impl DocumentRetrievalPrompt {
     pub fn create() -> Self {
         DocumentRetrievalPrompt {
-            instructions: vec![],
+            instructions: RwLock::new(Vec::new()),
         }
     }
 
-    pub fn with_instructions(mut self, instructions: Vec<&str>) -> Self {
+    pub fn with_instructions(self, instructions: Vec<&str>) -> Self {
         let instructs: Vec<_> = instructions.into_iter().map(|s| s.to_string()).collect();
-        self.instructions.extend(instructs);
+        self.instructions.write().extend(instructs);
         self
     }
 }
@@ -66,7 +67,7 @@ impl Prompt for DocumentRetrievalPrompt {
 
     fn format(&self, input_variables: HashMap<&str, &str>) -> Result<String> {
         // replace instructions.
-        let instructions = self.instructions.join(" \n");
+        let instructions = self.instructions.read().join(" \n");
         let prompt_template = self.template().replace("{instructions}", &instructions);
 
         let prompt_template = PromptTemplate::create(&prompt_template, self.variables());

@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+use std::sync::Arc;
+
 use anyhow::Result;
 use llmchain_llms::OpenAI;
 use llmchain_llms::LLM;
@@ -20,7 +22,7 @@ use llmchain_loaders::Document;
 use crate::Embedding;
 
 pub struct OpenAIEmbedding {
-    llm: OpenAI,
+    llm: Arc<OpenAI>,
 }
 
 impl OpenAIEmbedding {

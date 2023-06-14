@@ -15,13 +15,14 @@
 use std::future::Future;
 use std::pin::Pin;
 
+use anyhow::Result;
 use rustyline::config::Builder;
 use rustyline::error::ReadlineError;
 use rustyline::CompletionType;
 use rustyline::DefaultEditor;
 
 pub type AsyncCallback =
-    dyn Fn(String) -> Pin<Box<dyn Future<Output = String> + Send>> + Send + Sync;
+    dyn Fn(String) -> Pin<Box<dyn Future<Output = Result<String>> + Send>> + Send + Sync;
 
 pub async fn handle_repl(
     hint: &str,
@@ -37,7 +38,7 @@ pub async fn handle_repl(
     loop {
         match rl.readline(hint) {
             Ok(line) => {
-                println!("{}", (callback)(line).await);
+                println!("{}", (callback)(line).await?);
             }
             Err(e) => match e {
                 ReadlineError::Io(err) => {
