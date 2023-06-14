@@ -13,5 +13,8 @@
 // limitations under the License.
 
 mod kit;
+mod repl;
 
 pub use kit::MintFile;
+pub use repl::handle_repl;
+pub use repl::AsyncCallback;

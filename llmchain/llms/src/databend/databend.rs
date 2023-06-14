@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+use std::sync::Arc;
+
 use anyhow::Result;
 use databend_driver::new_connection;
 use llmchain_common::escape_sql_string;
@@ -27,10 +29,10 @@ pub struct DatabendLLM {
 }
 
 impl DatabendLLM {
-    pub fn create(dsn: &str) -> Self {
-        DatabendLLM {
+    pub fn create(dsn: &str) -> Arc<Self> {
+        Arc::new(DatabendLLM {
             dsn: dsn.to_string(),
-        }
+        })
     }
 }
 
@@ -76,8 +78,6 @@ impl LLM for DatabendLLM {
                 escape_sql_string(input)
             ))
             .await?;
-
-        info!("generate sql: {}", input);
 
         let mut generation = "".to_string();
 

@@ -1,5 +1,5 @@
 [package]
-name = "llmchain-prompts"
+name = "llmchain-memory"
 version = "0.1.0"
 edition = "2021"
 license = "Apache-2.0"
@@ -8,6 +8,10 @@ categories = ["LLM"]
 keywords = ["LLM"]
 
 [dependencies]
+llmchain-llms = { path = "../llms" }
+llmchain-loaders = { path = "../loaders" }
+llmchain-prompts = { path = "../prompts" }
+
 anyhow = { workspace = true }
 parking_lot = "0.12.1"
 

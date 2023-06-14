@@ -17,6 +17,7 @@ git2 = "0.17.2"
 log = { workspace = true }
 octocrab = "0.24.0"
 opendal = "0.33.2"
+patch = "0.7.0"
 rayon = "1.7.0"
 regex = "1.8.1"
 tokio = { workspace = true }

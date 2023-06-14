@@ -38,7 +38,7 @@ pub struct ChatResult {
 }
 
 #[async_trait::async_trait]
-pub trait LLM {
+pub trait LLM: Send + Sync {
     async fn embedding(&self, inputs: Vec<String>) -> Result<EmbeddingResult>;
     async fn generate(&self, input: &str) -> Result<GenerateResult>;
     async fn chat(&self, _input: Vec<String>) -> Result<Vec<ChatResult>> {

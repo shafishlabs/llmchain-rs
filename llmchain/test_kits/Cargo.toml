@@ -9,7 +9,9 @@ keywords = ["LLMs"]
 
 [dependencies]
 anyhow = { workspace = true }
+color-print = "0.3.4"
 goldenfile = "1.4"
+rustyline = "11.0.0"
 
 [dev-dependencies]
 env_logger = "*"
