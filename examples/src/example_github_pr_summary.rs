@@ -20,8 +20,8 @@ use llmchain_loaders::DocumentPath;
 use llmchain_loaders::DocumentSplitter;
 use llmchain_loaders::GithubPRDiffSplitter;
 use llmchain_loaders::GithubPRLoader;
-use llmchain_memory::Summary;
-use llmchain_prompts::PromptTemplate;
+use llmchain_memory::GithubPRSummary;
+use llmchain_memory::Summarize;
 use llmchain_test_kits::handle_repl;
 use llmchain_test_kits::AsyncCallback;
 use log::info;
@@ -57,20 +57,14 @@ async fn github_pr_summary(pr: String) -> Result<String> {
         .await?;
 
     let documents = GithubPRDiffSplitter::create()
-        .with_chunk_size(12000)
+        .with_chunk_size(18000)
         .split_documents(&documents)
         .unwrap();
 
     let databend_llm = DatabendLLM::create(&databend_dsn);
-    let summary = Summary::create(databend_llm);
+    let summary = GithubPRSummary::create(databend_llm);
     summary.add_documents(&documents).await?;
-
-    let prompt = " Format the following text into a Pull Request Body with the following sections within 50 words:
-             - List of changes with a short summary subtitle
-            Text to format in markdown: ";
-
-    let prompts = PromptTemplate::create(prompt, vec![]);
-    let pr_summary = summary.final_summary(prompts).await?;
+    let pr_summary = summary.final_summary().await?;
 
     let final_summary = format!("{}\n{}", pr, pr_summary);
     Ok(final_summary)

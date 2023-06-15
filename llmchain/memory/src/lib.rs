@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+mod github_pr_summary;
 mod summary;
 
-pub use summary::Summary;
+pub use github_pr_summary::GithubPRSummary;
+pub use summary::Summarize;
