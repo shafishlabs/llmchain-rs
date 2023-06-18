@@ -40,10 +40,7 @@ impl GithubPRSummary {
 #[async_trait::async_trait]
 impl Summarize for GithubPRSummary {
     async fn add_document(&self, document: &Document) -> Result<()> {
-        let template = "{text} \"\"\", you are world-class programmer,
-        you should accurately and clearly describe each code change, highlighting the key improvement or feature.
-        Please ensure that the summary is concise and to the point, providing relevant information about the change without any unnecessary details:
-        1.";
+        let template = "{text}, Please summarize the code diffs above to github changelogs style in a concise way:";
         let prompt_template = PromptTemplate::create(template, vec!["text".to_string()]);
         let mut input_variables = HashMap::new();
         input_variables.insert("text", document.content.as_str());
@@ -65,28 +62,27 @@ impl Summarize for GithubPRSummary {
 
     async fn final_summary(&self) -> Result<String> {
         let template = "
-As a world-class code programmer, your task is to create a Pull Request body summarizing from summaries. The body should include subheadings for each change, with a title of 10 words or less and a summary of 20 words or less.
-The subheadings should accurately and clearly describe each code change, highlighting the key improvement or feature. Please ensure that the summary is concise and to the point, providing relevant information about the change without any unnecessary details.
-Your Pull Request body should be well-organized and easy to understand, allowing other developers to quickly and easily review the changes and understand their impact.
+{text}
+\r\n
+Summarizing the Changelogs from code diffs above into a github pull request body in concise way, the fewer the parts the better, group the similarity parts into one, only summarize the  important parts if you think, each part with a title of 10 words or less and a summary of 20 words or less.
 
 For example:
+```
 ## PR Summary
 
 * **Efficient table deletion**
 The code now supports deleting all rows in a table more efficiently.
 * **Improved readability**
 Added comments throughout the codebase to enhance user understanding.
-
-
-Summaries:
-{text}
+```
              ";
 
         let prompt_template = PromptTemplate::create(template, vec!["text".to_string()]);
         let mut input_variables = HashMap::new();
-        let text = self.summaries.read().join(" ");
+        let text = self.summaries.read().join("\n");
         input_variables.insert("text", text.as_str());
         let prompt = prompt_template.format(input_variables)?;
+        println!("prompt:\n{}", prompt);
 
         let summary = self.llm.generate(&prompt).await?;
 
