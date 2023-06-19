@@ -63,10 +63,15 @@ impl Summarize for GithubPRSummary {
     async fn final_summary(&self) -> Result<String> {
         let template = "
 {text}
-\r\n
-Summarizing the Changelogs from code diffs above into a github pull request body in concise way, the fewer the parts the better, group the similarity parts into one, only summarize the  important parts if you think, each part with a title of 10 words or less and a summary of 20 words or less.
+\"\"\"
 
-For example:
+You are a code reviewer expert, the above is some Changelogs from a pull request by code changes.
+please summarizing them into a new github pull request body for release in concise way:
+- The fewer the parts the better.
+- Group the similarity parts into one.
+- Only summarize the important parts, each part with a title of 10 words or less and a summary of 20 words or less.
+
+Format like the follow example:
 ```
 ## PR Summary
 
