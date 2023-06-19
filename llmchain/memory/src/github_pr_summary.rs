@@ -40,7 +40,11 @@ impl GithubPRSummary {
 #[async_trait::async_trait]
 impl Summarize for GithubPRSummary {
     async fn add_document(&self, document: &Document) -> Result<()> {
-        let template = "{text}, Please summarize the code diffs above to github changelogs style in a concise way:";
+        let template = "```
+        {text}
+        ```
+Act as a Code Review Helper, please explain the code changes above in github changelogs style: 1.
+";
         let prompt_template = PromptTemplate::create(template, vec!["text".to_string()]);
         let mut input_variables = HashMap::new();
         input_variables.insert("text", document.content.as_str());
@@ -61,6 +65,10 @@ impl Summarize for GithubPRSummary {
     }
 
     async fn final_summary(&self) -> Result<String> {
+        if self.summaries.read().is_empty() {
+            return Ok("".to_string());
+        }
+
         let template = "
 {text}
 \"\"\"

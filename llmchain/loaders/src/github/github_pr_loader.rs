@@ -62,7 +62,7 @@ impl DocumentLoader for GithubPRLoader {
                 self.owner, self.repo, id
             );
             if diff.is_err() {
-                info!("PR {} not found", path);
+                info!("PR {} not found, error:{:?}", path, diff.err());
                 continue;
             }
 
