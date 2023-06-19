@@ -46,7 +46,7 @@ impl Summarize for GithubPRSummary {
         ```
         {text}
         ```
-Act as a world-class programmer, please summarize the code changes above in github changelogs style to bullet points:";
+Act as a world-class programmer, please summarize the code changes line by line above in github changelogs style to bullet points:";
         let prompt_template = PromptTemplate::create(template, vec!["text".to_string()]);
         let mut input_variables = HashMap::new();
         input_variables.insert("text", document.content.as_str());
