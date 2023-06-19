@@ -18,8 +18,10 @@ use std::sync::Arc;
 use anyhow::Result;
 use llmchain_llms::LLM;
 use llmchain_loaders::Document;
+use llmchain_prompts::GithubPRSummaryPrompt;
 use llmchain_prompts::Prompt;
 use llmchain_prompts::PromptTemplate;
+use log::info;
 use parking_lot::RwLock;
 
 use crate::Summarize;
@@ -40,16 +42,18 @@ impl GithubPRSummary {
 #[async_trait::async_trait]
 impl Summarize for GithubPRSummary {
     async fn add_document(&self, document: &Document) -> Result<()> {
-        let template = "{text} \"\"\", you are world-class programmer,
-        you should accurately and clearly describe each code change, highlighting the key improvement or feature.
-        Please ensure that the summary is concise and to the point, providing relevant information about the change without any unnecessary details:
-        1.";
+        let template = "
+        ```
+        {text}
+        ```
+Act as a world-class programmer, please summarize the code changes line by line above in github changelogs style to bullet points:";
         let prompt_template = PromptTemplate::create(template, vec!["text".to_string()]);
         let mut input_variables = HashMap::new();
         input_variables.insert("text", document.content.as_str());
         let prompt = prompt_template.format(input_variables)?;
 
         let summary = self.llm.generate(&prompt).await?;
+        info!("summary: {}", summary.generation);
         self.summaries.write().push(summary.generation);
 
         Ok(())
@@ -64,31 +68,19 @@ impl Summarize for GithubPRSummary {
     }
 
     async fn final_summary(&self) -> Result<String> {
-        let template = "
-As a world-class code programmer, your task is to create a Pull Request body summarizing from summaries. The body should include subheadings for each change, with a title of 10 words or less and a summary of 20 words or less.
-The subheadings should accurately and clearly describe each code change, highlighting the key improvement or feature. Please ensure that the summary is concise and to the point, providing relevant information about the change without any unnecessary details.
-Your Pull Request body should be well-organized and easy to understand, allowing other developers to quickly and easily review the changes and understand their impact.
+        if self.summaries.read().is_empty() {
+            return Ok("".to_string());
+        }
 
-For example:
-## PR Summary
-
-* **Efficient table deletion**
-The code now supports deleting all rows in a table more efficiently.
-* **Improved readability**
-Added comments throughout the codebase to enhance user understanding.
-
-
-Summaries:
-{text}
-             ";
-
-        let prompt_template = PromptTemplate::create(template, vec!["text".to_string()]);
         let mut input_variables = HashMap::new();
-        let text = self.summaries.read().join(" ");
+        let text = self.summaries.read().join("\n====\n");
         input_variables.insert("text", text.as_str());
+
+        let prompt_template = GithubPRSummaryPrompt::create();
         let prompt = prompt_template.format(input_variables)?;
 
         let summary = self.llm.generate(&prompt).await?;
+        info!("final summary: {}", summary.generation);
 
         Ok(summary.generation)
     }

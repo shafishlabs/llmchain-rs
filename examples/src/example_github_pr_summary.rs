@@ -57,7 +57,7 @@ async fn github_pr_summary(pr: String) -> Result<String> {
         .await?;
 
     let documents = GithubPRDiffSplitter::create()
-        .with_chunk_size(18000)
+        .with_chunk_size(5000)
         .split_documents(&documents)
         .unwrap();
 
