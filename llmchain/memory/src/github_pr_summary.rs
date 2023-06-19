@@ -18,8 +18,10 @@ use std::sync::Arc;
 use anyhow::Result;
 use llmchain_llms::LLM;
 use llmchain_loaders::Document;
+use llmchain_prompts::GithubPRSummaryPrompt;
 use llmchain_prompts::Prompt;
 use llmchain_prompts::PromptTemplate;
+use log::info;
 use parking_lot::RwLock;
 
 use crate::Summarize;
@@ -40,17 +42,18 @@ impl GithubPRSummary {
 #[async_trait::async_trait]
 impl Summarize for GithubPRSummary {
     async fn add_document(&self, document: &Document) -> Result<()> {
-        let template = "```
+        let template = "
+        ```
         {text}
         ```
-Act as a Code Review Helper, please explain the code changes above in github changelogs style: 1.
-";
+Act as a world-class programmer, please summarize the code changes above in github changelogs style to bullet points:";
         let prompt_template = PromptTemplate::create(template, vec!["text".to_string()]);
         let mut input_variables = HashMap::new();
         input_variables.insert("text", document.content.as_str());
         let prompt = prompt_template.format(input_variables)?;
 
         let summary = self.llm.generate(&prompt).await?;
+        info!("summary: {}", summary.generation);
         self.summaries.write().push(summary.generation);
 
         Ok(())
@@ -69,35 +72,15 @@ Act as a Code Review Helper, please explain the code changes above in github cha
             return Ok("".to_string());
         }
 
-        let template = "
-{text}
-\"\"\"
-
-You are a code reviewer expert, the above is some Changelogs from a pull request by code changes.
-please summarizing them into a new github pull request body for release in concise way:
-- The fewer the parts the better.
-- Group the similarity parts into one.
-- Only summarize the important parts, each part with a title of 10 words or less and a summary of 20 words or less.
-
-Format like the follow example:
-```
-## PR Summary
-
-* **Efficient table deletion**
-The code now supports deleting all rows in a table more efficiently.
-* **Improved readability**
-Added comments throughout the codebase to enhance user understanding.
-```
-             ";
-
-        let prompt_template = PromptTemplate::create(template, vec!["text".to_string()]);
         let mut input_variables = HashMap::new();
-        let text = self.summaries.read().join("\n");
+        let text = self.summaries.read().join("\n====\n");
         input_variables.insert("text", text.as_str());
+
+        let prompt_template = GithubPRSummaryPrompt::create();
         let prompt = prompt_template.format(input_variables)?;
-        println!("prompt:\n{}", prompt);
 
         let summary = self.llm.generate(&prompt).await?;
+        info!("final summary: {}", summary.generation);
 
         Ok(summary.generation)
     }

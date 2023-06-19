@@ -87,8 +87,6 @@ impl LLM for DatabendLLM {
             generation = row.0;
         }
 
-        info!("generate result: {}", generation);
-
         Ok(GenerateResult {
             prompt_tokens: 0,
             completion_tokens: 0,

@@ -13,9 +13,14 @@
 // limitations under the License.
 
 use std::future::Future;
+use std::io;
+use std::io::Write;
 use std::pin::Pin;
+use std::thread;
+use std::time::Duration;
 
 use anyhow::Result;
+use colored::*;
 use rustyline::config::Builder;
 use rustyline::error::ReadlineError;
 use rustyline::CompletionType;
@@ -38,7 +43,15 @@ pub async fn handle_repl(
     loop {
         match rl.readline(hint) {
             Ok(line) => {
-                color_print::cprintln!("<green>{}</green>", (callback)(line).await?);
+                let result = (callback)(line).await?;
+                let stdout = io::stdout();
+                let mut handle = stdout.lock();
+                for word in result.split_terminator('\n') {
+                    let colored_word = word.green();
+                    writeln!(handle, "{} ", colored_word)?; // print word and a space
+                    handle.flush()?;
+                    thread::sleep(Duration::from_millis(80)); // sleep for 500ms
+                }
             }
             Err(e) => match e {
                 ReadlineError::Io(err) => {

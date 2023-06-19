@@ -71,6 +71,8 @@ impl DocumentSplitter for GithubPRDiffSplitter {
                 if !need_skip {
                     // Only keep the diffs to reduce tokens.
                     let mut patch_diffs = vec![];
+                    patch_diffs.push(format!("changed file path:{}", patch.new.path,));
+
                     for hunk in patch.hunks {
                         for line in hunk.lines {
                             match line {

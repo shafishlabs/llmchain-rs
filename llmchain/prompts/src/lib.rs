@@ -13,10 +13,12 @@
 // limitations under the License.
 
 mod document_retrieval_prompt;
+mod github_pr_summary_prompt;
 mod prompt;
 mod text_to_sql_prompt;
 
 pub use document_retrieval_prompt::DocumentRetrievalPrompt;
+pub use github_pr_summary_prompt::GithubPRSummaryPrompt;
 pub use prompt::Prompt;
 pub use prompt::PromptTemplate;
 pub use text_to_sql_prompt::TextToSQLPrompt;
