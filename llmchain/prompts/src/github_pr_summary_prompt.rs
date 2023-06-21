@@ -30,22 +30,21 @@ impl GithubPRSummaryPrompt {
 impl Prompt for GithubPRSummaryPrompt {
     fn template(&self) -> String {
         let tpl = vec![
-            "{text}\n",
-            "Act as a world-class code expert, the above is some Changelogs from a pull request, please summarizing them into a new github pull request body in concise way, follow the instructions:\n",
+            "Act as a world-class programmer, please summarize the CHNAGELOGS into a new github pull request body in concise way, follow the instructions:\n",
             "- The fewer the parts the better\n",
             "- Group the similarity parts into one\n",
-            "- Only summarize the important parts into 2-4 parts, each part with a title of 10 words or less and a summary of 20 words or less\n",
+            "- Only summarize the important parts into 2 to 4 parts, each part with a title of 10 words or less and a summary of 80 words or less\n",
             "- Remove the similarity parts\n",
             "\n",
             "For example:\n",
             "```
 ## PR Summary
-
 * **Efficient table deletion**
 The code now supports deleting all rows in a table more efficiently.
 * **Improved readability**
 Added comments throughout the codebase to enhance user understanding.
 ```",
+            "\nCHANGELOGS:\n====\n{text}\n",
         ];
         tpl.join("")
     }
