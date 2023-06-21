@@ -17,7 +17,6 @@ use glob::Pattern;
 use log::info;
 use patch::Patch;
 
-use crate::text::TextSplitter;
 use crate::Document;
 use crate::DocumentSplitter;
 
@@ -51,12 +50,15 @@ impl DocumentSplitter for GithubPRDiffSplitter {
     }
 
     fn split_documents(&self, documents: &[Document]) -> Result<Vec<Document>> {
-        // To diff documents by files.
         let mut diff_documents = vec![];
+        let mut acc_patch_str = String::new();
+        let mut last_document_path = String::new();
+
         for document in documents {
             let content = Box::leak(document.content.clone().into_boxed_str());
             let patches = Patch::from_multiple(content)?;
-            let mut batch_buffer = Vec::new();
+            last_document_path = document.path.clone();
+
             for patch in patches {
                 let mut need_skip = false;
                 for skip in &self.skips {
@@ -69,42 +71,21 @@ impl DocumentSplitter for GithubPRDiffSplitter {
                 }
 
                 if !need_skip {
-                    // Only keep the diffs to reduce tokens.
-                    let mut patch_diffs = vec![];
-                    patch_diffs.push(format!("changed file path:{}", patch.new.path,));
-
-                    for hunk in patch.hunks {
-                        for line in hunk.lines {
-                            match line {
-                                patch::Line::Context(_) => {}
-                                patch::Line::Add(content) => {
-                                    patch_diffs.push(format!("+{}", content));
-                                }
-                                patch::Line::Remove(content) => {
-                                    patch_diffs.push(format!("-{}", content));
-                                }
-                            }
-                        }
-                    }
-
-                    let content = patch_diffs.join("\r\n").to_string();
-                    if batch_buffer.len() + content.len() < self.splitter_chunk_size {
-                        batch_buffer.push(content);
+                    let patch_str = format!("{}", patch);
+                    if acc_patch_str.len() + patch_str.len() <= self.splitter_chunk_size {
+                        acc_patch_str.push_str(&patch_str);
                     } else {
-                        if !batch_buffer.is_empty() {
-                            diff_documents
-                                .push(Document::create(&document.path, &batch_buffer.join("\n")));
-                            batch_buffer.clear();
+                        if !acc_patch_str.is_empty() {
+                            diff_documents.push(Document::create(&document.path, &acc_patch_str));
                         }
-                        batch_buffer.push(content);
+                        acc_patch_str = patch_str;
                     }
                 }
             }
+        }
 
-            if !batch_buffer.is_empty() {
-                diff_documents.push(Document::create(&document.path, &batch_buffer.join("\n")));
-                batch_buffer.clear();
-            }
+        if !acc_patch_str.is_empty() {
+            diff_documents.push(Document::create(&last_document_path, &acc_patch_str));
         }
         info!(
             "Split {} documents into {} diff documents",
@@ -112,16 +93,6 @@ impl DocumentSplitter for GithubPRDiffSplitter {
             diff_documents.len()
         );
 
-        let text_splitter = TextSplitter::create()
-            .with_chunk_size(self.splitter_chunk_size)
-            .with_separators(self.separators());
-        let result = text_splitter.split_documents(&diff_documents)?;
-        info!(
-            "Split {} diff documents into {} text documents",
-            diff_documents.len(),
-            result.len()
-        );
-
-        Ok(result)
+        Ok(diff_documents)
     }
 }
