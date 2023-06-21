@@ -43,7 +43,7 @@ impl GithubPRSummary {
 impl Summarize for GithubPRSummary {
     async fn add_document(&self, document: &Document) -> Result<()> {
         let template = "
-Act as a Senior Programmer, please provide a summary of the changes in the provided git diff patch within 200 words, focusing on describing the code changes without offering explanations.
+As a highly skilled programmer, please provide a clear and concise summary of the changes in the provided git diff patch. Focus on accurately describing the code modifications without delving into the reasons behind them:
 
 ```diff
 {text}
