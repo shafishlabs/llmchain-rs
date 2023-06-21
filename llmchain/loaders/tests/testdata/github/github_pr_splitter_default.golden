@@ -1,841 +1,767 @@
-part=0, len=674, chunk_size=2000, md5=3f6c867fb774de730b2f99ee1bee715c, path:https://github.com/datafuselabs/databend/pull/11450
+part=0, len=1906, chunk_size=2000, md5=40cc2399050ec2c4d53e7a566760fd2e, path:https://github.com/datafuselabs/databend/pull/11452
 ------------------------------------------------------------
-- - -   a / s r c / c o m m o n / s t o r a g e / s r c / s t a g e . r s 
- + + +   b / s r c / c o m m o n / s t o r a g e / s r c / s t a g e . r s 
- @ @   - 2 8 5 , 7   + 2 8 5 , 7   @ @   f n   b l o c k i n g _ l i s t _ f i l e s _ w i t h _ p a t t e r n ( 
-   
-           / /   p a t h   i s   a   d i r 
-           l e t   m u t   f i l e s   =   V e c : : n e w ( ) ; 
- -         l e t   l i s t   =   o p e r a t o r . l i s t ( p a t h ) ? ; 
- +         l e t   l i s t   =   o p e r a t o r . s c a n ( p a t h ) ? ; 
-           l e t   m u t   l i m i t   =   0 ; 
-           f o r   o b j   i n   l i s t   { 
-                   l e t   o b j   =   o b j ? ; 
-part=1, len=1148, chunk_size=2000, md5=4c4253ddca598aa023ffd8612841ce30, path:https://github.com/datafuselabs/databend/pull/11451
+--- a/src/common/storage/src/stage.rs
++++ b/src/common/storage/src/stage.rs
+@@ -285,7 +285,7 @@ fn blocking_list_files_with_pattern(
+ 
+     // path is a dir
+     let mut files = Vec::new();
+-    let list = operator.list(path)?;
++    let list = operator.scan(path)?;
+     let mut limit = 0;
+     for obj in list {
+         let obj = obj?;--- a/src/query/storages/parquet/src/deserialize_transform.rs
++++ b/src/query/storages/parquet/src/deserialize_transform.rs
+@@ -384,7 +384,7 @@ impl Processor for ParquetDeserializeTransform {
+ fn intervals_to_bitmap(interval: &[Interval], num_rows: usize) -> Bitmap {
+     debug_assert!(
+         interval.is_empty()
+-            || interval.last().unwrap().start + interval.last().unwrap().length < num_rows
++            || interval.last().unwrap().start + interval.last().unwrap().length <= num_rows
+     );
+ 
+     let mut bitmap = MutableBitmap::with_capacity(num_rows);--- a/Cargo.lock
++++ b/Cargo.lock
+@@ -871,12 +871,14 @@ dependencies = [
+  "common-exception",
+  "common-expression",
+  "common-meta-app",
++ "common-meta-embedded",
+  "ctor",
+  "databend-query",
+  "pyo3",
+  "pyo3-build-config",
+  "tokio",
+  "tokio-stream",
++ "uuid",
+ ]
+ 
+ [[package]]--- a/src/bendpy/Cargo.toml
++++ b/src/bendpy/Cargo.toml
+@@ -16,6 +16,7 @@ crate-type = ["cdylib"]
+ 
+ [dependencies]
+ pyo3 = { version = "0.18.1", features = ["extension-module", "abi3", "abi3-py37"] }
++uuid = { version = "1.1.2" }
+ # Workspace dependencies
+ arrow = { version = "37.0.0", features = ["pyarrow"] }
+ arrow-schema = "37.0.0"
+@@ -25,6 +26,7 @@ common-config = { path = "../query/config" }
+ common-exception = { path = "../common/exception" }
+ common-expression = { path = "../query/expression" }
+ common-meta-app = { path = "../meta/app" }
++common-meta-embedded = { path = "../meta/embedded" }
+ databend-query = { path = "../query/service", features = [
+     "simd",
+     "disable_initial_exec_tls",
+part=1, len=1582, chunk_size=2000, md5=f7d10a2ad03e2444adac2468165f6214, path:https://github.com/datafuselabs/databend/pull/11452
 ------------------------------------------------------------
-- - -   a / s r c / q u e r y / s t o r a g e s / p a r q u e t / s r c / d e s e r i a l i z e _ t r a n s f o r m . r s 
- + + +   b / s r c / q u e r y / s t o r a g e s / p a r q u e t / s r c / d e s e r i a l i z e _ t r a n s f o r m . r s 
- @ @   - 3 8 4 , 7   + 3 8 4 , 7   @ @   i m p l   P r o c e s s o r   f o r   P a r q u e t D e s e r i a l i z e T r a n s f o r m   { 
-   f n   i n t e r v a l s _ t o _ b i t m a p ( i n t e r v a l :   & [ I n t e r v a l ] ,   n u m _ r o w s :   u s i z e )   - >   B i t m a p   { 
-           d e b u g _ a s s e r t ! ( 
-                   i n t e r v a l . i s _ e m p t y ( ) 
- -                         | |   i n t e r v a l . l a s t ( ) . u n w r a p ( ) . s t a r t   +   i n t e r v a l . l a s t ( ) . u n w r a p ( ) . l e n g t h   <   n u m _ r o w s 
- +                         | |   i n t e r v a l . l a s t ( ) . u n w r a p ( ) . s t a r t   +   i n t e r v a l . l a s t ( ) . u n w r a p ( ) . l e n g t h   < =   n u m _ r o w s 
-           ) ; 
-   
-           l e t   m u t   b i t m a p   =   M u t a b l e B i t m a p : : w i t h _ c a p a c i t y ( n u m _ r o w s ) ; 
-part=2, len=2001, chunk_size=2000, md5=e983beab97ba79a325044cb71ccee667, path:https://github.com/datafuselabs/databend/pull/11452
+--- a/src/bendpy/README.md
++++ b/src/bendpy/README.md
+@@ -10,6 +10,8 @@ pip install databend
+ 
+ ## Usage
+ 
++### Basic:
++
+ ```python
+ from databend import SessionContext
+ 
+@@ -22,8 +24,16 @@ df.to_py_arrow()
+ 
+ # convert to pandas
+ df.to_pandas()
++
+ ```
+ 
++### Tenant separation:
++
++```python
++ctx = SessionContext(tenant = "a")
++```
++
++
+ ## Development
+ 
+ Setup virtualenv:--- a/src/bendpy/src/context.rs
++++ b/src/bendpy/src/context.rs
+@@ -36,19 +36,30 @@ pub(crate) struct PySessionContext {
+ #[pymethods]
+ impl PySessionContext {
+     #[new]
+-    fn new() -> PyResult<Self> {
++    #[pyo3(signature = (tenant = None))]
++    fn new(tenant: Option<&str>, py: Python) -> PyResult<Self> {
+         let session = RUNTIME.block_on(async {
+             let session = SessionManager::instance()
+                 .create_session(SessionType::Local)
+                 .await
+                 .unwrap();
+ 
++            if let Some(tenant) = tenant {
++                session.set_current_tenant(tenant.to_owned());
++            } else {
++                session.set_current_tenant(uuid::Uuid::new_v4().to_string());
++            }
++
+             let user = UserInfo::new_no_auth("root", "127.0.0.1");
+             session.set_authed_user(user, None).await.unwrap();
+             session
+         });
+ 
+-        Ok(PySessionContext { session })
++        let mut res = Self { session };
++
++        res.sql("CREATE DATABASE IF NOT EXISTS default", py)
++            .and_then(|df| df.collect(py))?;
++        Ok(res)
+     }
+ 
+     fn sql(&mut self, sql: &str, py: Python) -> PyResult<PyDataFrame> {
+part=2, len=874, chunk_size=2000, md5=56750e896aaaa50a660c96f64ae794e1, path:https://github.com/datafuselabs/databend/pull/11452
 ------------------------------------------------------------
-- - -   a / C a r g o . l o c k 
- + + +   b / C a r g o . l o c k 
- @ @   - 8 7 1 , 1 2   + 8 7 1 , 1 4   @ @   d e p e n d e n c i e s   =   [ 
-     " c o m m o n - e x c e p t i o n " , 
-     " c o m m o n - e x p r e s s i o n " , 
-     " c o m m o n - m e t a - a p p " , 
- +   " c o m m o n - m e t a - e m b e d d e d " , 
-     " c t o r " , 
-     " d a t a b e n d - q u e r y " , 
-     " p y o 3 " , 
-     " p y o 3 - b u i l d - c o n f i g " , 
-     " t o k i o " , 
-     " t o k i o - s t r e a m " , 
- +   " u u i d " , 
-   ] 
-   
-   [ [ p a c k a g e ] ] 
- - - -   a / s r c / b e n d p y / C a r g o . t o m l 
- + + +   b / s r c / b e n d p y / C a r g o . t o m l 
- @ @   - 1 6 , 6   + 1 6 , 7   @ @   c r a t e - t y p e   =   [ " c d y l i b " ] 
-   
-   [ d e p e n d e n c i e s ] 
-   p y o 3   =   {   v e r s i o n   =   " 0 . 1 8 . 1 " ,   f e a t u r e s   =   [ " e x t e n s i o n - m o d u l e " ,   " a b i 3 " ,   " a b i 3 - p y 3 7 " ]   } 
- + u u i d   =   {   v e r s i o n   =   " 1 . 1 . 2 "   } 
-   #   W o r k s p a c e   d e p e n d e n c i e s 
-   a r r o w   =   {   v e r s i o n   =   " 3 7 . 0 . 0 " ,   f e a t u r e s   =   [ " p y a r r o w " ]   } 
-   a r r o w - s c h e m a   =   " 3 7 . 0 . 0 " 
- @ @   - 2 5 , 6   + 2 6 , 7   @ @   c o m m o n - c o n f i g   =   {   p a t h   =   " . . / q u e r y / c o n f i g "   } 
-   c o m m o n - e x c e p t i o n   =   {   p a t h   =   " . . / c o m m o n / e x c e p t i o n "   } 
-   c o m m o n - e x p r e s s i o n   =   {   p a t h   =   " . . / q u e r y / e x p r e s s i o n "   } 
-   c o m m o n - m e t a - a p p   =   {   p a t h   =   " . . / m e t a / a p p "   } 
- + c o m m o n - m e t a - e m b e d d e d   =   {   p a t h   =   " . . / m e t a / e m b e d d e d "   } 
-   d a t a b e n d - q u e r y   =   {   p a t h   =   " . . / q u e r y / s e r v i c e " ,   f e a t u r e s   =   [ 
-           " s i m d " , 
-           " d i s a b l e _ i n i t i a l _ e x e c _ t l s " , 
- - - -  
-part=3, len=2001, chunk_size=2000, md5=e140d94ba0b894f4fa14adfe63f9f276, path:https://github.com/datafuselabs/databend/pull/11452
+--- a/src/bendpy/src/lib.rs
++++ b/src/bendpy/src/lib.rs
+@@ -21,6 +21,9 @@ mod schema;
+ mod utils;
+ 
+ use common_config::InnerConfig;
++use common_meta_app::storage::StorageFsConfig;
++use common_meta_app::storage::StorageParams;
++use common_meta_embedded::MetaEmbedded;
+ use databend_query::GlobalServices;
+ use pyo3::prelude::*;
+ use utils::RUNTIME;
+@@ -31,6 +34,13 @@ fn databend(_py: Python, m: &PyModule) -> PyResult<()> {
+     RUNTIME.block_on(async {
+         let mut conf: InnerConfig = InnerConfig::default();
+         conf.storage.allow_insecure = true;
++        conf.storage.params = StorageParams::Fs(StorageFsConfig {
++            root: "_databend_data".to_string(),
++        });
++
++        MetaEmbedded::init_global_meta_store("_databend_meta".to_string())
++            .await
++            .unwrap();
+         GlobalServices::init(conf).await.unwrap();
+     });
+ 
+part=3, len=1996, chunk_size=2000, md5=1facdfb6091e8e1cd9ddda683626c674, path:https://github.com/datafuselabs/databend/pull/11452
 ------------------------------------------------------------
-a / s r c / b e n d p y / R E A D M E . m d 
- + + +   b / s r c / b e n d p y / R E A D M E . m d 
- @ @   - 1 0 , 6   + 1 0 , 8   @ @   p i p   i n s t a l l   d a t a b e n d 
-   
-   # #   U s a g e 
-   
- + # # #   B a s i c : 
- + 
-   ` ` ` p y t h o n 
-   f r o m   d a t a b e n d   i m p o r t   S e s s i o n C o n t e x t 
-   
- @ @   - 2 2 , 8   + 2 4 , 1 6   @ @   d f . t o _ p y _ a r r o w ( ) 
-   
-   #   c o n v e r t   t o   p a n d a s 
-   d f . t o _ p a n d a s ( ) 
- + 
-   ` ` ` 
-   
- + # # #   T e n a n t   s e p a r a t i o n : 
- + 
- + ` ` ` p y t h o n 
- + c t x   =   S e s s i o n C o n t e x t ( t e n a n t   =   " a " ) 
- + ` ` ` 
- + 
- + 
-   # #   D e v e l o p m e n t 
-   
-   S e t u p   v i r t u a l e n v : 
- - - -   a / s r c / b e n d p y / s r c / c o n t e x t . r s 
- + + +   b / s r c / b e n d p y / s r c / c o n t e x t . r s 
- @ @   - 3 6 , 1 9   + 3 6 , 3 0   @ @   p u b ( c r a t e )   s t r u c t   P y S e s s i o n C o n t e x t   { 
-   # [ p y m e t h o d s ] 
-   i m p l   P y S e s s i o n C o n t e x t   { 
-           # [ n e w ] 
- -         f n   n e w ( )   - >   P y R e s u l t < S e l f >   { 
- +         # [ p y o 3 ( s i g n a t u r e   =   ( t e n a n t   =   N o n e ) ) ] 
- +         f n   n e w ( t e n a n t :   O p t i o n < & s t r > ,   p y :   P y t h o n )   - >   P y R e s u l t < S e l f >   { 
-                   l e t   s e s s i o n   =   R U N T I M E . b l o c k _ o n ( a s y n c   { 
-                           l e t   s e s s i o n   =   S e s s i o n M a n a g e r : : i n s t a n c e ( ) 
-                                   . c r e a t e _ s e s s i o n ( S e s s i o n T y p e : : L o c a l ) 
-                                   . a w a i t 
-                                   . u n w r a p ( ) ; 
-   
- +                         i f   l e t   S o m e ( t e n a n t )   =   t e n a n t   { 
- +                                 s e s s i o n . s e t _ c u r r e n t _ t e n a n t ( t e n a n t . t o _ o w n e d ( ) ) ; 
-
-part=4, len=2001, chunk_size=2000, md5=f90f2cad93aee6ca5b3664ca96cd1c2a, path:https://github.com/datafuselabs/databend/pull/11452
+--- a/src/query/service/src/sessions/session_ctx.rs
++++ b/src/query/service/src/sessions/session_ctx.rs
+@@ -28,6 +28,7 @@ use common_settings::ChangeValue;
+ use common_settings::Settings;
+ use parking_lot::RwLock;
+ 
++use super::SessionType;
+ use crate::sessions::QueryContextShared;
+ 
+ pub struct SessionContext {
+@@ -56,10 +57,11 @@ pub struct SessionContext {
+     // We store `query_id -> query_result_cache_key` to session context, so that we can fetch
+     // query result through previous query_id easily.
+     query_ids_results: RwLock<Vec<(String, Option<String>)>>,
++    typ: SessionType,
+ }
+ 
+ impl SessionContext {
+-    pub fn try_create(settings: Arc<Settings>) -> Result<Arc<Self>> {
++    pub fn try_create(settings: Arc<Settings>, typ: SessionType) -> Result<Arc<Self>> {
+         Ok(Arc::new(SessionContext {
+             settings,
+             abort: Default::default(),
+@@ -73,6 +75,7 @@ impl SessionContext {
+             io_shutdown_tx: Default::default(),
+             query_context_shared: Default::default(),
+             query_ids_results: Default::default(),
++            typ,
+         }))
+     }
+ 
+@@ -147,12 +150,13 @@ impl SessionContext {
+             }
+         }
+ 
+-        if conf.query.management_mode {
++        if conf.query.management_mode || self.typ == SessionType::Local {
+             let lock = self.current_tenant.read();
+             if !lock.is_empty() {
+                 return lock.clone();
+             }
+         }
++
+         conf.query.tenant_id.clone()
+     }
+ --- a/src/query/service/src/sessions/session_mgr.rs
++++ b/src/query/service/src/sessions/session_mgr.rs
+@@ -125,7 +125,7 @@ impl SessionManager {
+             _ => None,
+         };
+ 
+-        let session_ctx = SessionContext::try_create(settings)?;
++        let session_ctx = SessionContext::try_create(settings, typ.clone())?;
+         let session = Session::try_create(id.clone(), typ.clone(), session_ctx, mysql_conn_id)?;
+ 
+         let mut sessions = self.active_sessions.write();
+part=4, len=907, chunk_size=2000, md5=33f85002c49f6b8c0dbdda432faee015, path:https://github.com/datafuselabs/databend/pull/11453
 ------------------------------------------------------------
-+                         }   e l s e   { 
- +                                 s e s s i o n . s e t _ c u r r e n t _ t e n a n t ( u u i d : : U u i d : : n e w _ v 4 ( ) . t o _ s t r i n g ( ) ) ; 
- +                         } 
- + 
-                           l e t   u s e r   =   U s e r I n f o : : n e w _ n o _ a u t h ( " r o o t " ,   " 1 2 7 . 0 . 0 . 1 " ) ; 
-                           s e s s i o n . s e t _ a u t h e d _ u s e r ( u s e r ,   N o n e ) . a w a i t . u n w r a p ( ) ; 
-                           s e s s i o n 
-                   } ) ; 
-   
- -                 O k ( P y S e s s i o n C o n t e x t   {   s e s s i o n   } ) 
- +                 l e t   m u t   r e s   =   S e l f   {   s e s s i o n   } ; 
- + 
- +                 r e s . s q l ( " C R E A T E   D A T A B A S E   I F   N O T   E X I S T S   d e f a u l t " ,   p y ) 
- +                         . a n d _ t h e n ( | d f |   d f . c o l l e c t ( p y ) ) ? ; 
- +                 O k ( r e s ) 
-           } 
-   
-           f n   s q l ( & m u t   s e l f ,   s q l :   & s t r ,   p y :   P y t h o n )   - >   P y R e s u l t < P y D a t a F r a m e >   { 
- - - -   a / s r c / b e n d p y / s r c / l i b . r s 
- + + +   b / s r c / b e n d p y / s r c / l i b . r s 
- @ @   - 2 1 , 6   + 2 1 , 9   @ @   m o d   s c h e m a ; 
-   m o d   u t i l s ; 
-   
-   u s e   c o m m o n _ c o n f i g : : I n n e r C o n f i g ; 
- + u s e   c o m m o n _ m e t a _ a p p : : s t o r a g e : : S t o r a g e F s C o n f i g ; 
- + u s e   c o m m o n _ m e t a _ a p p : : s t o r a g e : : S t o r a g e P a r a m s ; 
- + u s e   c o m m o n _ m e t a _ e m b e d d e d : : M e t a E m b e d d e d ; 
-   u s e   d a t a b e n d _ q u e r y : : G l o b a l S e r v i c e s ; 
-   u s e   p y o 3 : : p r e l u d e : : * ; 
-   u s e   u t i l s : : R U N T I M E ; 
- @ @   - 3 1 , 6   + 3 4 , 1 3   @ @   f n   d a t a b e n d ( _ p y :   P y t h o n ,   m :   & P y M o d u l e )   - >   P y R e s u l t < ( ) >
-part=5, len=2001, chunk_size=2000, md5=8a4601b0426ef44d7f5212bd2c9f09c2, path:https://github.com/datafuselabs/databend/pull/11452
+--- a/src/query/service/src/sessions/session_type.rs
++++ b/src/query/service/src/sessions/session_type.rs
+@@ -14,7 +14,7 @@
+ 
+ use std::fmt;
+ 
+-#[derive(Clone)]
++#[derive(Clone, PartialEq)]
+ pub enum SessionType {
+     Clickhouse,
+     MySQL,--- a/src/query/service/tests/it/sessions/session_context.rs
++++ b/src/query/service/tests/it/sessions/session_context.rs
+@@ -19,11 +19,12 @@ use common_exception::Result;
+ use common_meta_app::principal::UserInfo;
+ use common_settings::Settings;
+ use databend_query::sessions::SessionContext;
++use databend_query::sessions::SessionType;
+ 
+ #[tokio::test(flavor = "multi_thread")]
+ async fn test_session_context() -> Result<()> {
+     let settings = Settings::create("default".to_string());
+-    let session_ctx = SessionContext::try_create(settings)?;
++    let session_ctx = SessionContext::try_create(settings, SessionType::MySQL)?;
+ 
+     // Abort status.
+     {
+part=5, len=1518, chunk_size=2000, md5=87ed248dcda5cca50770854d2a73e444, path:https://github.com/datafuselabs/databend/pull/11453
 ------------------------------------------------------------
-  { 
-           R U N T I M E . b l o c k _ o n ( a s y n c   { 
-                   l e t   m u t   c o n f :   I n n e r C o n f i g   =   I n n e r C o n f i g : : d e f a u l t ( ) ; 
-                   c o n f . s t o r a g e . a l l o w _ i n s e c u r e   =   t r u e ; 
- +                 c o n f . s t o r a g e . p a r a m s   =   S t o r a g e P a r a m s : : F s ( S t o r a g e F s C o n f i g   { 
- +                         r o o t :   " _ d a t a b e n d _ d a t a " . t o _ s t r i n g ( ) , 
- +                 } ) ; 
- + 
- +                 M e t a E m b e d d e d : : i n i t _ g l o b a l _ m e t a _ s t o r e ( " _ d a t a b e n d _ m e t a " . t o _ s t r i n g ( ) ) 
- +                         . a w a i t 
- +                         . u n w r a p ( ) ; 
-                   G l o b a l S e r v i c e s : : i n i t ( c o n f ) . a w a i t . u n w r a p ( ) ; 
-           } ) ; 
-   
- - - -   a / s r c / q u e r y / s e r v i c e / s r c / s e s s i o n s / s e s s i o n _ c t x . r s 
- + + +   b / s r c / q u e r y / s e r v i c e / s r c / s e s s i o n s / s e s s i o n _ c t x . r s 
- @ @   - 2 8 , 6   + 2 8 , 7   @ @   u s e   c o m m o n _ s e t t i n g s : : C h a n g e V a l u e ; 
-   u s e   c o m m o n _ s e t t i n g s : : S e t t i n g s ; 
-   u s e   p a r k i n g _ l o t : : R w L o c k ; 
-   
- + u s e   s u p e r : : S e s s i o n T y p e ; 
-   u s e   c r a t e : : s e s s i o n s : : Q u e r y C o n t e x t S h a r e d ; 
-   
-   p u b   s t r u c t   S e s s i o n C o n t e x t   { 
- @ @   - 5 6 , 1 0   + 5 7 , 1 1   @ @   p u b   s t r u c t   S e s s i o n C o n t e x t   { 
-           / /   W e   s t o r e   ` q u e r y _ i d   - >   q u e r y _ r e s u l t _ c a c h e _ k e y `   t o   s e s s i o n   c o n t e x t ,   s o   t h a t   w e   c a n   f e t c h 
-           / /   q u e r y   r e s u l t   t h r o u g h   p r e v i o u s   q u e r y _ i d   e a s i l y . 
-           q u e r y _ i d s _ r e s u l t s :   R w L o c k < V e c < (
-part=6, len=2001, chunk_size=2000, md5=53a86c69b5ee837c3f5a778573b80aad, path:https://github.com/datafuselabs/databend/pull/11452
+--- a/docs/doc/13-sql-reference/10-data-types/11-data-type-decimal-types.md
++++ b/docs/doc/13-sql-reference/10-data-types/11-data-type-decimal-types.md
+@@ -7,7 +7,7 @@ description:  Decimal types are high-precision numeric values to be stored and m
+ 
+ The Decimal type is useful for applications that require exact decimal representations, such as financial calculations or scientific computations.
+ 
+-We can use `DECIMAL(P, S)` to indicate decimal types. 
++We can use `DECIMAL(P, S)` to indicate decimal types.
+ 
+ - `P` is the precision, which is the total number of digits in the number, it's range is [1, 76].
+ - `S` is the scale, which is the number of digits to the right of the decimal point, it's range is [0, P].
+@@ -17,7 +17,7 @@ If `P` is less than 38, the physical datatype of decimal is `Decimal128`, otherw
+ For a DECIMAL(P, S) data type:
+ * The minimum value is `-10^P + 1` divided by `10^S`.
+ * The maximum value is `10^P - 1` divided by `10^S`.
+- 
++
+ If you have a `DECIMAL(10, 2)` , you can store values with up to `10 digits`, with `2 digits` to the right of the decimal point. The minimum value is `-9999999.99`, and the maximum value is `9999999.99`.
+ 
+ ## Example
+@@ -49,7 +49,7 @@ DECIMAL has a set of complex rules for precision inference. Different rules will
+ 
+ - Multiplication: `DECIMAL(a, b) * DECIMAL(x, y) -> DECIMAL(a + x, b + y)`.
+ 
+-- Division: `DECIMAL(a, b) / DECIMAL(x, y) -> DECIMAL(a + y, b)`.
++- Division: `DECIMAL(a, b) / DECIMAL(x, y) -> DOUBLE`.
+ 
+ ### Comparison Operations
+ 
+part=6, len=1885, chunk_size=2000, md5=8ca664c51ed1f8a93a724581036669a5, path:https://github.com/datafuselabs/databend/pull/11453
 ------------------------------------------------------------
-S t r i n g ,   O p t i o n < S t r i n g > ) > > , 
- +         t y p :   S e s s i o n T y p e , 
-   } 
-   
-   i m p l   S e s s i o n C o n t e x t   { 
- -         p u b   f n   t r y _ c r e a t e ( s e t t i n g s :   A r c < S e t t i n g s > )   - >   R e s u l t < A r c < S e l f > >   { 
- +         p u b   f n   t r y _ c r e a t e ( s e t t i n g s :   A r c < S e t t i n g s > ,   t y p :   S e s s i o n T y p e )   - >   R e s u l t < A r c < S e l f > >   { 
-                   O k ( A r c : : n e w ( S e s s i o n C o n t e x t   { 
-                           s e t t i n g s , 
-                           a b o r t :   D e f a u l t : : d e f a u l t ( ) , 
- @ @   - 7 3 , 6   + 7 5 , 7   @ @   i m p l   S e s s i o n C o n t e x t   { 
-                           i o _ s h u t d o w n _ t x :   D e f a u l t : : d e f a u l t ( ) , 
-                           q u e r y _ c o n t e x t _ s h a r e d :   D e f a u l t : : d e f a u l t ( ) , 
-                           q u e r y _ i d s _ r e s u l t s :   D e f a u l t : : d e f a u l t ( ) , 
- +                         t y p , 
-                   } ) ) 
-           } 
-   
- @ @   - 1 4 7 , 1 2   + 1 5 0 , 1 3   @ @   i m p l   S e s s i o n C o n t e x t   { 
-                           } 
-                   } 
-   
- -                 i f   c o n f . q u e r y . m a n a g e m e n t _ m o d e   { 
- +                 i f   c o n f . q u e r y . m a n a g e m e n t _ m o d e   | |   s e l f . t y p   = =   S e s s i o n T y p e : : L o c a l   { 
-                           l e t   l o c k   =   s e l f . c u r r e n t _ t e n a n t . r e a d ( ) ; 
-                           i f   ! l o c k . i s _ e m p t y ( )   { 
-                                   r e t u r n   l o c k . c l o n e ( ) ; 
-                           } 
-                   } 
- + 
-                   c o n f . q u e r y . t e n a n t _ i d . c l o n e ( ) 
-           } 
-   
- - - -   a / s r c / q u e r y / s e r v i c e / s r c / s e s s i o n s / s
-part=7, len=2001, chunk_size=2000, md5=d8d8bb487890605e8676d7ff66d8088b, path:https://github.com/datafuselabs/databend/pull/11452
+--- a/src/query/expression/src/type_check.rs
++++ b/src/query/expression/src/type_check.rs
+@@ -30,6 +30,7 @@ use crate::types::decimal::MAX_DECIMAL256_PRECISION;
+ use crate::types::DataType;
+ use crate::types::DecimalDataType;
+ use crate::types::Number;
++use crate::types::NumberDataType;
+ use crate::AutoCastRules;
+ use crate::ColumnIndex;
+ use crate::ConstantFolder;
+@@ -494,7 +495,8 @@ pub fn can_auto_cast_to(
+             let properties = n.get_decimal_properties().unwrap();
+             properties.scale <= d.scale() && properties.precision <= d.precision()
+         }
+-        (DataType::Decimal(_), DataType::Number(n)) if n.is_float() => true,
++        // Decimal only upcast to double
++        (DataType::Decimal(_), DataType::Number(NumberDataType::Float64)) => true,
+         _ => false,
+     }
+ }--- a/src/query/expression/src/types/decimal.rs
++++ b/src/query/expression/src/types/decimal.rs
+@@ -678,25 +678,21 @@ impl DecimalDataType {
+         other.max_precision()
+     }
+ 
++    // is_divide will be mapped into float64
+     pub fn binary_result_type(
+         a: &Self,
+         b: &Self,
+         is_multiply: bool,
+-        is_divide: bool,
+         is_plus_minus: bool,
+     ) -> Result<Self> {
+         let mut scale = a.scale().max(b.scale());
+         let mut precision = a.max_result_precision(b);
+ 
+         let multiply_precision = a.precision() + b.precision();
+-        let divide_precision = a.precision() + b.scale();
+ 
+         if is_multiply {
+             scale = a.scale() + b.scale();
+             precision = precision.min(multiply_precision);
+-        } else if is_divide {
+-            scale = a.scale();
+-            precision = precision.min(divide_precision);
+         } else if is_plus_minus {
+             scale = std::cmp::max(a.scale(), b.scale());
+             // for addition/subtraction, we add 1 to the width to ensure we don't overflow
+part=7, len=8063, chunk_size=2000, md5=8e0bb5cb05a9ea30463667de23e94548, path:https://github.com/datafuselabs/databend/pull/11453
 ------------------------------------------------------------
-e s s i o n _ m g r . r s 
- + + +   b / s r c / q u e r y / s e r v i c e / s r c / s e s s i o n s / s e s s i o n _ m g r . r s 
- @ @   - 1 2 5 , 7   + 1 2 5 , 7   @ @   i m p l   S e s s i o n M a n a g e r   { 
-                           _   = >   N o n e , 
-                   } ; 
-   
- -                 l e t   s e s s i o n _ c t x   =   S e s s i o n C o n t e x t : : t r y _ c r e a t e ( s e t t i n g s ) ? ; 
- +                 l e t   s e s s i o n _ c t x   =   S e s s i o n C o n t e x t : : t r y _ c r e a t e ( s e t t i n g s ,   t y p . c l o n e ( ) ) ? ; 
-                   l e t   s e s s i o n   =   S e s s i o n : : t r y _ c r e a t e ( i d . c l o n e ( ) ,   t y p . c l o n e ( ) ,   s e s s i o n _ c t x ,   m y s q l _ c o n n _ i d ) ? ; 
-   
-                   l e t   m u t   s e s s i o n s   =   s e l f . a c t i v e _ s e s s i o n s . w r i t e ( ) ; 
- - - -   a / s r c / q u e r y / s e r v i c e / s r c / s e s s i o n s / s e s s i o n _ t y p e . r s 
- + + +   b / s r c / q u e r y / s e r v i c e / s r c / s e s s i o n s / s e s s i o n _ t y p e . r s 
- @ @   - 1 4 , 7   + 1 4 , 7   @ @ 
-   
-   u s e   s t d : : f m t ; 
-   
- - # [ d e r i v e ( C l o n e ) ] 
- + # [ d e r i v e ( C l o n e ,   P a r t i a l E q ) ] 
-   p u b   e n u m   S e s s i o n T y p e   { 
-           C l i c k h o u s e , 
-           M y S Q L , 
- - - -   a / s r c / q u e r y / s e r v i c e / t e s t s / i t / s e s s i o n s / s e s s i o n _ c o n t e x t . r s 
- + + +   b / s r c / q u e r y / s e r v i c e / t e s t s / i t / s e s s i o n s / s e s s i o n _ c o n t e x t . r s 
- @ @   - 1 9 , 1 1   + 1 9 , 1 2   @ @   u s e   c o m m o n _ e x c e p t i o n : : R e s u l t ; 
-   u s e   c o m m o n _ m e t a _ a p p : : p r i n c i p a l : : U s e r I n f o ; 
-   u s e   c o m m o n _ s e t t i n g s : : S e t t i n g s ; 
-   u s e   d a t a b e n d _ q u e r y : : s e s s i o n s : : S e s s i o n C o n t e x t ; 
- + u s e   d a t a b e n d _ q
-part=8, len=712, chunk_size=2000, md5=bdda0bc99c820e5ab63fb4f44f3c63f1, path:https://github.com/datafuselabs/databend/pull/11452
+--- a/src/query/functions/src/scalars/decimal.rs
++++ b/src/query/functions/src/scalars/decimal.rs
+@@ -39,17 +39,17 @@ use ethnum::i256;
+ use num_traits::AsPrimitive;
+ 
+ macro_rules! op_decimal {
+-    ($a: expr, $b: expr, $ctx: expr, $return_type: expr, $op: ident, $scale_a: expr, $scale_b: expr, $is_divide: expr) => {
++    ($a: expr, $b: expr, $ctx: expr, $return_type: expr, $op: ident, $scale_a: expr, $scale_b: expr) => {
+         match $return_type {
+             DataType::Decimal(d) => match d {
+                 DecimalDataType::Decimal128(size) => {
+                     binary_decimal!(
+-                        $a, $b, $ctx, $op, *size, $scale_a, $scale_b, i128, Decimal128, $is_divide
++                        $a, $b, $ctx, $op, *size, $scale_a, $scale_b, i128, Decimal128
+                     )
+                 }
+                 DecimalDataType::Decimal256(size) => {
+                     binary_decimal!(
+-                        $a, $b, $ctx, $op, *size, $scale_a, $scale_b, i256, Decimal256, $is_divide
++                        $a, $b, $ctx, $op, *size, $scale_a, $scale_b, i256, Decimal256
+                     )
+                 }
+             },
+@@ -116,11 +116,10 @@ macro_rules! compare_decimal {
+ }
+ 
+ macro_rules! binary_decimal {
+-    ($a: expr, $b: expr, $ctx: expr, $op: ident, $size: expr, $scale_a: expr, $scale_b: expr, $type_name: ty, $decimal_type: tt, $is_divide: expr) => {{
++    ($a: expr, $b: expr, $ctx: expr, $op: ident, $size: expr, $scale_a: expr, $scale_b: expr, $type_name: ty, $decimal_type: tt) => {{
+         let scale_a = <$type_name>::e($scale_a);
+         let scale_b = <$type_name>::e($scale_b);
+ 
+-        let zero = <$type_name>::zero();
+         let one = <$type_name>::one();
+         let min_for_precision = <$type_name>::min_for_precision($size.precision);
+         let max_for_precision = <$type_name>::max_for_precision($size.precision);
+@@ -133,17 +132,12 @@ macro_rules! binary_decimal {
+                 let mut result = Vec::with_capacity(buffer_a.len());
+ 
+                 for (a, b) in buffer_a.iter().zip(buffer_b.iter()) {
+-                    if $is_divide && std::intrinsics::unlikely(*b == zero) {
+-                        $ctx.set_error(result.len(), "divided by zero");
++                    let t = (a * scale_a).$op(b) / scale_b;
++                    if t < min_for_precision || t > max_for_precision {
++                        $ctx.set_error(result.len(), "Decimal overflow");
+                         result.push(one);
+                     } else {
+-                        let t = (a * scale_a).$op(b) / scale_b;
+-                        if t < min_for_precision || t > max_for_precision {
+-                            $ctx.set_error(result.len(), "Decimal overflow");
+-                            result.push(one);
+-                        } else {
+-                            result.push(t);
+-                        }
++                        result.push(t);
+                     }
+                 }
+                 Value::Column(Column::Decimal(DecimalColumn::$decimal_type(
+@@ -158,18 +152,13 @@ macro_rules! binary_decimal {
+             ) => {
+                 let mut result = Vec::with_capacity(buffer.len());
+ 
+-                if $is_divide && std::intrinsics::unlikely(*b == zero) {
+-                    $ctx.set_error(result.len(), "divided by zero");
+-                    result.push(one);
+-                } else {
+-                    for a in buffer.iter() {
+-                        let t = (a * scale_a).$op(b) / scale_b;
+-                        if t < min_for_precision || t > max_for_precision {
+-                            $ctx.set_error(result.len(), "Decimal overflow");
+-                            result.push(one);
+-                        } else {
+-                            result.push(t);
+-                        }
++                for a in buffer.iter() {
++                    let t = (a * scale_a).$op(b) / scale_b;
++                    if t < min_for_precision || t > max_for_precision {
++                        $ctx.set_error(result.len(), "Decimal overflow");
++                        result.push(one);
++                    } else {
++                        result.push(t);
+                     }
+                 }
+ 
+@@ -186,17 +175,12 @@ macro_rules! binary_decimal {
+                 let mut result = Vec::with_capacity(buffer.len());
+ 
+                 for b in buffer.iter() {
+-                    if $is_divide && std::intrinsics::unlikely(*b == zero) {
+-                        $ctx.set_error(result.len(), "divided by zero");
++                    let t = (a * scale_a).$op(b) / scale_b;
++                    if t < min_for_precision || t > max_for_precision {
++                        $ctx.set_error(result.len(), "Decimal overflow");
+                         result.push(one);
+                     } else {
+-                        let t = (a * scale_a).$op(b) / scale_b;
+-                        if t < min_for_precision || t > max_for_precision {
+-                            $ctx.set_error(result.len(), "Decimal overflow");
+-                            result.push(one);
+-                        } else {
+-                            result.push(t);
+-                        }
++                        result.push(t);
+                     }
+                 }
+                 Value::Column(Column::Decimal(DecimalColumn::$decimal_type(
+@@ -209,14 +193,9 @@ macro_rules! binary_decimal {
+                 ValueRef::Scalar(ScalarRef::Decimal(DecimalScalar::$decimal_type(a, _))),
+                 ValueRef::Scalar(ScalarRef::Decimal(DecimalScalar::$decimal_type(b, _))),
+             ) => {
+-                let mut t = zero;
+-                if $is_divide && std::intrinsics::unlikely(*b == zero) {
+-                    $ctx.set_error(0, "divided by zero");
+-                } else {
+-                    t = (a * scale_a).$op(b) / scale_b;
+-                    if t < min_for_precision || t > max_for_precision {
+-                        $ctx.set_error(0, "Decimal overflow");
+-                    }
++                let t = (a * scale_a).$op(b) / scale_b;
++                if t < min_for_precision || t > max_for_precision {
++                    $ctx.set_error(0, "Decimal overflow");
+                 }
+                 Value::Scalar(Scalar::Decimal(DecimalScalar::$decimal_type(t, $size)))
+             }
+@@ -293,24 +272,20 @@ macro_rules! register_decimal_binary_op {
+                 DecimalDataType::from_size(args_type[1].get_decimal_properties()?).unwrap();
+ 
+             let is_multiply = $name == "multiply";
+-            let is_divide = $name == "divide";
+-            let is_plus_minus = !is_multiply && !is_divide;
++            let is_plus_minus = !is_multiply;
+             let return_type = DecimalDataType::binary_result_type(
+                 &decimal_a,
+                 &decimal_b,
+                 is_multiply,
+-                is_divide,
+                 is_plus_minus,
+             )
+             .ok()?;
+ 
+-            let mut scale_a = 0;
++            let scale_a = 0;
+             let mut scale_b = 0;
+ 
+             if is_multiply {
+                 scale_b = return_type.scale() as u32;
+-            } else if is_divide {
+-                scale_a = return_type.scale() as u32;
+             }
+ 
+             let function = Function {
+@@ -343,8 +318,7 @@ macro_rules! register_decimal_binary_op {
+                             &DataType::Decimal(return_type.clone()),
+                             $op,
+                             scale_a,
+-                            scale_b,
+-                            is_divide
++                            scale_b
+                         )
+                     }),
+                 },
+@@ -371,7 +345,6 @@ pub(crate) fn register_decimal_arithmetic(registry: &mut FunctionRegistry) {
+     // TODO checked overflow by default
+     register_decimal_binary_op!(registry, "plus", add);
+     register_decimal_binary_op!(registry, "minus", sub);
+-    register_decimal_binary_op!(registry, "divide", div);
+     register_decimal_binary_op!(registry, "multiply", mul);
+ }
+ 
+part=8, len=2663, chunk_size=2000, md5=090716aa82719797f9a39074a3a465af, path:https://github.com/datafuselabs/databend/pull/11455
 ------------------------------------------------------------
-u e r y : : s e s s i o n s : : S e s s i o n T y p e ; 
-   
-   # [ t o k i o : : t e s t ( f l a v o r   =   " m u l t i _ t h r e a d " ) ] 
-   a s y n c   f n   t e s t _ s e s s i o n _ c o n t e x t ( )   - >   R e s u l t < ( ) >   { 
-           l e t   s e t t i n g s   =   S e t t i n g s : : c r e a t e ( " d e f a u l t " . t o _ s t r i n g ( ) ) ; 
- -         l e t   s e s s i o n _ c t x   =   S e s s i o n C o n t e x t : : t r y _ c r e a t e ( s e t t i n g s ) ? ; 
- +         l e t   s e s s i o n _ c t x   =   S e s s i o n C o n t e x t : : t r y _ c r e a t e ( s e t t i n g s ,   S e s s i o n T y p e : : M y S Q L ) ? ; 
-   
-           / /   A b o r t   s t a t u s . 
-           { 
-part=9, len=2001, chunk_size=2000, md5=9b266faf0177de941cff326889e0771d, path:https://github.com/datafuselabs/databend/pull/11453
+--- a/tests/sqllogictests/suites/base/11_data_type/11_0006_data_type_decimal
++++ b/tests/sqllogictests/suites/base/11_data_type/11_0006_data_type_decimal
+@@ -226,27 +226,27 @@ SELECT CAST(1.23 AS DECIMAL(76, 2)) * CAST(987654321.34 AS DECIMAL(20, 2)) AS re
+ query I
+ SELECT CAST(4.56 AS DECIMAL(6, 2)) / CAST(1.23 AS DECIMAL(6, 2)) AS result;
+ ----
+-3.70
++3.7073170731707314
+ 
+ query I
+ SELECT CAST(4.56 AS DECIMAL(46, 2)) / CAST(1.23 AS DECIMAL(46, 2)) AS result;
+ ----
+-3.70
++3.7073170731707314
+ 
+ query I
+ SELECT CAST(987654321.34 AS DECIMAL(20, 2)) / CAST(123456789.12 AS DECIMAL(20, 2)) AS result;
+ ----
+-8.00
++8.000000067878
+ 
+ query I
+ SELECT CAST(987654321.34 AS DECIMAL(52, 2)) / CAST(123456789.12 AS DECIMAL(52, 2)) AS result;
+ ----
+-8.00
++8.000000067878
+ 
+ query I
+ SELECT CAST(987654321.34 AS DECIMAL(20, 2)) / CAST(1.23 AS DECIMAL(6, 2)) AS result;
+ ----
+-802970992.95
++802970992.9593496
+ 
+ onlyif mysql
+ statement error 1068
+@@ -255,7 +255,7 @@ SELECT CAST(987654321.34 AS DECIMAL(76, 2)) / CAST(1.23 AS DECIMAL(6, 2)) AS res
+ query I
+ SELECT CAST(987654321.34 AS DECIMAL(76, 2)) / CAST(1.23 AS DECIMAL(76, 2)) AS result;
+ ----
+-802970992.95
++802970992.9593496
+ 
+ ## negative
+ 
+@@ -292,12 +292,12 @@ SELECT CAST(-1.23 AS DECIMAL(76, 2)) * CAST(-4.56 AS DECIMAL(76, 2)) AS result;
+ query I
+ SELECT CAST(-4.56 AS DECIMAL(6, 2)) / CAST(-1.23 AS DECIMAL(6, 2)) AS result;
+ ----
+-3.70
++3.7073170731707314
+ 
+ query I
+ SELECT CAST(-4.56 AS DECIMAL(76, 2)) / CAST(-1.23 AS DECIMAL(76, 2)) AS result;
+ ----
+-3.70
++3.7073170731707314
+ 
+ query I
+ SELECT MIN(CAST(-4.56 AS DECIMAL(6, 2)))
+@@ -352,17 +352,17 @@ SELECT ANY(CAST(2.34 AS DECIMAL(76, 2)))
+ query TTTT
+ select typeof(a+b), typeof(a-b), typeof(a*b), typeof(a/b) from (select 3::Decimal(13,2) a , 3.1::Decimal(8,3) b);
+ ----
+-DECIMAL(15, 3) DECIMAL(15, 3) DECIMAL(21, 5) DECIMAL(16, 2)
++DECIMAL(15, 3) DECIMAL(15, 3) DECIMAL(21, 5) DOUBLE
+ 
+ query TTTT
+ select typeof(a+b), typeof(a-b), typeof(a*b), typeof(a/b) from (select 3::Decimal(76,2) a , 3.1::Decimal(76,3) b);
+ ----
+-DECIMAL(76, 3) DECIMAL(76, 3) DECIMAL(76, 5) DECIMAL(76, 2)
++DECIMAL(76, 3) DECIMAL(76, 3) DECIMAL(76, 5) DOUBLE
+ 
+ query TTTT
+ select typeof(a+b), typeof(a-b), typeof(a*b), typeof(a/b) from (select 3::Decimal(39,2) a , 3.1::Decimal(39,3) b);
+ ----
+-DECIMAL(41, 3) DECIMAL(41, 3) DECIMAL(76, 5) DECIMAL(42, 2)
++DECIMAL(41, 3) DECIMAL(41, 3) DECIMAL(76, 5) DOUBLE
+ 
+ ## compare
+ 
+@@ -865,7 +865,7 @@ NULL
+ query T
+ select c1/c1 from t2 order by c1 asc
+ ----
+-1.00
++1.0
+ NULL
+ 
+ 
+@@ -896,7 +896,7 @@ query T
+ select if(number=1,number+1,null)/if(number=1,(number+1)::decimal(7,2),null) from numbers(2)
+ ----
+ NULL
+-1
++1.0
+ 
+ 
+ 
+part=9, len=4157, chunk_size=2000, md5=59e32c63af68c95329fb33a3d906aa74, path:https://github.com/datafuselabs/databend/pull/11455
 ------------------------------------------------------------
-- - -   a / d o c s / d o c / 1 3 - s q l - r e f e r e n c e / 1 0 - d a t a - t y p e s / 1 1 - d a t a - t y p e - d e c i m a l - t y p e s . m d 
- + + +   b / d o c s / d o c / 1 3 - s q l - r e f e r e n c e / 1 0 - d a t a - t y p e s / 1 1 - d a t a - t y p e - d e c i m a l - t y p e s . m d 
- @ @   - 7 , 7   + 7 , 7   @ @   d e s c r i p t i o n :     D e c i m a l   t y p e s   a r e   h i g h - p r e c i s i o n   n u m e r i c   v a l u e s   t o   b e   s t o r e d   a n d   m 
-   
-   T h e   D e c i m a l   t y p e   i s   u s e f u l   f o r   a p p l i c a t i o n s   t h a t   r e q u i r e   e x a c t   d e c i m a l   r e p r e s e n t a t i o n s ,   s u c h   a s   f i n a n c i a l   c a l c u l a t i o n s   o r   s c i e n t i f i c   c o m p u t a t i o n s . 
-   
- - W e   c a n   u s e   ` D E C I M A L ( P ,   S ) `   t o   i n d i c a t e   d e c i m a l   t y p e s .   
- + W e   c a n   u s e   ` D E C I M A L ( P ,   S ) `   t o   i n d i c a t e   d e c i m a l   t y p e s . 
-   
-   -   ` P `   i s   t h e   p r e c i s i o n ,   w h i c h   i s   t h e   t o t a l   n u m b e r   o f   d i g i t s   i n   t h e   n u m b e r ,   i t ' s   r a n g e   i s   [ 1 ,   7 6 ] . 
-   -   ` S `   i s   t h e   s c a l e ,   w h i c h   i s   t h e   n u m b e r   o f   d i g i t s   t o   t h e   r i g h t   o f   t h e   d e c i m a l   p o i n t ,   i t ' s   r a n g e   i s   [ 0 ,   P ] . 
- @ @   - 1 7 , 7   + 1 7 , 7   @ @   I f   ` P `   i s   l e s s   t h a n   3 8 ,   t h e   p h y s i c a l   d a t a t y p e   o f   d e c i m a l   i s   ` D e c i m a l 1 2 8 ` ,   o t h e r w 
-   F o r   a   D E C I M A L ( P ,   S )   d a t a   t y p e : 
-   *   T h e   m i n i m u m   v a l u e   i s   ` - 1 0 ^ P   +   1 `   d i v i d e d   b y   ` 1 0 ^ S ` . 
-   *   T h e   m a x i m u m   v a l u e   i s   ` 1 0 ^ P   -   1 `   d i v i d e d   b y   ` 1 0 ^ S ` . 
- -   
- + 
-   I f   y o u   h a v e   a   ` D E C I M A L ( 1 0 ,   2 ) `   ,   y
-part=10, len=2001, chunk_size=2000, md5=17d5fb53f386eecddb958ab43928cd97, path:https://github.com/datafuselabs/databend/pull/11453
+--- a/src/query/functions/src/scalars/datetime.rs
++++ b/src/query/functions/src/scalars/datetime.rs
+@@ -121,7 +121,8 @@ fn int64_domain_to_timestamp_domain<T: AsPrimitive<i64>>(
+ }
+ 
+ fn register_string_to_timestamp(registry: &mut FunctionRegistry) {
+-    registry.register_aliases("to_timestamp", &["to_datetime"]);
++    registry.register_aliases("to_date", &["str_to_date"]);
++    registry.register_aliases("to_timestamp", &["to_datetime", "str_to_timestamp"]);
+     registry.register_aliases("try_to_timestamp", &["try_to_datetime"]);
+ 
+     registry.register_passthrough_nullable_1_arg::<StringType, TimestampType, _, _>(
+@@ -151,7 +152,7 @@ fn register_string_to_timestamp(registry: &mut FunctionRegistry) {
+     }
+ 
+     registry.register_combine_nullable_2_arg::<StringType, StringType, TimestampType, _, _>(
+-        "str_to_timestamp",
++        "to_timestamp",
+         |_, _| FunctionDomain::MayThrow,
+         vectorize_with_builder_2_arg::<StringType, StringType, NullableType<TimestampType>>(
+             |timestamp, format, output, ctx| {
+@@ -179,22 +180,25 @@ fn register_string_to_timestamp(registry: &mut FunctionRegistry) {
+     );
+ 
+     registry.register_combine_nullable_2_arg::<StringType, StringType, DateType, _, _>(
+-        "str_to_date",
++        "to_date",
+         |_, _| FunctionDomain::MayThrow,
+         vectorize_with_builder_2_arg::<StringType, StringType, NullableType<DateType>>(
+-            |date, format, output, _| {
++            |date, format, output, ctx| {
+                 if format.is_empty() {
+                     output.push_null();
+                 } else {
+                     match (std::str::from_utf8(date), std::str::from_utf8(format)) {
+-                        (Ok(date), Ok(format)) => {
+-                            if let Ok(res) = NaiveDate::parse_from_str(date, format) {
++                        (Ok(date), Ok(format)) => match NaiveDate::parse_from_str(date, format) {
++                            Ok(res) => {
+                                 output.push(res.num_days_from_ce() - EPOCH_DAYS_FROM_CE);
+-                            } else {
++                            }
++                            Err(e) => {
++                                ctx.set_error(output.len(), e.to_string());
+                                 output.push_null();
+                             }
+-                        }
+-                        _ => {
++                        },
++                        (Err(e), _) | (_, Err(e)) => {
++                            ctx.set_error(output.len(), e.to_string());
+                             output.push_null();
+                         }
+                     }
+@@ -380,8 +384,9 @@ fn register_number_to_date(registry: &mut FunctionRegistry) {
+ }
+ 
+ fn register_to_string(registry: &mut FunctionRegistry) {
++    registry.register_aliases("to_string", &["date_format"]);
+     registry.register_combine_nullable_2_arg::<TimestampType, StringType, StringType, _, _>(
+-        "date_format",
++        "to_string",
+         |_, _| FunctionDomain::MayThrow,
+         vectorize_with_builder_2_arg::<TimestampType, StringType, NullableType<StringType>>(
+             |date, format, output, ctx| {
+@@ -389,11 +394,15 @@ fn register_to_string(registry: &mut FunctionRegistry) {
+                     output.push_null();
+                 } else {
+                     let ts = date.to_timestamp(ctx.func_ctx.tz.tz);
+-                    if let Ok(format) = std::str::from_utf8(format) {
+-                        let res = ts.format(format).to_string();
+-                        output.push(res.as_bytes());
+-                    } else {
+-                        output.push_null();
++                    match std::str::from_utf8(format) {
++                        Ok(format) => {
++                            let res = ts.format(format).to_string();
++                            output.push(res.as_bytes());
++                        }
++                        Err(e) => {
++                            ctx.set_error(output.len(), e.to_string());
++                            output.push_null();
++                        }
+                     }
+                 }
+             },
+part=10, len=1186, chunk_size=2000, md5=db8b509f3d07083aed737b25b53b34be, path:https://github.com/datafuselabs/databend/pull/11457
 ------------------------------------------------------------
-o u   c a n   s t o r e   v a l u e s   w i t h   u p   t o   ` 1 0   d i g i t s ` ,   w i t h   ` 2   d i g i t s `   t o   t h e   r i g h t   o f   t h e   d e c i m a l   p o i n t .   T h e   m i n i m u m   v a l u e   i s   ` - 9 9 9 9 9 9 9 . 9 9 ` ,   a n d   t h e   m a x i m u m   v a l u e   i s   ` 9 9 9 9 9 9 9 . 9 9 ` . 
-   
-   # #   E x a m p l e 
- @ @   - 4 9 , 7   + 4 9 , 7   @ @   D E C I M A L   h a s   a   s e t   o f   c o m p l e x   r u l e s   f o r   p r e c i s i o n   i n f e r e n c e .   D i f f e r e n t   r u l e s   w i l l 
-   
-   -   M u l t i p l i c a t i o n :   ` D E C I M A L ( a ,   b )   *   D E C I M A L ( x ,   y )   - >   D E C I M A L ( a   +   x ,   b   +   y ) ` . 
-   
- - -   D i v i s i o n :   ` D E C I M A L ( a ,   b )   /   D E C I M A L ( x ,   y )   - >   D E C I M A L ( a   +   y ,   b ) ` . 
- + -   D i v i s i o n :   ` D E C I M A L ( a ,   b )   /   D E C I M A L ( x ,   y )   - >   D O U B L E ` . 
-   
-   # # #   C o m p a r i s o n   O p e r a t i o n s 
-   
- - - -   a / s r c / q u e r y / e x p r e s s i o n / s r c / t y p e _ c h e c k . r s 
- + + +   b / s r c / q u e r y / e x p r e s s i o n / s r c / t y p e _ c h e c k . r s 
- @ @   - 3 0 , 6   + 3 0 , 7   @ @   u s e   c r a t e : : t y p e s : : d e c i m a l : : M A X _ D E C I M A L 2 5 6 _ P R E C I S I O N ; 
-   u s e   c r a t e : : t y p e s : : D a t a T y p e ; 
-   u s e   c r a t e : : t y p e s : : D e c i m a l D a t a T y p e ; 
-   u s e   c r a t e : : t y p e s : : N u m b e r ; 
- + u s e   c r a t e : : t y p e s : : N u m b e r D a t a T y p e ; 
-   u s e   c r a t e : : A u t o C a s t R u l e s ; 
-   u s e   c r a t e : : C o l u m n I n d e x ; 
-   u s e   c r a t e : : C o n s t a n t F o l d e r ; 
- @ @   - 4 9 4 , 7   + 4 9 5 , 8   @ @   p u b   f n   c a n _ a u t o _ c a s t _ t o ( 
-                           l e t   p r o p e r t i e s   =   n . g e t _ d e c i m a l _ p r o p e r t i e s ( ) . u n w r a p ( ) ; 
-      
-part=11, len=2001, chunk_size=2000, md5=93de0d17e85bd8543ef9bfaf84a406ac, path:https://github.com/datafuselabs/databend/pull/11453
+--- a/tests/sqllogictests/suites/query/02_function/02_0012_function_datetimes
++++ b/tests/sqllogictests/suites/query/02_function/02_0012_function_datetimes
+@@ -894,7 +894,7 @@ statement ok
+ drop table t
+ 
+ query T
+-select date_format('2022-02-02', '精彩的%Y年，美丽的%mmonth,激动の%dd');
++select to_string('2022-02-02', '精彩的%Y年，美丽的%mmonth,激动の%dd');
+ ----
+ 精彩的2022年，美丽的02month,激动の02d
+ 
+@@ -903,6 +903,11 @@ select str_to_date('精彩的2022年，美丽的02month,激动の02d', '精彩
+ ----
+ 2022-02-02
+ 
++query T
++select to_date('精彩的2022年，美丽的02month,激动の02d', '精彩的%Y年，美丽的%mmonth,激动の%dd');
++----
++2022-02-02
++
+ statement error 1001
+ select date_format('', '');
+ 
+@@ -925,6 +930,6 @@ select str_to_timestamp('2022年02月04日，8时58分59秒,时区：+0000', '%Y
+ 2022-02-04 08:58:59.000000
+ 
+ query T
+-select str_to_timestamp('2022年02月04日，8时58分59秒,时区：+0800', '%Y年%m月%d日，%H时%M分%S秒,时区：%z');
++select to_timestamp('2022年02月04日，8时58分59秒,时区：+0800', '%Y年%m月%d日，%H时%M分%S秒,时区：%z');
+ ----
+ 2022-02-04 00:58:59.000000
+part=11, len=1745, chunk_size=2000, md5=3916c0533adb371270deff40ca1c236b, path:https://github.com/datafuselabs/databend/pull/11457
 ------------------------------------------------------------
-                    p r o p e r t i e s . s c a l e   < =   d . s c a l e ( )   & &   p r o p e r t i e s . p r e c i s i o n   < =   d . p r e c i s i o n ( ) 
-                   } 
- -                 ( D a t a T y p e : : D e c i m a l ( _ ) ,   D a t a T y p e : : N u m b e r ( n ) )   i f   n . i s _ f l o a t ( )   = >   t r u e , 
- +                 / /   D e c i m a l   o n l y   u p c a s t   t o   d o u b l e 
- +                 ( D a t a T y p e : : D e c i m a l ( _ ) ,   D a t a T y p e : : N u m b e r ( N u m b e r D a t a T y p e : : F l o a t 6 4 ) )   = >   t r u e , 
-                   _   = >   f a l s e , 
-           } 
-   } 
- - - -   a / s r c / q u e r y / e x p r e s s i o n / s r c / t y p e s / d e c i m a l . r s 
- + + +   b / s r c / q u e r y / e x p r e s s i o n / s r c / t y p e s / d e c i m a l . r s 
- @ @   - 6 7 8 , 2 5   + 6 7 8 , 2 1   @ @   i m p l   D e c i m a l D a t a T y p e   { 
-                   o t h e r . m a x _ p r e c i s i o n ( ) 
-           } 
-   
- +         / /   i s _ d i v i d e   w i l l   b e   m a p p e d   i n t o   f l o a t 6 4 
-           p u b   f n   b i n a r y _ r e s u l t _ t y p e ( 
-                   a :   & S e l f , 
-                   b :   & S e l f , 
-                   i s _ m u l t i p l y :   b o o l , 
- -                 i s _ d i v i d e :   b o o l , 
-                   i s _ p l u s _ m i n u s :   b o o l , 
-           )   - >   R e s u l t < S e l f >   { 
-                   l e t   m u t   s c a l e   =   a . s c a l e ( ) . m a x ( b . s c a l e ( ) ) ; 
-                   l e t   m u t   p r e c i s i o n   =   a . m a x _ r e s u l t _ p r e c i s i o n ( b ) ; 
-   
-                   l e t   m u l t i p l y _ p r e c i s i o n   =   a . p r e c i s i o n ( )   +   b . p r e c i s i o n ( ) ; 
- -                 l e t   d i v i d e _ p r e c i s i o n   =   a . p r e c i s i o n ( )   +   b . s c a l e ( ) ; 
-   
-                   i f   i s _ m u l t i p l y   { 
-              
-part=12, len=804, chunk_size=2000, md5=c82cfc33ac86d9431653a95ca147e5ce, path:https://github.com/datafuselabs/databend/pull/11453
-------------------------------------------------------------
-            s c a l e   =   a . s c a l e ( )   +   b . s c a l e ( ) ; 
-                           p r e c i s i o n   =   p r e c i s i o n . m i n ( m u l t i p l y _ p r e c i s i o n ) ; 
- -                 }   e l s e   i f   i s _ d i v i d e   { 
- -                         s c a l e   =   a . s c a l e ( ) ; 
- -                         p r e c i s i o n   =   p r e c i s i o n . m i n ( d i v i d e _ p r e c i s i o n ) ; 
-                   }   e l s e   i f   i s _ p l u s _ m i n u s   { 
-                           s c a l e   =   s t d : : c m p : : m a x ( a . s c a l e ( ) ,   b . s c a l e ( ) ) ; 
-                           / /   f o r   a d d i t i o n / s u b t r a c t i o n ,   w e   a d d   1   t o   t h e   w i d t h   t o   e n s u r e   w e   d o n ' t   o v e r f l o w 
-part=13, len=2001, chunk_size=2000, md5=b8ce29a823bbd46962feaae34ba43387, path:https://github.com/datafuselabs/databend/pull/11453
-------------------------------------------------------------
-- - -   a / s r c / q u e r y / f u n c t i o n s / s r c / s c a l a r s / d e c i m a l . r s 
- + + +   b / s r c / q u e r y / f u n c t i o n s / s r c / s c a l a r s / d e c i m a l . r s 
- @ @   - 3 9 , 1 7   + 3 9 , 1 7   @ @   u s e   e t h n u m : : i 2 5 6 ; 
-   u s e   n u m _ t r a i t s : : A s P r i m i t i v e ; 
-   
-   m a c r o _ r u l e s !   o p _ d e c i m a l   { 
- -         ( $ a :   e x p r ,   $ b :   e x p r ,   $ c t x :   e x p r ,   $ r e t u r n _ t y p e :   e x p r ,   $ o p :   i d e n t ,   $ s c a l e _ a :   e x p r ,   $ s c a l e _ b :   e x p r ,   $ i s _ d i v i d e :   e x p r )   = >   { 
- +         ( $ a :   e x p r ,   $ b :   e x p r ,   $ c t x :   e x p r ,   $ r e t u r n _ t y p e :   e x p r ,   $ o p :   i d e n t ,   $ s c a l e _ a :   e x p r ,   $ s c a l e _ b :   e x p r )   = >   { 
-                   m a t c h   $ r e t u r n _ t y p e   { 
-                           D a t a T y p e : : D e c i m a l ( d )   = >   m a t c h   d   { 
-                                   D e c i m a l D a t a T y p e : : D e c i m a l 1 2 8 ( s i z e )   = >   { 
-                                           b i n a r y _ d e c i m a l ! ( 
- -                                                 $ a ,   $ b ,   $ c t x ,   $ o p ,   * s i z e ,   $ s c a l e _ a ,   $ s c a l e _ b ,   i 1 2 8 ,   D e c i m a l 1 2 8 ,   $ i s _ d i v i d e 
- +                                                 $ a ,   $ b ,   $ c t x ,   $ o p ,   * s i z e ,   $ s c a l e _ a ,   $ s c a l e _ b ,   i 1 2 8 ,   D e c i m a l 1 2 8 
-                                           ) 
-                                   } 
-                                   D e c i m a l D a t a T y p e : : D e c i m a l 2 5 6 ( s i z e )   = >   { 
-                                           b i n a r y _ d e c i m a l ! ( 
- -                                                 $ a ,   $ b ,   $ c t x ,   $ o p ,   * s i z e ,   $ s c a l e _ a ,   $ s c a l e _ b ,   i 2 5 6 ,   D e
-part=14, len=2001, chunk_size=2000, md5=dcaf6516e14b0f5756c2d0c324c89210, path:https://github.com/datafuselabs/databend/pull/11453
-------------------------------------------------------------
-c i m a l 2 5 6 ,   $ i s _ d i v i d e 
- +                                                 $ a ,   $ b ,   $ c t x ,   $ o p ,   * s i z e ,   $ s c a l e _ a ,   $ s c a l e _ b ,   i 2 5 6 ,   D e c i m a l 2 5 6 
-                                           ) 
-                                   } 
-                           } , 
- @ @   - 1 1 6 , 1 1   + 1 1 6 , 1 0   @ @   m a c r o _ r u l e s !   c o m p a r e _ d e c i m a l   { 
-   } 
-   
-   m a c r o _ r u l e s !   b i n a r y _ d e c i m a l   { 
- -         ( $ a :   e x p r ,   $ b :   e x p r ,   $ c t x :   e x p r ,   $ o p :   i d e n t ,   $ s i z e :   e x p r ,   $ s c a l e _ a :   e x p r ,   $ s c a l e _ b :   e x p r ,   $ t y p e _ n a m e :   t y ,   $ d e c i m a l _ t y p e :   t t ,   $ i s _ d i v i d e :   e x p r )   = >   { { 
- +         ( $ a :   e x p r ,   $ b :   e x p r ,   $ c t x :   e x p r ,   $ o p :   i d e n t ,   $ s i z e :   e x p r ,   $ s c a l e _ a :   e x p r ,   $ s c a l e _ b :   e x p r ,   $ t y p e _ n a m e :   t y ,   $ d e c i m a l _ t y p e :   t t )   = >   { { 
-                   l e t   s c a l e _ a   =   < $ t y p e _ n a m e > : : e ( $ s c a l e _ a ) ; 
-                   l e t   s c a l e _ b   =   < $ t y p e _ n a m e > : : e ( $ s c a l e _ b ) ; 
-   
- -                 l e t   z e r o   =   < $ t y p e _ n a m e > : : z e r o ( ) ; 
-                   l e t   o n e   =   < $ t y p e _ n a m e > : : o n e ( ) ; 
-                   l e t   m i n _ f o r _ p r e c i s i o n   =   < $ t y p e _ n a m e > : : m i n _ f o r _ p r e c i s i o n ( $ s i z e . p r e c i s i o n ) ; 
-                   l e t   m a x _ f o r _ p r e c i s i o n   =   < $ t y p e _ n a m e > : : m a x _ f o r _ p r e c i s i o n ( $ s i z e . p r e c i s i o n ) ; 
- @ @   - 1 3 3 , 1 7   + 1 3 2 , 1 2   @ @   m a c r o _ r u l e s !   b i n a r y _ d e c i m a l   { 
-                                   l e t   m u t   r e s u l t   =   V e c : : w i t h _ c a p a c i t y (
-part=15, len=2001, chunk_size=2000, md5=a2c3e3a03794c21e637aa0b7afd5e863, path:https://github.com/datafuselabs/databend/pull/11453
-------------------------------------------------------------
-b u f f e r _ a . l e n ( ) ) ; 
-   
-                                   f o r   ( a ,   b )   i n   b u f f e r _ a . i t e r ( ) . z i p ( b u f f e r _ b . i t e r ( ) )   { 
- -                                         i f   $ i s _ d i v i d e   & &   s t d : : i n t r i n s i c s : : u n l i k e l y ( * b   = =   z e r o )   { 
- -                                                 $ c t x . s e t _ e r r o r ( r e s u l t . l e n ( ) ,   " d i v i d e d   b y   z e r o " ) ; 
- +                                         l e t   t   =   ( a   *   s c a l e _ a ) . $ o p ( b )   /   s c a l e _ b ; 
- +                                         i f   t   <   m i n _ f o r _ p r e c i s i o n   | |   t   >   m a x _ f o r _ p r e c i s i o n   { 
- +                                                 $ c t x . s e t _ e r r o r ( r e s u l t . l e n ( ) ,   " D e c i m a l   o v e r f l o w " ) ; 
-                                                   r e s u l t . p u s h ( o n e ) ; 
-                                           }   e l s e   { 
- -                                                 l e t   t   =   ( a   *   s c a l e _ a ) . $ o p ( b )   /   s c a l e _ b ; 
- -                                                 i f   t   <   m i n _ f o r _ p r e c i s i o n   | |   t   >   m a x _ f o r _ p r e c i s i o n   { 
- -                                                         $ c t x . s e t _ e r r o r ( r e s u l t . l e n ( ) ,   " D e c i m a l   o v e r f l o w " ) ; 
- -                                                         r e s u l t . p u s h ( o n e ) ; 
- -                                                 }   e l s e   { 
- -                                                         r e s u l t . p u s h ( t ) ; 
- -                                                 } 
- +                                                 r e s u l t . p u s h ( t ) ; 
-                                           } 
-                                   } 
-                                   V a l u
-part=16, len=2001, chunk_size=2000, md5=4848cfe2b2a3a44ac43fa1402090b2ee, path:https://github.com/datafuselabs/databend/pull/11453
-------------------------------------------------------------
-e : : C o l u m n ( C o l u m n : : D e c i m a l ( D e c i m a l C o l u m n : : $ d e c i m a l _ t y p e ( 
- @ @   - 1 5 8 , 1 8   + 1 5 2 , 1 3   @ @   m a c r o _ r u l e s !   b i n a r y _ d e c i m a l   { 
-                           )   = >   { 
-                                   l e t   m u t   r e s u l t   =   V e c : : w i t h _ c a p a c i t y ( b u f f e r . l e n ( ) ) ; 
-   
- -                                 i f   $ i s _ d i v i d e   & &   s t d : : i n t r i n s i c s : : u n l i k e l y ( * b   = =   z e r o )   { 
- -                                         $ c t x . s e t _ e r r o r ( r e s u l t . l e n ( ) ,   " d i v i d e d   b y   z e r o " ) ; 
- -                                         r e s u l t . p u s h ( o n e ) ; 
- -                                 }   e l s e   { 
- -                                         f o r   a   i n   b u f f e r . i t e r ( )   { 
- -                                                 l e t   t   =   ( a   *   s c a l e _ a ) . $ o p ( b )   /   s c a l e _ b ; 
- -                                                 i f   t   <   m i n _ f o r _ p r e c i s i o n   | |   t   >   m a x _ f o r _ p r e c i s i o n   { 
- -                                                         $ c t x . s e t _ e r r o r ( r e s u l t . l e n ( ) ,   " D e c i m a l   o v e r f l o w " ) ; 
- -                                                         r e s u l t . p u s h ( o n e ) ; 
- -                                                 }   e l s e   { 
- -                                                         r e s u l t . p u s h ( t ) ; 
- -                                                 } 
- +                                 f o r   a   i n   b u f f e r . i t e r ( )   { 
- +                                         l e t   t   =   ( a   *   s c a l e _ a ) . $ o p ( b )   /   s c a l e _ b ; 
- +                                         i f   t   <   m i n _ f o r _ p r e c i s i o n   | |   t   >   m a x _ f o r _ p r e c i s i o n  
-part=17, len=2001, chunk_size=2000, md5=1243b53e04827da6f8b8b67bf1708987, path:https://github.com/datafuselabs/databend/pull/11453
-------------------------------------------------------------
-{ 
- +                                                 $ c t x . s e t _ e r r o r ( r e s u l t . l e n ( ) ,   " D e c i m a l   o v e r f l o w " ) ; 
- +                                                 r e s u l t . p u s h ( o n e ) ; 
- +                                         }   e l s e   { 
- +                                                 r e s u l t . p u s h ( t ) ; 
-                                           } 
-                                   } 
-   
- @ @   - 1 8 6 , 1 7   + 1 7 5 , 1 2   @ @   m a c r o _ r u l e s !   b i n a r y _ d e c i m a l   { 
-                                   l e t   m u t   r e s u l t   =   V e c : : w i t h _ c a p a c i t y ( b u f f e r . l e n ( ) ) ; 
-   
-                                   f o r   b   i n   b u f f e r . i t e r ( )   { 
- -                                         i f   $ i s _ d i v i d e   & &   s t d : : i n t r i n s i c s : : u n l i k e l y ( * b   = =   z e r o )   { 
- -                                                 $ c t x . s e t _ e r r o r ( r e s u l t . l e n ( ) ,   " d i v i d e d   b y   z e r o " ) ; 
- +                                         l e t   t   =   ( a   *   s c a l e _ a ) . $ o p ( b )   /   s c a l e _ b ; 
- +                                         i f   t   <   m i n _ f o r _ p r e c i s i o n   | |   t   >   m a x _ f o r _ p r e c i s i o n   { 
- +                                                 $ c t x . s e t _ e r r o r ( r e s u l t . l e n ( ) ,   " D e c i m a l   o v e r f l o w " ) ; 
-                                                   r e s u l t . p u s h ( o n e ) ; 
-                                           }   e l s e   { 
- -                                                 l e t   t   =   ( a   *   s c a l e _ a ) . $ o p ( b )   /   s c a l e _ b ; 
- -                                                 i f   t   <   m i n _ f o r _ p r e c i s i o n   | |   t   >   m a x _ f o r _ p r e c i s i o n   { 
- -                                                  
-part=18, len=2001, chunk_size=2000, md5=1742eda29c1b2c1521b39030e221efc6, path:https://github.com/datafuselabs/databend/pull/11453
-------------------------------------------------------------
-      $ c t x . s e t _ e r r o r ( r e s u l t . l e n ( ) ,   " D e c i m a l   o v e r f l o w " ) ; 
- -                                                         r e s u l t . p u s h ( o n e ) ; 
- -                                                 }   e l s e   { 
- -                                                         r e s u l t . p u s h ( t ) ; 
- -                                                 } 
- +                                                 r e s u l t . p u s h ( t ) ; 
-                                           } 
-                                   } 
-                                   V a l u e : : C o l u m n ( C o l u m n : : D e c i m a l ( D e c i m a l C o l u m n : : $ d e c i m a l _ t y p e ( 
- @ @   - 2 0 9 , 1 4   + 1 9 3 , 9   @ @   m a c r o _ r u l e s !   b i n a r y _ d e c i m a l   { 
-                                   V a l u e R e f : : S c a l a r ( S c a l a r R e f : : D e c i m a l ( D e c i m a l S c a l a r : : $ d e c i m a l _ t y p e ( a ,   _ ) ) ) , 
-                                   V a l u e R e f : : S c a l a r ( S c a l a r R e f : : D e c i m a l ( D e c i m a l S c a l a r : : $ d e c i m a l _ t y p e ( b ,   _ ) ) ) , 
-                           )   = >   { 
- -                                 l e t   m u t   t   =   z e r o ; 
- -                                 i f   $ i s _ d i v i d e   & &   s t d : : i n t r i n s i c s : : u n l i k e l y ( * b   = =   z e r o )   { 
- -                                         $ c t x . s e t _ e r r o r ( 0 ,   " d i v i d e d   b y   z e r o " ) ; 
- -                                 }   e l s e   { 
- -                                         t   =   ( a   *   s c a l e _ a ) . $ o p ( b )   /   s c a l e _ b ; 
- -                                         i f   t   <   m i n _ f o r _ p r e c i s i o n   | |   t   >   m a x _ f o r _ p r e c i s i o n   { 
- -                                                 $ c t x . s e t _ e r r o r ( 0 ,   " D e c i m a l   o v e r f l
-part=19, len=2001, chunk_size=2000, md5=429366c03c57e5c9119597aa3f3d7a28, path:https://github.com/datafuselabs/databend/pull/11453
-------------------------------------------------------------
-o w " ) ; 
- -                                         } 
- +                                 l e t   t   =   ( a   *   s c a l e _ a ) . $ o p ( b )   /   s c a l e _ b ; 
- +                                 i f   t   <   m i n _ f o r _ p r e c i s i o n   | |   t   >   m a x _ f o r _ p r e c i s i o n   { 
- +                                         $ c t x . s e t _ e r r o r ( 0 ,   " D e c i m a l   o v e r f l o w " ) ; 
-                                   } 
-                                   V a l u e : : S c a l a r ( S c a l a r : : D e c i m a l ( D e c i m a l S c a l a r : : $ d e c i m a l _ t y p e ( t ,   $ s i z e ) ) ) 
-                           } 
- @ @   - 2 9 3 , 2 4   + 2 7 2 , 2 0   @ @   m a c r o _ r u l e s !   r e g i s t e r _ d e c i m a l _ b i n a r y _ o p   { 
-                                   D e c i m a l D a t a T y p e : : f r o m _ s i z e ( a r g s _ t y p e [ 1 ] . g e t _ d e c i m a l _ p r o p e r t i e s ( ) ? ) . u n w r a p ( ) ; 
-   
-                           l e t   i s _ m u l t i p l y   =   $ n a m e   = =   " m u l t i p l y " ; 
- -                         l e t   i s _ d i v i d e   =   $ n a m e   = =   " d i v i d e " ; 
- -                         l e t   i s _ p l u s _ m i n u s   =   ! i s _ m u l t i p l y   & &   ! i s _ d i v i d e ; 
- +                         l e t   i s _ p l u s _ m i n u s   =   ! i s _ m u l t i p l y ; 
-                           l e t   r e t u r n _ t y p e   =   D e c i m a l D a t a T y p e : : b i n a r y _ r e s u l t _ t y p e ( 
-                                   & d e c i m a l _ a , 
-                                   & d e c i m a l _ b , 
-                                   i s _ m u l t i p l y , 
- -                                 i s _ d i v i d e , 
-                                   i s _ p l u s _ m i n u s , 
-                           ) 
-                           . o k ( ) ? ; 
-   
- -                         l e t   m u t   s c a l e _ a   =   0 ; 
- +              
-part=20, len=2001, chunk_size=2000, md5=d53d4a7e5561563fe5145d004de64a69, path:https://github.com/datafuselabs/databend/pull/11453
-------------------------------------------------------------
-          l e t   s c a l e _ a   =   0 ; 
-                           l e t   m u t   s c a l e _ b   =   0 ; 
-   
-                           i f   i s _ m u l t i p l y   { 
-                                   s c a l e _ b   =   r e t u r n _ t y p e . s c a l e ( )   a s   u 3 2 ; 
- -                         }   e l s e   i f   i s _ d i v i d e   { 
- -                                 s c a l e _ a   =   r e t u r n _ t y p e . s c a l e ( )   a s   u 3 2 ; 
-                           } 
-   
-                           l e t   f u n c t i o n   =   F u n c t i o n   { 
- @ @   - 3 4 3 , 8   + 3 1 8 , 7   @ @   m a c r o _ r u l e s !   r e g i s t e r _ d e c i m a l _ b i n a r y _ o p   { 
-                                                           & D a t a T y p e : : D e c i m a l ( r e t u r n _ t y p e . c l o n e ( ) ) , 
-                                                           $ o p , 
-                                                           s c a l e _ a , 
- -                                                         s c a l e _ b , 
- -                                                         i s _ d i v i d e 
- +                                                         s c a l e _ b 
-                                                   ) 
-                                           } ) , 
-                                   } , 
- @ @   - 3 7 1 , 7   + 3 4 5 , 6   @ @   p u b ( c r a t e )   f n   r e g i s t e r _ d e c i m a l _ a r i t h m e t i c ( r e g i s t r y :   & m u t   F u n c t i o n R e g i s t r y )   { 
-           / /   T O D O   c h e c k e d   o v e r f l o w   b y   d e f a u l t 
-           r e g i s t e r _ d e c i m a l _ b i n a r y _ o p ! ( r e g i s t r y ,   " p l u s " ,   a d d ) ; 
-           r e g i s t e r _ d e c i m a l _ b i n a r y _ o p ! ( r e g i s t r y ,   " m i n u s " ,   s u b ) ; 
- -         r e g i s t e r _ d e c i m a l _ b i n a r y _ o p ! ( r e g i s t r y ,   " d i v i d e " ,   d i v ) ; 
-           r e g i s
-part=21, len=110, chunk_size=2000, md5=3cf9fd13707061a1dd89bc67406f43c0, path:https://github.com/datafuselabs/databend/pull/11453
-------------------------------------------------------------
-t e r _ d e c i m a l _ b i n a r y _ o p ! ( r e g i s t r y ,   " m u l t i p l y " ,   m u l ) ; 
-   } 
-   
-part=22, len=2001, chunk_size=2000, md5=bc12a7ba6c729acfe78474b1a015435e, path:https://github.com/datafuselabs/databend/pull/11453
-------------------------------------------------------------
-- - -   a / t e s t s / s q l l o g i c t e s t s / s u i t e s / b a s e / 1 1 _ d a t a _ t y p e / 1 1 _ 0 0 0 6 _ d a t a _ t y p e _ d e c i m a l 
- + + +   b / t e s t s / s q l l o g i c t e s t s / s u i t e s / b a s e / 1 1 _ d a t a _ t y p e / 1 1 _ 0 0 0 6 _ d a t a _ t y p e _ d e c i m a l 
- @ @   - 2 2 6 , 2 7   + 2 2 6 , 2 7   @ @   S E L E C T   C A S T ( 1 . 2 3   A S   D E C I M A L ( 7 6 ,   2 ) )   *   C A S T ( 9 8 7 6 5 4 3 2 1 . 3 4   A S   D E C I M A L ( 2 0 ,   2 ) )   A S   r e 
-   q u e r y   I 
-   S E L E C T   C A S T ( 4 . 5 6   A S   D E C I M A L ( 6 ,   2 ) )   /   C A S T ( 1 . 2 3   A S   D E C I M A L ( 6 ,   2 ) )   A S   r e s u l t ; 
-   - - - - 
- - 3 . 7 0 
- + 3 . 7 0 7 3 1 7 0 7 3 1 7 0 7 3 1 4 
-   
-   q u e r y   I 
-   S E L E C T   C A S T ( 4 . 5 6   A S   D E C I M A L ( 4 6 ,   2 ) )   /   C A S T ( 1 . 2 3   A S   D E C I M A L ( 4 6 ,   2 ) )   A S   r e s u l t ; 
-   - - - - 
- - 3 . 7 0 
- + 3 . 7 0 7 3 1 7 0 7 3 1 7 0 7 3 1 4 
-   
-   q u e r y   I 
-   S E L E C T   C A S T ( 9 8 7 6 5 4 3 2 1 . 3 4   A S   D E C I M A L ( 2 0 ,   2 ) )   /   C A S T ( 1 2 3 4 5 6 7 8 9 . 1 2   A S   D E C I M A L ( 2 0 ,   2 ) )   A S   r e s u l t ; 
-   - - - - 
- - 8 . 0 0 
- + 8 . 0 0 0 0 0 0 0 6 7 8 7 8 
-   
-   q u e r y   I 
-   S E L E C T   C A S T ( 9 8 7 6 5 4 3 2 1 . 3 4   A S   D E C I M A L ( 5 2 ,   2 ) )   /   C A S T ( 1 2 3 4 5 6 7 8 9 . 1 2   A S   D E C I M A L ( 5 2 ,   2 ) )   A S   r e s u l t ; 
-   - - - - 
- - 8 . 0 0 
- + 8 . 0 0 0 0 0 0 0 6 7 8 7 8 
-   
-   q u e r y   I 
-   S E L E C T   C A S T ( 9 8 7 6 5 4 3 2 1 . 3 4   A S   D E C I M A L ( 2 0 ,   2 ) )   /   C A S T ( 1 . 2 3   A S   D E C I M A L ( 6 ,   2 ) )   A S   r e s u l t ; 
-   - - - - 
- - 8 0 2 9 7 0 9 9 2 . 9 5 
- + 8 0 2 9 7 0 9 9 2 . 9 5 9 3 4 9 6 
-   
-   o n l y i f   m y s q l 
-   s t a t e m e n t   e r r o r   1 0 6 8 
- @ @   - 2 5 5 , 7   + 2 5 5 , 7   @ @   S E L E C T   C A S T ( 9 8 7 6 5 4 3 2 1 . 3 4   A S   D E C I M A L ( 7 6 ,   2 )
-part=23, len=2001, chunk_size=2000, md5=38f37eb1f16f64b2dd15aec99fbd84a8, path:https://github.com/datafuselabs/databend/pull/11453
-------------------------------------------------------------
-)   /   C A S T ( 1 . 2 3   A S   D E C I M A L ( 6 ,   2 ) )   A S   r e s 
-   q u e r y   I 
-   S E L E C T   C A S T ( 9 8 7 6 5 4 3 2 1 . 3 4   A S   D E C I M A L ( 7 6 ,   2 ) )   /   C A S T ( 1 . 2 3   A S   D E C I M A L ( 7 6 ,   2 ) )   A S   r e s u l t ; 
-   - - - - 
- - 8 0 2 9 7 0 9 9 2 . 9 5 
- + 8 0 2 9 7 0 9 9 2 . 9 5 9 3 4 9 6 
-   
-   # #   n e g a t i v e 
-   
- @ @   - 2 9 2 , 1 2   + 2 9 2 , 1 2   @ @   S E L E C T   C A S T ( - 1 . 2 3   A S   D E C I M A L ( 7 6 ,   2 ) )   *   C A S T ( - 4 . 5 6   A S   D E C I M A L ( 7 6 ,   2 ) )   A S   r e s u l t ; 
-   q u e r y   I 
-   S E L E C T   C A S T ( - 4 . 5 6   A S   D E C I M A L ( 6 ,   2 ) )   /   C A S T ( - 1 . 2 3   A S   D E C I M A L ( 6 ,   2 ) )   A S   r e s u l t ; 
-   - - - - 
- - 3 . 7 0 
- + 3 . 7 0 7 3 1 7 0 7 3 1 7 0 7 3 1 4 
-   
-   q u e r y   I 
-   S E L E C T   C A S T ( - 4 . 5 6   A S   D E C I M A L ( 7 6 ,   2 ) )   /   C A S T ( - 1 . 2 3   A S   D E C I M A L ( 7 6 ,   2 ) )   A S   r e s u l t ; 
-   - - - - 
- - 3 . 7 0 
- + 3 . 7 0 7 3 1 7 0 7 3 1 7 0 7 3 1 4 
-   
-   q u e r y   I 
-   S E L E C T   M I N ( C A S T ( - 4 . 5 6   A S   D E C I M A L ( 6 ,   2 ) ) ) 
- @ @   - 3 5 2 , 1 7   + 3 5 2 , 1 7   @ @   S E L E C T   A N Y ( C A S T ( 2 . 3 4   A S   D E C I M A L ( 7 6 ,   2 ) ) ) 
-   q u e r y   T T T T 
-   s e l e c t   t y p e o f ( a + b ) ,   t y p e o f ( a - b ) ,   t y p e o f ( a * b ) ,   t y p e o f ( a / b )   f r o m   ( s e l e c t   3 : : D e c i m a l ( 1 3 , 2 )   a   ,   3 . 1 : : D e c i m a l ( 8 , 3 )   b ) ; 
-   - - - - 
- - D E C I M A L ( 1 5 ,   3 )   D E C I M A L ( 1 5 ,   3 )   D E C I M A L ( 2 1 ,   5 )   D E C I M A L ( 1 6 ,   2 ) 
- + D E C I M A L ( 1 5 ,   3 )   D E C I M A L ( 1 5 ,   3 )   D E C I M A L ( 2 1 ,   5 )   D O U B L E 
-   
-   q u e r y   T T T T 
-   s e l e c t   t y p e o f ( a + b ) ,   t y p e o f ( a - b ) ,   t y p e o f ( a * b ) ,   t y p e o f ( a / b )   f r o m   ( s e l e c t   3 : : D e c i m a l ( 7 6 , 2
-part=24, len=1322, chunk_size=2000, md5=243c67f2dc0a5c58361291ac10775036, path:https://github.com/datafuselabs/databend/pull/11453
-------------------------------------------------------------
-)   a   ,   3 . 1 : : D e c i m a l ( 7 6 , 3 )   b ) ; 
-   - - - - 
- - D E C I M A L ( 7 6 ,   3 )   D E C I M A L ( 7 6 ,   3 )   D E C I M A L ( 7 6 ,   5 )   D E C I M A L ( 7 6 ,   2 ) 
- + D E C I M A L ( 7 6 ,   3 )   D E C I M A L ( 7 6 ,   3 )   D E C I M A L ( 7 6 ,   5 )   D O U B L E 
-   
-   q u e r y   T T T T 
-   s e l e c t   t y p e o f ( a + b ) ,   t y p e o f ( a - b ) ,   t y p e o f ( a * b ) ,   t y p e o f ( a / b )   f r o m   ( s e l e c t   3 : : D e c i m a l ( 3 9 , 2 )   a   ,   3 . 1 : : D e c i m a l ( 3 9 , 3 )   b ) ; 
-   - - - - 
- - D E C I M A L ( 4 1 ,   3 )   D E C I M A L ( 4 1 ,   3 )   D E C I M A L ( 7 6 ,   5 )   D E C I M A L ( 4 2 ,   2 ) 
- + D E C I M A L ( 4 1 ,   3 )   D E C I M A L ( 4 1 ,   3 )   D E C I M A L ( 7 6 ,   5 )   D O U B L E 
-   
-   # #   c o m p a r e 
-   
- @ @   - 8 6 5 , 7   + 8 6 5 , 7   @ @   N U L L 
-   q u e r y   T 
-   s e l e c t   c 1 / c 1   f r o m   t 2   o r d e r   b y   c 1   a s c 
-   - - - - 
- - 1 . 0 0 
- + 1 . 0 
-   N U L L 
-   
-   
- @ @   - 8 9 6 , 7   + 8 9 6 , 7   @ @   q u e r y   T 
-   s e l e c t   i f ( n u m b e r = 1 , n u m b e r + 1 , n u l l ) / i f ( n u m b e r = 1 , ( n u m b e r + 1 ) : : d e c i m a l ( 7 , 2 ) , n u l l )   f r o m   n u m b e r s ( 2 ) 
-   - - - - 
-   N U L L 
- - 1 
- + 1 . 0 
-   
-   
-   
-part=25, len=2001, chunk_size=2000, md5=5519d07e7bf8b26565640bf30b5c5970, path:https://github.com/datafuselabs/databend/pull/11455
-------------------------------------------------------------
-- - -   a / s r c / q u e r y / f u n c t i o n s / s r c / s c a l a r s / d a t e t i m e . r s 
- + + +   b / s r c / q u e r y / f u n c t i o n s / s r c / s c a l a r s / d a t e t i m e . r s 
- @ @   - 1 2 1 , 7   + 1 2 1 , 8   @ @   f n   i n t 6 4 _ d o m a i n _ t o _ t i m e s t a m p _ d o m a i n < T :   A s P r i m i t i v e < i 6 4 > > ( 
-   } 
-   
-   f n   r e g i s t e r _ s t r i n g _ t o _ t i m e s t a m p ( r e g i s t r y :   & m u t   F u n c t i o n R e g i s t r y )   { 
- -         r e g i s t r y . r e g i s t e r _ a l i a s e s ( " t o _ t i m e s t a m p " ,   & [ " t o _ d a t e t i m e " ] ) ; 
- +         r e g i s t r y . r e g i s t e r _ a l i a s e s ( " t o _ d a t e " ,   & [ " s t r _ t o _ d a t e " ] ) ; 
- +         r e g i s t r y . r e g i s t e r _ a l i a s e s ( " t o _ t i m e s t a m p " ,   & [ " t o _ d a t e t i m e " ,   " s t r _ t o _ t i m e s t a m p " ] ) ; 
-           r e g i s t r y . r e g i s t e r _ a l i a s e s ( " t r y _ t o _ t i m e s t a m p " ,   & [ " t r y _ t o _ d a t e t i m e " ] ) ; 
-   
-           r e g i s t r y . r e g i s t e r _ p a s s t h r o u g h _ n u l l a b l e _ 1 _ a r g : : < S t r i n g T y p e ,   T i m e s t a m p T y p e ,   _ ,   _ > ( 
- @ @   - 1 5 1 , 7   + 1 5 2 , 7   @ @   f n   r e g i s t e r _ s t r i n g _ t o _ t i m e s t a m p ( r e g i s t r y :   & m u t   F u n c t i o n R e g i s t r y )   { 
-           } 
-   
-           r e g i s t r y . r e g i s t e r _ c o m b i n e _ n u l l a b l e _ 2 _ a r g : : < S t r i n g T y p e ,   S t r i n g T y p e ,   T i m e s t a m p T y p e ,   _ ,   _ > ( 
- -                 " s t r _ t o _ t i m e s t a m p " , 
- +                 " t o _ t i m e s t a m p " , 
-                   | _ ,   _ |   F u n c t i o n D o m a i n : : M a y T h r o w , 
-                   v e c t o r i z e _ w i t h _ b u i l d e r _ 2 _ a r g : : < S t r i n g T y p e ,   S t r i n g T y p e ,   N u l l a b l e T y p e < T i m e s t a m p T y p
-part=26, len=2001, chunk_size=2000, md5=7ca1a3a7770bae59aae1447df076fdfa, path:https://github.com/datafuselabs/databend/pull/11455
-------------------------------------------------------------
-e > > ( 
-                           | t i m e s t a m p ,   f o r m a t ,   o u t p u t ,   c t x |   { 
- @ @   - 1 7 9 , 2 2   + 1 8 0 , 2 5   @ @   f n   r e g i s t e r _ s t r i n g _ t o _ t i m e s t a m p ( r e g i s t r y :   & m u t   F u n c t i o n R e g i s t r y )   { 
-           ) ; 
-   
-           r e g i s t r y . r e g i s t e r _ c o m b i n e _ n u l l a b l e _ 2 _ a r g : : < S t r i n g T y p e ,   S t r i n g T y p e ,   D a t e T y p e ,   _ ,   _ > ( 
- -                 " s t r _ t o _ d a t e " , 
- +                 " t o _ d a t e " , 
-                   | _ ,   _ |   F u n c t i o n D o m a i n : : M a y T h r o w , 
-                   v e c t o r i z e _ w i t h _ b u i l d e r _ 2 _ a r g : : < S t r i n g T y p e ,   S t r i n g T y p e ,   N u l l a b l e T y p e < D a t e T y p e > > ( 
- -                         | d a t e ,   f o r m a t ,   o u t p u t ,   _ |   { 
- +                         | d a t e ,   f o r m a t ,   o u t p u t ,   c t x |   { 
-                                   i f   f o r m a t . i s _ e m p t y ( )   { 
-                                           o u t p u t . p u s h _ n u l l ( ) ; 
-                                   }   e l s e   { 
-                                           m a t c h   ( s t d : : s t r : : f r o m _ u t f 8 ( d a t e ) ,   s t d : : s t r : : f r o m _ u t f 8 ( f o r m a t ) )   { 
- -                                                 ( O k ( d a t e ) ,   O k ( f o r m a t ) )   = >   { 
- -                                                         i f   l e t   O k ( r e s )   =   N a i v e D a t e : : p a r s e _ f r o m _ s t r ( d a t e ,   f o r m a t )   { 
- +                                                 ( O k ( d a t e ) ,   O k ( f o r m a t ) )   = >   m a t c h   N a i v e D a t e : : p a r s e _ f r o m _ s t r ( d a t e ,   f o r m a t )   { 
- +                                                         O k ( r e s )   = >   { 
-                                                    
-part=27, len=2001, chunk_size=2000, md5=5f47425f97f6f4dd9a15cc380cd4bbcc, path:https://github.com/datafuselabs/databend/pull/11455
-------------------------------------------------------------
-              o u t p u t . p u s h ( r e s . n u m _ d a y s _ f r o m _ c e ( )   -   E P O C H _ D A Y S _ F R O M _ C E ) ; 
- -                                                         }   e l s e   { 
- +                                                         } 
- +                                                         E r r ( e )   = >   { 
- +                                                                 c t x . s e t _ e r r o r ( o u t p u t . l e n ( ) ,   e . t o _ s t r i n g ( ) ) ; 
-                                                                   o u t p u t . p u s h _ n u l l ( ) ; 
-                                                           } 
- -                                                 } 
- -                                                 _   = >   { 
- +                                                 } , 
- +                                                 ( E r r ( e ) ,   _ )   |   ( _ ,   E r r ( e ) )   = >   { 
- +                                                         c t x . s e t _ e r r o r ( o u t p u t . l e n ( ) ,   e . t o _ s t r i n g ( ) ) ; 
-                                                           o u t p u t . p u s h _ n u l l ( ) ; 
-                                                   } 
-                                           } 
- @ @   - 3 8 0 , 8   + 3 8 4 , 9   @ @   f n   r e g i s t e r _ n u m b e r _ t o _ d a t e ( r e g i s t r y :   & m u t   F u n c t i o n R e g i s t r y )   { 
-   } 
-   
-   f n   r e g i s t e r _ t o _ s t r i n g ( r e g i s t r y :   & m u t   F u n c t i o n R e g i s t r y )   { 
- +         r e g i s t r y . r e g i s t e r _ a l i a s e s ( " t o _ s t r i n g " ,   & [ " d a t e _ f o r m a t " ] ) ; 
-           r e g i s t r y . r e g i s t e r _ c o m b i n e _ n u l l a b l e _ 2 _ a r g : : < T i m e s t a m p T y p e ,   S t r i n g T y p e ,   S t r i n g T y p e ,   _ ,   _ > ( 
- -                 " d a t e _ f o r m a t " , 
- +                 " t o _ s t r i n g " , 
-    
-part=28, len=2001, chunk_size=2000, md5=3239a6b04488d431f8c5e856f351ea4d, path:https://github.com/datafuselabs/databend/pull/11455
-------------------------------------------------------------
-              | _ ,   _ |   F u n c t i o n D o m a i n : : M a y T h r o w , 
-                   v e c t o r i z e _ w i t h _ b u i l d e r _ 2 _ a r g : : < T i m e s t a m p T y p e ,   S t r i n g T y p e ,   N u l l a b l e T y p e < S t r i n g T y p e > > ( 
-                           | d a t e ,   f o r m a t ,   o u t p u t ,   c t x |   { 
- @ @   - 3 8 9 , 1 1   + 3 9 4 , 1 5   @ @   f n   r e g i s t e r _ t o _ s t r i n g ( r e g i s t r y :   & m u t   F u n c t i o n R e g i s t r y )   { 
-                                           o u t p u t . p u s h _ n u l l ( ) ; 
-                                   }   e l s e   { 
-                                           l e t   t s   =   d a t e . t o _ t i m e s t a m p ( c t x . f u n c _ c t x . t z . t z ) ; 
- -                                         i f   l e t   O k ( f o r m a t )   =   s t d : : s t r : : f r o m _ u t f 8 ( f o r m a t )   { 
- -                                                 l e t   r e s   =   t s . f o r m a t ( f o r m a t ) . t o _ s t r i n g ( ) ; 
- -                                                 o u t p u t . p u s h ( r e s . a s _ b y t e s ( ) ) ; 
- -                                         }   e l s e   { 
- -                                                 o u t p u t . p u s h _ n u l l ( ) ; 
- +                                         m a t c h   s t d : : s t r : : f r o m _ u t f 8 ( f o r m a t )   { 
- +                                                 O k ( f o r m a t )   = >   { 
- +                                                         l e t   r e s   =   t s . f o r m a t ( f o r m a t ) . t o _ s t r i n g ( ) ; 
- +                                                         o u t p u t . p u s h ( r e s . a s _ b y t e s ( ) ) ; 
- +                                                 } 
- +                                                 E r r ( e )   = >   { 
- +                                                         c t x . s e t _ e r r o r ( o u t p u t . l e n
-part=29, len=2001, chunk_size=2000, md5=2c636f0c11aeaa7fd625e2ed6a4ed0d4, path:https://github.com/datafuselabs/databend/pull/11455
-------------------------------------------------------------
-( ) ,   e . t o _ s t r i n g ( ) ) ; 
- +                                                         o u t p u t . p u s h _ n u l l ( ) ; 
- +                                                 } 
-                                           } 
-                                   } 
-                           } , 
- - - -   a / t e s t s / s q l l o g i c t e s t s / s u i t e s / q u e r y / 0 2 _ f u n c t i o n / 0 2 _ 0 0 1 2 _ f u n c t i o n _ d a t e t i m e s 
- + + +   b / t e s t s / s q l l o g i c t e s t s / s u i t e s / q u e r y / 0 2 _ f u n c t i o n / 0 2 _ 0 0 1 2 _ f u n c t i o n _ d a t e t i m e s 
- @ @   - 8 9 4 , 7   + 8 9 4 , 7   @ @   s t a t e m e n t   o k 
-   d r o p   t a b l e   t 
-   
-   q u e r y   T 
- - s e l e c t   d a t e _ f o r m a t ( ' 2 0 2 2 - 0 2 - 0 2 ' ,   ' 精 彩 的 % Y 年 ， 美 丽 的 % m m o n t h , 激 动 の % d d ' ) ; 
- + s e l e c t   t o _ s t r i n g ( ' 2 0 2 2 - 0 2 - 0 2 ' ,   ' 精 彩 的 % Y 年 ， 美 丽 的 % m m o n t h , 激 动 の % d d ' ) ; 
-   - - - - 
-   精 彩 的 2 0 2 2 年 ， 美 丽 的 0 2 m o n t h , 激 动 の 0 2 d 
-   
- @ @   - 9 0 3 , 6   + 9 0 3 , 1 1   @ @   s e l e c t   s t r _ t o _ d a t e ( ' 精 彩 的 2 0 2 2 年 ， 美 丽 的 0 2 m o n t h , 激 动 の 0 2 d ' ,   ' 精 彩 
-   - - - - 
-   2 0 2 2 - 0 2 - 0 2 
-   
- + q u e r y   T 
- + s e l e c t   t o _ d a t e ( ' 精 彩 的 2 0 2 2 年 ， 美 丽 的 0 2 m o n t h , 激 动 の 0 2 d ' ,   ' 精 彩 的 % Y 年 ， 美 丽 的 % m m o n t h , 激 动 の % d d ' ) ; 
- + - - - - 
- + 2 0 2 2 - 0 2 - 0 2 
- + 
-   s t a t e m e n t   e r r o r   1 0 0 1 
-   s e l e c t   d a t e _ f o r m a t ( ' ' ,   ' ' ) ; 
-   
- @ @   - 9 2 5 , 6   + 9 3 0 , 6   @ @   s e l e c t   s t r _ t o _ t i m e s t a m p ( ' 2 0 2 2 年 0 2 月 0 4 日 ， 8 时 5 8 分 5 9 秒 , 时 区 ： + 0 0 0 0 ' ,   ' % Y 
-   2 0 2 2 - 0 2 - 0 4   0 8 : 5 8 : 5 9 . 0 0 0 0 0 0 
-   
-   q u e r y   T 
- - s e l e c t   s t r _ t o _ t i m e s t a m p
-part=30, len=442, chunk_size=2000, md5=227602f9bcdabb3a0e8db1e83af7b8ab, path:https://github.com/datafuselabs/databend/pull/11455
-------------------------------------------------------------
-( ' 2 0 2 2 年 0 2 月 0 4 日 ， 8 时 5 8 分 5 9 秒 , 时 区 ： + 0 8 0 0 ' ,   ' % Y 年 % m 月 % d 日 ， % H 时 % M 分 % S 秒 , 时 区 ： % z ' ) ; 
- + s e l e c t   t o _ t i m e s t a m p ( ' 2 0 2 2 年 0 2 月 0 4 日 ， 8 时 5 8 分 5 9 秒 , 时 区 ： + 0 8 0 0 ' ,   ' % Y 年 % m 月 % d 日 ， % H 时 % M 分 % S 秒 , 时 区 ： % z ' ) ; 
-   - - - - 
-   2 0 2 2 - 0 2 - 0 4   0 0 : 5 8 : 5 9 . 0 0 0 0 0 0 
-part=31, len=2001, chunk_size=2000, md5=47ee5574df7088c4e9c8af3234944fb9, path:https://github.com/datafuselabs/databend/pull/11457
-------------------------------------------------------------
-- - -   a / s r c / m e t a / s e r v i c e / s r c / m e t a _ s e r v i c e / r a f t m e t a . r s 
- + + +   b / s r c / m e t a / s e r v i c e / s r c / m e t a _ s e r v i c e / r a f t m e t a . r s 
- @ @   - 1 2 , 6   + 1 2 , 7   @ @ 
-   / /   S e e   t h e   L i c e n s e   f o r   t h e   s p e c i f i c   l a n g u a g e   g o v e r n i n g   p e r m i s s i o n s   a n d 
-   / /   l i m i t a t i o n s   u n d e r   t h e   L i c e n s e . 
-   
- + u s e   s t d : : c o l l e c t i o n s : : B T r e e M a p ; 
-   u s e   s t d : : c o l l e c t i o n s : : B T r e e S e t ; 
-   u s e   s t d : : f m t : : D e b u g ; 
-   u s e   s t d : : n e t : : I p v 4 A d d r ; 
- @ @   - 9 8 , 2 4   + 9 9 , 3 9   @ @   u s e   c r a t e : : O p e n e d ; 
-   p u b   s t r u c t   M e t a N o d e S t a t u s   { 
-           p u b   i d :   N o d e I d , 
-   
- +         / / /   T h e   r a f t   s e r v i c e   e n d p o i n t   f o r   i n t e r n a l   c o m m u n i c a t i o n 
-           p u b   e n d p o i n t :   S t r i n g , 
-   
- +         / / /   T h e   s i z e   i n   b y t e s   o f   t h e   o n   d i s k   d a t a . 
-           p u b   d b _ s i z e :   u 6 4 , 
-   
- +         / / /   S e r v e r   s t a t e ,   o n e   o f   " F o l l o w e r " ,   " L e a r n e r " ,   " C a n d i d a t e " ,   " L e a d e r " . 
-           p u b   s t a t e :   S t r i n g , 
-   
- +         / / /   I s   t h i s   n o d e   a   l e a d e r . 
-           p u b   i s _ l e a d e r :   b o o l , 
-   
- +         / / /   C u r r e n t   t e r m . 
-           p u b   c u r r e n t _ t e r m :   u 6 4 , 
-   
- +         / / /   L a s t   r e c e i v e d   l o g   i n d e x 
-           p u b   l a s t _ l o g _ i n d e x :   u 6 4 , 
-   
- +         / / /   L a s t   l o g   i d   t h a t   h a s   b e e n   c o m m i t t e d   a n d   a p p l i e d   t o   s t a t e   m a c h i n e . 
-           p u b   l a s t _ a p p l i e d :   L o g I d , 
-   
- +         / / /   T h e   l a
-part=32, len=1488, chunk_size=2000, md5=59b1f09e316811427c11a9f418909be1, path:https://github.com/datafuselabs/databend/pull/11457
-------------------------------------------------------------
-s t   k n o w n   l e a d e r   n o d e . 
-           p u b   l e a d e r :   O p t i o n < N o d e > , 
-   
- +         / / /   T h e   r e p l i c a t i o n   s t a t e   o f   a l l   n o d e s . 
- +         / / / 
- +         / / /   O n l y   l e a d e r   n o d e   h a s   n o n - N o n e   d a t a   f o r   t h i s   f i e l d ,   i . e . ,   ` i s _ l e a d e r `   i s   t r u e . 
- +         p u b   r e p l i c a t i o n :   O p t i o n < B T r e e M a p < N o d e I d ,   O p t i o n < L o g I d > > > , 
- + 
- +         / / /   N o d e s   t h a t   c a n   v o t e   i n   e l e c t i o n   c a n   g r a n t   r e p l i c a t i o n . 
-           p u b   v o t e r s :   V e c < N o d e > , 
-   
- +         / / /   A l s o   k n o w n   a s   ` l e a r n e r ` s . 
-           p u b   n o n _ v o t e r s :   V e c < N o d e > , 
-   
-           / / /   T h e   l a s t   ` s e q `   u s e d   b y   G e n e r i c K V   s u b   t r e e . 
- @ @   - 9 0 1 , 6   + 9 1 7 , 7   @ @   i m p l   M e t a N o d e   { 
-                                   N o n e   = >   L o g I d : : n e w ( C o m m i t t e d L e a d e r I d : : n e w ( 0 ,   0 ) ,   0 ) , 
-                           } , 
-                           l e a d e r , 
- +                         r e p l i c a t i o n :   m e t r i c s . r e p l i c a t i o n , 
-                           v o t e r s , 
-                           n o n _ v o t e r s :   l e a r n e r s , 
-                           l a s t _ s e q , 
+--- a/src/meta/service/src/meta_service/raftmeta.rs
++++ b/src/meta/service/src/meta_service/raftmeta.rs
+@@ -12,6 +12,7 @@
+ // See the License for the specific language governing permissions and
+ // limitations under the License.
+ 
++use std::collections::BTreeMap;
+ use std::collections::BTreeSet;
+ use std::fmt::Debug;
+ use std::net::Ipv4Addr;
+@@ -98,24 +99,39 @@ use crate::Opened;
+ pub struct MetaNodeStatus {
+     pub id: NodeId,
+ 
++    /// The raft service endpoint for internal communication
+     pub endpoint: String,
+ 
++    /// The size in bytes of the on disk data.
+     pub db_size: u64,
+ 
++    /// Server state, one of "Follower", "Learner", "Candidate", "Leader".
+     pub state: String,
+ 
++    /// Is this node a leader.
+     pub is_leader: bool,
+ 
++    /// Current term.
+     pub current_term: u64,
+ 
++    /// Last received log index
+     pub last_log_index: u64,
+ 
++    /// Last log id that has been committed and applied to state machine.
+     pub last_applied: LogId,
+ 
++    /// The last known leader node.
+     pub leader: Option<Node>,
+ 
++    /// The replication state of all nodes.
++    ///
++    /// Only leader node has non-None data for this field, i.e., `is_leader` is true.
++    pub replication: Option<BTreeMap<NodeId, Option<LogId>>>,
++
++    /// Nodes that can vote in election can grant replication.
+     pub voters: Vec<Node>,
+ 
++    /// Also known as `learner`s.
+     pub non_voters: Vec<Node>,
+ 
+     /// The last `seq` used by GenericKV sub tree.
+@@ -901,6 +917,7 @@ impl MetaNode {
+                 None => LogId::new(CommittedLeaderId::new(0, 0), 0),
+             },
+             leader,
++            replication: metrics.replication,
+             voters,
+             non_voters: learners,
+             last_seq,
