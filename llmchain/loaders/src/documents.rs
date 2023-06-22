@@ -53,6 +53,7 @@ impl Documents {
     pub fn len(&self) -> usize {
         self.documents.read().len()
     }
+
     pub fn is_empty(&self) -> bool {
         self.documents.read().is_empty()
     }
@@ -62,14 +63,6 @@ impl Documents {
         DocumentsIter {
             documents: guard,
             index: 0,
-        }
-    }
-}
-
-impl From<Vec<Document>> for Documents {
-    fn from(documents: Vec<Document>) -> Self {
-        Documents {
-            documents: RwLock::new(documents),
         }
     }
 }
@@ -101,6 +94,14 @@ impl<'a> IntoIterator for &'a Documents {
         DocumentsIter {
             documents: self.documents.read().clone(),
             index: 0,
+        }
+    }
+}
+
+impl From<Vec<Document>> for Documents {
+    fn from(documents: Vec<Document>) -> Self {
+        Documents {
+            documents: RwLock::new(documents),
         }
     }
 }
