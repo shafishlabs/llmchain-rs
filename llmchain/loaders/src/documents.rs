@@ -32,10 +32,10 @@ impl Documents {
         self.documents.write().push(document);
     }
 
-    pub fn extend(&self, documents: &Documents) {
+    pub fn extend(&self, other_docs: &Documents) {
         self.documents
             .write()
-            .extend(documents.documents.read().clone());
+            .extend_from_slice(&other_docs.documents.read());
     }
 
     pub fn tokens(&self) -> usize {
@@ -68,6 +68,26 @@ impl Documents {
     }
 }
 
+impl FromIterator<Document> for Documents {
+    fn from_iter<I: IntoIterator<Item = Document>>(iter: I) -> Self {
+        Documents {
+            documents: RwLock::new(iter.into_iter().collect()),
+        }
+    }
+}
+
+impl<'a> IntoIterator for &'a Documents {
+    type Item = Document;
+    type IntoIter = DocumentsIter;
+
+    fn into_iter(self) -> Self::IntoIter {
+        DocumentsIter {
+            documents: self.documents.read().clone(),
+            index: 0,
+        }
+    }
+}
+
 pub struct DocumentsIter {
     documents: Vec<Document>,
     index: usize,
@@ -83,18 +103,6 @@ impl Iterator for DocumentsIter {
             Some(result)
         } else {
             None
-        }
-    }
-}
-
-impl<'a> IntoIterator for &'a Documents {
-    type Item = Document;
-    type IntoIter = DocumentsIter;
-
-    fn into_iter(self) -> Self::IntoIter {
-        DocumentsIter {
-            documents: self.documents.read().clone(),
-            index: 0,
         }
     }
 }
