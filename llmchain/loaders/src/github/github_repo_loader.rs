@@ -20,9 +20,9 @@ use log::info;
 
 use crate::DirectoryLoader;
 use crate::Disk;
-use crate::Document;
 use crate::DocumentLoader;
 use crate::DocumentPath;
+use crate::Documents;
 use crate::LocalDisk;
 use crate::MarkdownLoader;
 use crate::TextLoader;
@@ -37,7 +37,7 @@ impl GithubRepoLoader {
 
 #[async_trait::async_trait]
 impl DocumentLoader for GithubRepoLoader {
-    async fn load(&self, path: DocumentPath) -> Result<Vec<Document>> {
+    async fn load(&self, path: DocumentPath) -> Result<Documents> {
         let repo_url = path.as_str()?;
         let local_path = format!("/tmp/{}/", uuid::Uuid::new_v4());
         let local_disk = LocalDisk::create()?;
@@ -62,6 +62,7 @@ impl DocumentLoader for GithubRepoLoader {
         info!("DirectoryLoader result: {:?}", result.len());
 
         let result = result
+            .documents()
             .iter()
             .map(|x| {
                 let mut x = x.clone();
@@ -75,6 +76,6 @@ impl DocumentLoader for GithubRepoLoader {
             info!("remove {}", local_path);
         }
 
-        Ok(result)
+        Ok(Documents::from(result))
     }
 }

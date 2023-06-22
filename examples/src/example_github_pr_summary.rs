@@ -66,7 +66,7 @@ async fn github_pr_summary(pr: String) -> Result<String> {
     summary.add_documents(&documents).await?;
     let pr_summary = summary.final_summary().await?;
 
-    let final_summary = format!("{}\n{}", pr, pr_summary);
+    let final_summary = format!("{}\nAll tokens:{}\n{}", pr, summary.tokens(), pr_summary);
     Ok(final_summary)
 }
 

@@ -17,6 +17,7 @@ use regex::Regex;
 
 use crate::document::Document;
 use crate::DocumentSplitter;
+use crate::Documents;
 
 pub struct TextSplitter {
     pub splitter_chunk_size: usize,
@@ -93,10 +94,10 @@ impl DocumentSplitter for TextSplitter {
         self.separators.clone()
     }
 
-    fn split_documents(&self, documents: &[Document]) -> Result<Vec<Document>> {
-        let mut result = vec![];
+    fn split_documents(&self, documents: &Documents) -> Result<Documents> {
+        let result = Documents::create();
 
-        for document in documents {
+        for document in documents.documents() {
             let chunks = self.split_text(&document.content)?;
 
             for chunk in chunks {

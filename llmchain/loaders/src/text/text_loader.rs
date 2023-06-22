@@ -20,6 +20,7 @@ use crate::Disk;
 use crate::Document;
 use crate::DocumentLoader;
 use crate::DocumentPath;
+use crate::Documents;
 
 pub struct TextLoader {
     disk: Arc<dyn Disk>,
@@ -33,10 +34,12 @@ impl TextLoader {
 
 #[async_trait::async_trait]
 impl DocumentLoader for TextLoader {
-    async fn load(&self, path: DocumentPath) -> Result<Vec<Document>> {
+    async fn load(&self, path: DocumentPath) -> Result<Documents> {
         let bs = self.disk.get_operator()?.read(path.as_str()?).await?;
         let content = String::from_utf8_lossy(&bs).to_string();
+        let documents = Documents::create();
+        documents.push(Document::create(path.as_str()?, &content));
 
-        Ok(vec![Document::create(path.as_str()?, &content)])
+        Ok(documents)
     }
 }

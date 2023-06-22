@@ -17,6 +17,7 @@ use env_logger::Env;
 use llmchain_embeddings::DatabendEmbedding;
 use llmchain_embeddings::Embedding;
 use llmchain_loaders::Document;
+use llmchain_loaders::Documents;
 use log::info;
 
 /// EXPORT DATABEND_DSN=<your-databend-dsn>
@@ -32,16 +33,16 @@ async fn main() -> Result<()> {
         .unwrap();
 
     // Sample documents.
-    let documents = vec![
+    let documents = Documents::from(vec![
         Document::create("", "hello"),
         Document::create("", "llmchain.rs"),
-    ];
+    ]);
 
     // create embedding.
     let embeddings = DatabendEmbedding::create(&dsn);
 
     // embedding documents.
-    let document_result = embeddings.embed_documents(documents).await?;
+    let document_result = embeddings.embed_documents(&documents).await?;
     info!("{:?}", document_result);
 
     Ok(())

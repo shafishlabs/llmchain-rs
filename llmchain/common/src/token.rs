@@ -13,12 +13,9 @@
 // limitations under the License.
 
 use anyhow::Result;
-use llmchain_loaders::Document;
-use llmchain_loaders::Documents;
+use tiktoken_rs::r50k_base;
 
-#[async_trait::async_trait]
-pub trait VectorStore: Send + Sync {
-    async fn init(&self) -> Result<()>;
-    async fn add_documents(&self, inputs: &Documents) -> Result<Vec<String>>;
-    async fn similarity_search(&self, query: &str, k: usize) -> Result<Vec<Document>>;
+pub fn chat_tokens(input: &str) -> Result<Vec<String>> {
+    let rke = r50k_base()?;
+    rke.split_by_token(input, true)
 }

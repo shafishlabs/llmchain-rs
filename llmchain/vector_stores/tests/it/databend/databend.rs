@@ -17,6 +17,7 @@ use std::sync::Arc;
 use anyhow::Result;
 use llmchain_embeddings::DatabendEmbedding;
 use llmchain_loaders::Document;
+use llmchain_loaders::Documents;
 use llmchain_vector_stores::DatabendVectorStore;
 use llmchain_vector_stores::VectorStore;
 
@@ -28,11 +29,11 @@ async fn test_vector_stores_databend() -> Result<()> {
     let databend = DatabendVectorStore::create(&dsn, databend_embedding);
     databend.init().await?;
 
-    let documents = vec![
+    let documents = Documents::from(vec![
         Document::create("1.md", "hello"),
         Document::create("2.md", "llmchain.rs"),
-    ];
-    let result = databend.add_documents(documents).await?;
+    ]);
+    let result = databend.add_documents(&documents).await?;
     assert_eq!(result.len(), 2);
 
     let similarities = databend.similarity_search("llmchain", 1).await?;

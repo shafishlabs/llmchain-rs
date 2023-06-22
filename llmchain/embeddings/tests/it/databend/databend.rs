@@ -16,6 +16,7 @@ use anyhow::Result;
 use llmchain_embeddings::DatabendEmbedding;
 use llmchain_embeddings::Embedding;
 use llmchain_loaders::Document;
+use llmchain_loaders::Documents;
 
 #[tokio::test]
 async fn test_embedding_databend() -> Result<()> {
@@ -35,7 +36,8 @@ async fn test_embedding_databend() -> Result<()> {
             Document::create("", "hello"),
             Document::create("", "llmchain.rs"),
         ];
-        let document_result = embeddings.embed_documents(documents).await?;
+        let documents = Documents::from(documents);
+        let document_result = embeddings.embed_documents(&documents).await?;
         assert_eq!(document_result.len(), 2);
         assert_eq!(document_result[0].len(), 1536);
     }

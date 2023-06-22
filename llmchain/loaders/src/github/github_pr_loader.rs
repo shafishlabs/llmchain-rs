@@ -21,6 +21,7 @@ use octocrab::Octocrab;
 use crate::Document;
 use crate::DocumentLoader;
 use crate::DocumentPath;
+use crate::Documents;
 
 pub struct GithubPRLoader {
     owner: String,
@@ -40,8 +41,8 @@ impl GithubPRLoader {
 
 #[async_trait::async_trait]
 impl DocumentLoader for GithubPRLoader {
-    async fn load(&self, path: DocumentPath) -> Result<Vec<Document>> {
-        let mut documents = vec![];
+    async fn load(&self, path: DocumentPath) -> Result<Documents> {
+        let documents = Documents::create();
         let list = path.as_list()?;
         info!("Loading PRs from {:?}", list);
 

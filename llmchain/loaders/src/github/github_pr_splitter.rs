@@ -19,6 +19,7 @@ use patch::Patch;
 
 use crate::Document;
 use crate::DocumentSplitter;
+use crate::Documents;
 
 pub struct GithubPRDiffSplitter {
     pub splitter_chunk_size: usize,
@@ -49,8 +50,8 @@ impl DocumentSplitter for GithubPRDiffSplitter {
         vec![]
     }
 
-    fn split_documents(&self, documents: &[Document]) -> Result<Vec<Document>> {
-        let mut diff_documents = vec![];
+    fn split_documents(&self, documents: &Documents) -> Result<Documents> {
+        let diff_documents = Documents::create();
         let mut acc_patch_str = String::new();
         let mut last_document_path = String::new();
 
@@ -70,9 +71,16 @@ impl DocumentSplitter for GithubPRDiffSplitter {
                     }
                 }
 
+                // Skip deleted files.
+                if patch.new.path == "/dev/null" {
+                    continue;
+                }
+
                 if !need_skip {
                     let patch_str = format!("{}", patch);
+
                     if acc_patch_str.len() + patch_str.len() <= self.splitter_chunk_size {
+                        acc_patch_str.push('\n');
                         acc_patch_str.push_str(&patch_str);
                     } else {
                         if !acc_patch_str.is_empty() {

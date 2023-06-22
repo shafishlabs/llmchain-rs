@@ -13,10 +13,10 @@
 // limitations under the License.
 
 use anyhow::Result;
-use llmchain_loaders::Document;
+use llmchain_loaders::Documents;
 
 #[async_trait::async_trait]
 pub trait Embedding: Send + Sync {
     async fn embed_query(&self, input: &str) -> Result<Vec<f32>>;
-    async fn embed_documents(&self, inputs: Vec<Document>) -> Result<Vec<Vec<f32>>>;
+    async fn embed_documents(&self, inputs: &Documents) -> Result<Vec<Vec<f32>>>;
 }

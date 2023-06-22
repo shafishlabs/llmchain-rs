@@ -18,6 +18,7 @@ use anyhow::Result;
 use env_logger::Env;
 use llmchain_embeddings::DatabendEmbedding;
 use llmchain_loaders::Document;
+use llmchain_loaders::Documents;
 use llmchain_vector_stores::DatabendVectorStore;
 use llmchain_vector_stores::VectorStore;
 use log::info;
@@ -35,10 +36,10 @@ async fn main() -> Result<()> {
         .unwrap();
 
     // Sample documents.
-    let documents = vec![
+    let documents = Documents::from(vec![
         Document::create("1.md", "hello"),
         Document::create("2.md", "llmchain.rs"),
-    ];
+    ]);
 
     // create embedding.
     let databend_embedding = Arc::new(DatabendEmbedding::create(&dsn));
@@ -48,7 +49,7 @@ async fn main() -> Result<()> {
     databend.init().await?;
 
     // add documents to vector store.
-    let uuids = databend.add_documents(documents).await?;
+    let uuids = databend.add_documents(&documents).await?;
     info!("embedding uuids:{:?}", uuids);
 
     // query a similarity document.
