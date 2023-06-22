@@ -38,10 +38,6 @@ impl Documents {
             .extend(documents.documents.read().clone());
     }
 
-    pub fn documents(&self) -> Vec<Document> {
-        self.documents.read().clone()
-    }
-
     pub fn tokens(&self) -> usize {
         self.documents.read().iter().map(|d| d.tokens()).sum()
     }
@@ -64,6 +60,11 @@ impl Documents {
             documents: guard,
             index: 0,
         }
+    }
+
+    pub fn first(&self) -> Option<Document> {
+        let guard = self.documents.read();
+        guard.first().cloned()
     }
 }
 

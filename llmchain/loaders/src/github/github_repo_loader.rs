@@ -62,10 +62,9 @@ impl DocumentLoader for GithubRepoLoader {
         info!("DirectoryLoader result: {:?}", result.len());
 
         let result = result
-            .documents()
             .iter()
             .map(|x| {
-                let mut x = x.clone();
+                let mut x = x;
                 x.path = x.path.replace(&local_path, repo_url);
                 x
             })

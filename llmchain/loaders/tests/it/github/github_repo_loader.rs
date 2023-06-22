@@ -31,7 +31,9 @@ async fn test_github_repo_loader() -> Result<()> {
 
     assert!(documents.len() > 10);
     assert!(
-        documents.documents()[0]
+        documents
+            .first()
+            .unwrap()
             .path
             .starts_with("https://github.com")
     );

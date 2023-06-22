@@ -97,7 +97,7 @@ impl DocumentSplitter for TextSplitter {
     fn split_documents(&self, documents: &Documents) -> Result<Documents> {
         let result = Documents::create();
 
-        for document in documents.documents() {
+        for document in documents {
             let chunks = self.split_text(&document.content)?;
 
             for chunk in chunks {
