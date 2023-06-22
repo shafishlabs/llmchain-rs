@@ -8,6 +8,7 @@ categories = ["LLM"]
 keywords = ["LLM"]
 
 [dependencies]
+llmchain-common = { path = "../common" }
 llmchain-llms = { path = "../llms" }
 llmchain-loaders = { path = "../loaders" }
 llmchain-prompts = { path = "../prompts" }

@@ -38,12 +38,6 @@ doctest = false
 test = false
 
 [[bin]]
-name = "example_github_inspect"
-path = "src/example_github_inspect.rs"
-doctest = false
-test = false
-
-[[bin]]
 name = "example_github_repo_loader"
 path = "src/example_github_repo_loader.rs"
 doctest = false

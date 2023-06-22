@@ -13,11 +13,11 @@
 // limitations under the License.
 
 use anyhow::Result;
-use llmchain_loaders::Document;
+use llmchain_loaders::Documents;
 
 #[async_trait::async_trait]
 pub trait Summarize: Send + Sync {
-    async fn add_document(&self, document: &Document) -> Result<()>;
-    async fn add_documents(&self, documents: &[Document]) -> Result<()>;
+    async fn add_documents(&self, documents: &Documents) -> Result<()>;
     async fn final_summary(&self) -> Result<String>;
+    fn tokens(&self) -> usize;
 }

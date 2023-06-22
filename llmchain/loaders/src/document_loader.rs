@@ -13,12 +13,11 @@
 // limitations under the License.
 
 use anyhow::Result;
-use llmchain_loaders::Document;
-use llmchain_loaders::Documents;
+
+use crate::DocumentPath;
+use crate::Documents;
 
 #[async_trait::async_trait]
-pub trait VectorStore: Send + Sync {
-    async fn init(&self) -> Result<()>;
-    async fn add_documents(&self, inputs: &Documents) -> Result<Vec<String>>;
-    async fn similarity_search(&self, query: &str, k: usize) -> Result<Vec<Document>>;
+pub trait DocumentLoader: Send + Sync {
+    async fn load(&self, path: DocumentPath) -> Result<Documents>;
 }

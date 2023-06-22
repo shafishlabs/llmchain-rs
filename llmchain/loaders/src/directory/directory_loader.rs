@@ -25,9 +25,9 @@ use rayon::prelude::IntoParallelRefIterator;
 use rayon::ThreadPoolBuilder;
 
 use crate::Disk;
-use crate::Document;
 use crate::DocumentLoader;
 use crate::DocumentPath;
+use crate::Documents;
 
 pub struct DirectoryLoader {
     disk: Arc<dyn Disk>,
@@ -83,7 +83,7 @@ impl DirectoryLoader {
 
 #[async_trait::async_trait]
 impl DocumentLoader for DirectoryLoader {
-    async fn load(&self, path: DocumentPath) -> Result<Vec<Document>> {
+    async fn load(&self, path: DocumentPath) -> Result<Documents> {
         let mut tasks: Vec<(String, Arc<dyn DocumentLoader>)> = Vec::new();
         self.process_directory(path.as_str()?, &mut tasks).await?;
 
@@ -97,10 +97,10 @@ impl DocumentLoader for DirectoryLoader {
                 .collect()
         });
 
-        let mut documents = vec![];
+        let documents = Documents::create();
         for result in results {
             let result = result.await?;
-            documents.extend(result);
+            documents.extend(&result);
         }
 
         Ok(documents)

@@ -12,9 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use anyhow::Result;
-
-use crate::DocumentPath;
+use llmchain_common::chat_tokens;
 
 #[derive(Debug, Clone, Eq, PartialEq)]
 pub struct Document {
@@ -32,12 +30,11 @@ impl Document {
         }
     }
 
+    pub fn tokens(&self) -> usize {
+        chat_tokens(&self.content).unwrap().len()
+    }
+
     pub fn size(&self) -> usize {
         self.content.len()
     }
-}
-
-#[async_trait::async_trait]
-pub trait DocumentLoader: Send + Sync {
-    async fn load(&self, path: DocumentPath) -> Result<Vec<Document>>;
 }

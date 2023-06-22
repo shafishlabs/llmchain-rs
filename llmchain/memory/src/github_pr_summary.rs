@@ -16,8 +16,9 @@ use std::collections::HashMap;
 use std::sync::Arc;
 
 use anyhow::Result;
+use llmchain_common::chat_tokens;
 use llmchain_llms::LLM;
-use llmchain_loaders::Document;
+use llmchain_loaders::Documents;
 use llmchain_prompts::GithubPRSummaryPrompt;
 use llmchain_prompts::Prompt;
 use llmchain_prompts::PromptTemplate;
@@ -27,12 +28,14 @@ use parking_lot::RwLock;
 use crate::Summarize;
 
 pub struct GithubPRSummary {
+    tokens: RwLock<usize>,
     llm: Arc<dyn LLM>,
     summaries: RwLock<Vec<String>>,
 }
 impl GithubPRSummary {
     pub fn create(llm: Arc<dyn LLM>) -> Arc<Self> {
         Arc::new(Self {
+            tokens: Default::default(),
             llm,
             summaries: RwLock::new(Vec::new()),
         })
@@ -41,29 +44,32 @@ impl GithubPRSummary {
 
 #[async_trait::async_trait]
 impl Summarize for GithubPRSummary {
-    async fn add_document(&self, document: &Document) -> Result<()> {
-        let template = "
+    async fn add_documents(&self, documents: &Documents) -> Result<()> {
+        for (i, document) in documents.iter().enumerate() {
+            let template = "
 As a highly skilled programmer, please provide a clear and concise summary of the changes in the provided git diff patch. Focus on accurately describing the code modifications without delving into the reasons behind them:
 
 ```diff
 {text}
 ```
 ";
-        let prompt_template = PromptTemplate::create(template, vec!["text".to_string()]);
-        let mut input_variables = HashMap::new();
-        input_variables.insert("text", document.content.as_str());
-        let prompt = prompt_template.format(input_variables)?;
+            let prompt_template = PromptTemplate::create(template, vec!["text".to_string()]);
+            let mut input_variables = HashMap::new();
+            input_variables.insert("text", document.content.as_str());
+            let prompt = prompt_template.format(input_variables)?;
 
-        let summary = self.llm.generate(&prompt).await?;
-        info!("summary: {}", summary.generation);
-        self.summaries.write().push(summary.generation);
+            let tokens = chat_tokens(&prompt)?;
+            *self.tokens.write() += tokens.len();
 
-        Ok(())
-    }
-
-    async fn add_documents(&self, documents: &[Document]) -> Result<()> {
-        for document in documents {
-            self.add_document(document).await?;
+            let summary = self.llm.generate(&prompt).await?;
+            info!(
+                "summary [{}/{}, token counts:{}]: \n{}",
+                i + 1,
+                documents.len(),
+                tokens.len(),
+                summary.generation
+            );
+            self.summaries.write().push(summary.generation);
         }
 
         Ok(())
@@ -80,11 +86,18 @@ As a highly skilled programmer, please provide a clear and concise summary of th
 
         let prompt_template = GithubPRSummaryPrompt::create();
         let prompt = prompt_template.format(input_variables)?;
-        info!("prompt:\n{}", prompt);
+
+        let tokens = chat_tokens(&prompt)?;
+        *self.tokens.write() += tokens.len();
+        info!("prompt: token counts={}, result:{}", tokens.len(), prompt);
 
         let summary = self.llm.generate(&prompt).await?;
         info!("final summary: {}", summary.generation);
 
         Ok(summary.generation)
+    }
+
+    fn tokens(&self) -> usize {
+        *self.tokens.read()
     }
 }

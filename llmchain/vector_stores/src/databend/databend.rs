@@ -20,6 +20,7 @@ use futures::StreamExt;
 use llmchain_common::escape_sql_string;
 use llmchain_embeddings::Embedding;
 use llmchain_loaders::Document;
+use llmchain_loaders::Documents;
 use log::info;
 use uuid::Uuid;
 
@@ -78,7 +79,7 @@ impl VectorStore for DatabendVectorStore {
         Ok(())
     }
 
-    async fn add_documents(&self, inputs: Vec<Document>) -> Result<Vec<String>> {
+    async fn add_documents(&self, inputs: &Documents) -> Result<Vec<String>> {
         let uuids = (0..inputs.len())
             .map(|_| Uuid::new_v4().to_string())
             .collect::<Vec<_>>();

@@ -30,15 +30,14 @@ impl GithubPRSummaryPrompt {
 impl Prompt for GithubPRSummaryPrompt {
     fn template(&self) -> String {
         let tpl = vec![
-            "Please follow these instructions to create a concise GitHub pull request summary based on the provided changelogs",
+            "Please follow these instructions to create a concise GitHub pull request summary as changelog based on the provided commit explanations",
             "using the following format for each key change:",
             "1. Identify and summarize the key changes in 1 to 4 main points.",
             "2. For each point, write a title of 10 words or less.",
             "3. Provide a brief description of each point, using 60 words or less.",
-            "4. Do not additional summary at the end of the output.",
             "The output format example for your reference:",
             "```
-## Summary
+## PR Summary
 * **Efficient table deletion**
 
 The code now supports deleting all rows in a table more efficiently.
@@ -47,7 +46,7 @@ The code now supports deleting all rows in a table more efficiently.
 
 Added comments throughout the codebase to enhance user understanding.
 ```",
-            "changelogs:",
+            "commit explanation:",
             "{text}",
         ];
         tpl.join("\n")

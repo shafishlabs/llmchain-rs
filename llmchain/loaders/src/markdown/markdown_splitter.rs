@@ -15,8 +15,8 @@
 use anyhow::Result;
 
 use crate::text::TextSplitter;
-use crate::Document;
 use crate::DocumentSplitter;
+use crate::Documents;
 
 pub struct MarkdownSplitter {
     pub splitter_chunk_size: usize,
@@ -46,7 +46,7 @@ impl DocumentSplitter for MarkdownSplitter {
         ]
     }
 
-    fn split_documents(&self, documents: &[Document]) -> Result<Vec<Document>> {
+    fn split_documents(&self, documents: &Documents) -> Result<Documents> {
         let text_splitter = TextSplitter::create()
             .with_chunk_size(self.splitter_chunk_size)
             .with_separators(self.separators());

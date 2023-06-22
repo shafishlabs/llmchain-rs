@@ -16,6 +16,7 @@ use anyhow::Result;
 use llmchain_embeddings::Embedding;
 use llmchain_embeddings::OpenAIEmbedding;
 use llmchain_loaders::Document;
+use llmchain_loaders::Documents;
 
 #[ignore]
 #[tokio::test]
@@ -32,11 +33,11 @@ async fn test_embedding_openai() -> Result<()> {
     // embeddings documents.
     {
         let embeddings = OpenAIEmbedding::create(&api_key);
-        let documents = vec![
+        let documents = Documents::from(vec![
             Document::create("", "hello"),
             Document::create("", "llmchain.rs"),
-        ];
-        let document_result = embeddings.embed_documents(documents).await?;
+        ]);
+        let document_result = embeddings.embed_documents(&documents).await?;
         assert_eq!(document_result.len(), 2);
         assert_eq!(document_result[0].len(), 1536);
     }

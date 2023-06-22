@@ -8,6 +8,8 @@ categories = ["LLM"]
 keywords = ["LLM"]
 
 [dependencies]
+llmchain-common = { path = "../common" }
+
 async-trait = { workspace = true }
 anyhow = { workspace = true }
 
@@ -17,6 +19,7 @@ git2 = "0.17.2"
 log = { workspace = true }
 octocrab = "0.24.0"
 opendal = "0.33.2"
+parking_lot = "0.12.1"
 patch = "0.7.0"
 rayon = "1.7.0"
 regex = "1.8.1"

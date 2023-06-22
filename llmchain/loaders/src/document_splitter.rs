@@ -14,9 +14,9 @@
 
 use anyhow::Result;
 
-use crate::document::Document;
+use crate::Documents;
 
 pub trait DocumentSplitter {
     fn separators(&self) -> Vec<String>;
-    fn split_documents(&self, documents: &[Document]) -> Result<Vec<Document>>;
+    fn split_documents(&self, documents: &Documents) -> Result<Documents>;
 }

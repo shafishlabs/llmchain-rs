@@ -1,5 +1,6 @@
-part=0, len=1906, chunk_size=2000, md5=40cc2399050ec2c4d53e7a566760fd2e, path:https://github.com/datafuselabs/databend/pull/11452
+part=0, len=1910, chunk_size=2000, md5=4485b0fe0b943f354e3ee6af8d157313, path:https://github.com/datafuselabs/databend/pull/11452
 ------------------------------------------------------------
+
 --- a/src/common/storage/src/stage.rs
 +++ b/src/common/storage/src/stage.rs
 @@ -285,7 +285,7 @@ fn blocking_list_files_with_pattern(
@@ -10,7 +11,8 @@ part=0, len=1906, chunk_size=2000, md5=40cc2399050ec2c4d53e7a566760fd2e, path:ht
 +    let list = operator.scan(path)?;
      let mut limit = 0;
      for obj in list {
-         let obj = obj?;--- a/src/query/storages/parquet/src/deserialize_transform.rs
+         let obj = obj?;
+--- a/src/query/storages/parquet/src/deserialize_transform.rs
 +++ b/src/query/storages/parquet/src/deserialize_transform.rs
 @@ -384,7 +384,7 @@ impl Processor for ParquetDeserializeTransform {
  fn intervals_to_bitmap(interval: &[Interval], num_rows: usize) -> Bitmap {
@@ -20,7 +22,8 @@ part=0, len=1906, chunk_size=2000, md5=40cc2399050ec2c4d53e7a566760fd2e, path:ht
 +            || interval.last().unwrap().start + interval.last().unwrap().length <= num_rows
      );
  
-     let mut bitmap = MutableBitmap::with_capacity(num_rows);--- a/Cargo.lock
+     let mut bitmap = MutableBitmap::with_capacity(num_rows);
+--- a/Cargo.lock
 +++ b/Cargo.lock
 @@ -871,12 +871,14 @@ dependencies = [
   "common-exception",
@@ -36,7 +39,8 @@ part=0, len=1906, chunk_size=2000, md5=40cc2399050ec2c4d53e7a566760fd2e, path:ht
 + "uuid",
  ]
  
- [[package]]--- a/src/bendpy/Cargo.toml
+ [[package]]
+--- a/src/bendpy/Cargo.toml
 +++ b/src/bendpy/Cargo.toml
 @@ -16,6 +16,7 @@ crate-type = ["cdylib"]
  
@@ -54,7 +58,7 @@ part=0, len=1906, chunk_size=2000, md5=40cc2399050ec2c4d53e7a566760fd2e, path:ht
  databend-query = { path = "../query/service", features = [
      "simd",
      "disable_initial_exec_tls",
-part=1, len=1582, chunk_size=2000, md5=f7d10a2ad03e2444adac2468165f6214, path:https://github.com/datafuselabs/databend/pull/11452
+part=1, len=1583, chunk_size=2000, md5=1c32a8c2032827f31a854561b75decff, path:https://github.com/datafuselabs/databend/pull/11452
 ------------------------------------------------------------
 --- a/src/bendpy/README.md
 +++ b/src/bendpy/README.md
@@ -83,7 +87,8 @@ part=1, len=1582, chunk_size=2000, md5=f7d10a2ad03e2444adac2468165f6214, path:ht
 +
  ## Development
  
- Setup virtualenv:--- a/src/bendpy/src/context.rs
+ Setup virtualenv:
+--- a/src/bendpy/src/context.rs
 +++ b/src/bendpy/src/context.rs
 @@ -36,19 +36,30 @@ pub(crate) struct PySessionContext {
  #[pymethods]
@@ -146,7 +151,7 @@ part=2, len=874, chunk_size=2000, md5=56750e896aaaa50a660c96f64ae794e1, path:htt
          GlobalServices::init(conf).await.unwrap();
      });
  
-part=3, len=1996, chunk_size=2000, md5=1facdfb6091e8e1cd9ddda683626c674, path:https://github.com/datafuselabs/databend/pull/11452
+part=3, len=1997, chunk_size=2000, md5=12108b3cedc866b29f8eb2a7c81e4f3f, path:https://github.com/datafuselabs/databend/pull/11452
 ------------------------------------------------------------
 --- a/src/query/service/src/sessions/session_ctx.rs
 +++ b/src/query/service/src/sessions/session_ctx.rs
@@ -193,7 +198,8 @@ part=3, len=1996, chunk_size=2000, md5=1facdfb6091e8e1cd9ddda683626c674, path:ht
 +
          conf.query.tenant_id.clone()
      }
- --- a/src/query/service/src/sessions/session_mgr.rs
+ 
+--- a/src/query/service/src/sessions/session_mgr.rs
 +++ b/src/query/service/src/sessions/session_mgr.rs
 @@ -125,7 +125,7 @@ impl SessionManager {
              _ => None,
@@ -204,7 +210,7 @@ part=3, len=1996, chunk_size=2000, md5=1facdfb6091e8e1cd9ddda683626c674, path:ht
          let session = Session::try_create(id.clone(), typ.clone(), session_ctx, mysql_conn_id)?;
  
          let mut sessions = self.active_sessions.write();
-part=4, len=907, chunk_size=2000, md5=33f85002c49f6b8c0dbdda432faee015, path:https://github.com/datafuselabs/databend/pull/11453
+part=4, len=908, chunk_size=2000, md5=ab8d1e695004a1f32cb97efeaa2c14f6, path:https://github.com/datafuselabs/databend/pull/11453
 ------------------------------------------------------------
 --- a/src/query/service/src/sessions/session_type.rs
 +++ b/src/query/service/src/sessions/session_type.rs
@@ -216,7 +222,8 @@ part=4, len=907, chunk_size=2000, md5=33f85002c49f6b8c0dbdda432faee015, path:htt
 +#[derive(Clone, PartialEq)]
  pub enum SessionType {
      Clickhouse,
-     MySQL,--- a/src/query/service/tests/it/sessions/session_context.rs
+     MySQL,
+--- a/src/query/service/tests/it/sessions/session_context.rs
 +++ b/src/query/service/tests/it/sessions/session_context.rs
 @@ -19,11 +19,12 @@ use common_exception::Result;
  use common_meta_app::principal::UserInfo;
@@ -263,7 +270,7 @@ part=5, len=1518, chunk_size=2000, md5=87ed248dcda5cca50770854d2a73e444, path:ht
  
  ### Comparison Operations
  
-part=6, len=1885, chunk_size=2000, md5=8ca664c51ed1f8a93a724581036669a5, path:https://github.com/datafuselabs/databend/pull/11453
+part=6, len=1886, chunk_size=2000, md5=488dafbd5a859e11f0475ec1f3be9cbc, path:https://github.com/datafuselabs/databend/pull/11453
 ------------------------------------------------------------
 --- a/src/query/expression/src/type_check.rs
 +++ b/src/query/expression/src/type_check.rs
@@ -284,7 +291,8 @@ part=6, len=1885, chunk_size=2000, md5=8ca664c51ed1f8a93a724581036669a5, path:ht
 +        (DataType::Decimal(_), DataType::Number(NumberDataType::Float64)) => true,
          _ => false,
      }
- }--- a/src/query/expression/src/types/decimal.rs
+ }
+--- a/src/query/expression/src/types/decimal.rs
 +++ b/src/query/expression/src/types/decimal.rs
 @@ -678,25 +678,21 @@ impl DecimalDataType {
          other.max_precision()

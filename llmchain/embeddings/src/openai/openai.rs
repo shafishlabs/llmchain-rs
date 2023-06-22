@@ -17,7 +17,7 @@ use std::sync::Arc;
 use anyhow::Result;
 use llmchain_llms::OpenAI;
 use llmchain_llms::LLM;
-use llmchain_loaders::Document;
+use llmchain_loaders::Documents;
 
 use crate::Embedding;
 
@@ -46,8 +46,8 @@ impl Embedding for OpenAIEmbedding {
         }
     }
 
-    async fn embed_documents(&self, inputs: Vec<Document>) -> Result<Vec<Vec<f32>>> {
-        let inputs = inputs.iter().map(|x| x.content.clone()).collect::<Vec<_>>();
+    async fn embed_documents(&self, inputs: &Documents) -> Result<Vec<Vec<f32>>> {
+        let inputs = inputs.iter().map(|x| x.content).collect::<Vec<_>>();
         let result = self.llm.embedding(inputs).await?;
 
         Ok(result.embeddings)

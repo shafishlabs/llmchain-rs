@@ -13,5 +13,7 @@
 // limitations under the License.
 
 mod string;
+mod token;
 
 pub use string::escape_sql_string;
+pub use token::chat_tokens;

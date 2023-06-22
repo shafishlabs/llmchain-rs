@@ -17,9 +17,9 @@ use std::sync::Arc;
 use anyhow::Result;
 
 use crate::Disk;
-use crate::Document;
 use crate::DocumentLoader;
 use crate::DocumentPath;
+use crate::Documents;
 use crate::TextLoader;
 
 pub struct MarkdownLoader {
@@ -34,7 +34,7 @@ impl MarkdownLoader {
 
 #[async_trait::async_trait]
 impl DocumentLoader for MarkdownLoader {
-    async fn load(&self, path: DocumentPath) -> Result<Vec<Document>> {
+    async fn load(&self, path: DocumentPath) -> Result<Documents> {
         let text_loader = TextLoader::create(self.disk.clone());
         text_loader.load(path).await
     }

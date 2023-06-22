@@ -108,7 +108,7 @@ async fn embeddings(databend_dsn: &str) -> Result<()> {
         databend.init().await?;
 
         // indexing.
-        let uuids = databend.add_documents(documents).await?;
+        let uuids = databend.add_documents(&documents).await?;
         info!(
             "Indexing the documents done, count: {}, cost: {}",
             uuids.len(),

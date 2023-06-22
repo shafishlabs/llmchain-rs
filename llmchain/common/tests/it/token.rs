@@ -12,13 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use anyhow::Result;
-use llmchain_loaders::Document;
-use llmchain_loaders::Documents;
+use llmchain_common::chat_tokens;
 
-#[async_trait::async_trait]
-pub trait VectorStore: Send + Sync {
-    async fn init(&self) -> Result<()>;
-    async fn add_documents(&self, inputs: &Documents) -> Result<Vec<String>>;
-    async fn similarity_search(&self, query: &str, k: usize) -> Result<Vec<Document>>;
+#[test]
+fn test_token() {
+    let input = "This is a sentence   with spaces, hahhahah haha ha";
+    let output = chat_tokens(input).unwrap();
+    assert_eq!(output, [
+        "This",
+        " is",
+        " a",
+        " sentence",
+        " ",
+        " ",
+        " with",
+        " spaces",
+        ",",
+        " ha",
+        "hh",
+        "ahah",
+        " haha",
+        " ha"
+    ]);
 }
