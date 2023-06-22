@@ -34,14 +34,17 @@ impl Prompt for GithubPRSummaryPrompt {
             "using the following format for each key change:",
             "1. Identify and summarize the key changes in 1 to 4 main points.",
             "2. For each point, write a title of 10 words or less.",
-            "3. Provide a brief description of each point, using 80 words or less.",
+            "3. Provide a brief description of each point, using 60 words or less.",
             "4. Do not additional summary at the end of the output.",
-            "For example:",
+            "The output format example for your reference:",
             "```
 ## Summary
 * **Efficient table deletion**
+
 The code now supports deleting all rows in a table more efficiently.
+
 * **Improved readability**
+
 Added comments throughout the codebase to enhance user understanding.
 ```",
             "changelogs:",
