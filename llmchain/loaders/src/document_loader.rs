@@ -12,29 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use llmchain_common::chat_tokens;
+use anyhow::Result;
 
-#[derive(Debug, Clone, Eq, PartialEq)]
-pub struct Document {
-    pub path: String,
-    pub content: String,
-    pub content_md5: String,
-}
+use crate::DocumentPath;
+use crate::Documents;
 
-impl Document {
-    pub fn create(path: &str, content: &str) -> Self {
-        Document {
-            path: path.to_string(),
-            content: content.to_string(),
-            content_md5: format!("{:x}", md5::compute(content)),
-        }
-    }
-
-    pub fn tokens(&self) -> usize {
-        chat_tokens(&self.content).unwrap().len()
-    }
-
-    pub fn size(&self) -> usize {
-        self.content.len()
-    }
+#[async_trait::async_trait]
+pub trait DocumentLoader: Send + Sync {
+    async fn load(&self, path: DocumentPath) -> Result<Documents>;
 }
