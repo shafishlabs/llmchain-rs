@@ -64,7 +64,7 @@ Please write a understandable key changes summaries on the following git diff, g
 
             let summary = self.llm.generate(&prompt).await?;
             info!(
-                "summary [{}/{}, tokens:{}]: \n{}",
+                "summary [{}/{}, tokens {}]: \n{}",
                 i + 1,
                 documents.len(),
                 tokens.len(),
@@ -90,7 +90,7 @@ Please write a understandable key changes summaries on the following git diff, g
 
         let tokens = chat_tokens(&prompt)?;
         *self.tokens.write() += tokens.len();
-        info!("prompt: token:{}, result:{}", tokens.len(), prompt);
+        info!("prompt: tokens {}, result\n{}", tokens.len(), prompt);
 
         let summary = self.llm.generate(&prompt).await?;
         info!("final summary: {}", summary.generation);

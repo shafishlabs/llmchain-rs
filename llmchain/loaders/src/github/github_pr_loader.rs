@@ -15,6 +15,7 @@
 use std::sync::Arc;
 
 use anyhow::Result;
+use llmchain_common::chat_tokens;
 use log::info;
 use octocrab::Octocrab;
 
@@ -22,7 +23,6 @@ use crate::Document;
 use crate::DocumentLoader;
 use crate::DocumentPath;
 use crate::Documents;
-
 pub struct GithubPRLoader {
     owner: String,
     repo: String,
@@ -70,9 +70,10 @@ impl DocumentLoader for GithubPRLoader {
             let diff = diff?;
             documents.push(Document::create(&path, &diff));
             info!(
-                "Loaded PR {}, diff_len {} in {:?}",
+                "Loaded PR {}, diff_len {}, tokens {} in {:?}",
                 path,
                 diff.len(),
+                chat_tokens(&diff).unwrap().len(),
                 now.elapsed()
             );
         }
