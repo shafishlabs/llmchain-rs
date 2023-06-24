@@ -47,8 +47,7 @@ impl Summarize for GithubPRSummary {
     async fn add_documents(&self, documents: &Documents) -> Result<()> {
         for (i, document) in documents.iter().enumerate() {
             let template = "
-You will act as a reviewer for GitHub Pull Requests.
-Please write a understandable key changes summaries on the following git diff, give as bullet points:
+Give me a summarized text bullet list \"• \" in plain English of all code changes in this diff and group them by file like (index.rs):
 
 ```diff
 {text}
