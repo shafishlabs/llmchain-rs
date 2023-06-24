@@ -35,13 +35,9 @@ impl Prompt for GithubPRSummaryPrompt {
             2. For each point, write a title of 30 words or less for to summary what's the point changed.
             3. Provide a description of each point, using 50 words or less, the impact or purpose of this change.",
             "Format the output as follows(The provided examples are for illustration purposes only and should not be repeated):
-## PR Summary
-### Title 1
-Description 1
-
-### Title 2
-Description 2",
-            "Commit explanations:",
+* **Title 1** Description 1
+* **Title 2** Description 2",
+            "--------",
             "{text}",
         ];
         tpl.join("\n")

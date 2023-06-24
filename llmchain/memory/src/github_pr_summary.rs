@@ -47,8 +47,8 @@ impl Summarize for GithubPRSummary {
     async fn add_documents(&self, documents: &Documents) -> Result<()> {
         for (i, document) in documents.iter().enumerate() {
             let template = "
-You are an experienced software developer. You will act as a reviewer for GitHub Pull Requests.
-Please write a understandable key changes on the following git diff:
+You will act as a reviewer for GitHub Pull Requests.
+Please write a understandable key changes summaries on the following git diff, give as bullet points:
 
 ```diff
 {text}
@@ -64,7 +64,7 @@ Please write a understandable key changes on the following git diff:
 
             let summary = self.llm.generate(&prompt).await?;
             info!(
-                "summary [{}/{}, token counts:{}]: \n{}",
+                "summary [{}/{}, tokens:{}]: \n{}",
                 i + 1,
                 documents.len(),
                 tokens.len(),
