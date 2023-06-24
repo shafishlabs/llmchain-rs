@@ -47,7 +47,7 @@ impl Summarize for GithubPRSummary {
     async fn add_documents(&self, documents: &Documents) -> Result<()> {
         for (i, document) in documents.iter().enumerate() {
             let template = "
-Give me a summarized text bullet list \"• \" in plain English of all code changes in this diff and group them by file like (index.rs):
+Give me a summarized text bullet list \"• \" in plain English of all code changes in this diff and group them by file in short:
 
 ```diff
 {text}
