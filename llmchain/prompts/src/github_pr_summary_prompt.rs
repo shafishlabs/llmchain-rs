@@ -31,11 +31,11 @@ impl Prompt for GithubPRSummaryPrompt {
     fn template(&self) -> String {
         let tpl = vec![
             "Please provide a clear and concise summary of the main changes made in a pull request. Focus on the motivation behind the changes and avoid describing specific file modifications. Follow these guidelines while summarizing:",
-            "1. Disregard unimportant changes.",
-            "2. Consolidate similar points.",
+            "1. Ignore changes that you think are not important.",
+            "2. Remove the similar points.",
             "3. Summarize and classify all changelogs into 1 to 4 points.",
             "4. Summarize a title for each point, describing what the point mainly did, as a new title for the pull request changelog, no more than 30 words.",
-            "5. Make an easy-to-understand summary for each point no more than 50 words, please do not describe what was modified.",
+            "5. Make an easy-to-understand summary for each point no more than 80 words, please do not describe what was modified.",
             "Format the output as follows(The provided examples are for illustration purposes only and should not be repeated):
 * **Title 1** Description 1
 * **Title 2** Description 2",
