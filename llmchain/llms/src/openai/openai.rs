@@ -108,7 +108,7 @@ impl OpenAI {
         let conf = OpenAIConfig::new()
             .with_api_key(&self.api_key)
             .with_api_base(&*self.api_base.read());
-        Client::new(conf)
+        Client::with_config(conf)
     }
 }
 
@@ -158,8 +158,8 @@ impl LLM for OpenAI {
             generate_result.completion_tokens = usage.completion_tokens;
         }
 
-        if !response.choices.is_empty() {
-            generate_result.generation = response.choices[0].message.content.clone();
+        if let Some(choice) = response.choices.first() {
+            generate_result.generation = choice.message.content.clone().unwrap_or_default();
         }
 
         Ok(generate_result)
