@@ -9,7 +9,7 @@ keywords = ["LLM"]
 
 [dependencies]
 anyhow = { workspace = true }
-tiktoken-rs = "0.4.4"
+tiktoken-rs = {git = "https://github.com/BohuTANG/tiktoken-rs"}
 
 [dev-dependencies]
 goldenfile = "1.4"
