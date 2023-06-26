@@ -16,7 +16,7 @@ members = [
 
 
 [workspace.dependencies]
-anyhow = "1.0.58"
+anyhow = "1.0.*"
 async-trait = "0.1.68"
 databend-driver = "0.2.23"
 env_logger = "0.10.0"
