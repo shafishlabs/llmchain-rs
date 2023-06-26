@@ -87,7 +87,7 @@ impl AzureOpenAI {
             .with_api_base(&self.api_base)
             .with_deployment_id(&self.deployment_id)
             .with_api_version(&self.api_version);
-        Client::new(conf)
+        Client::with_config(conf)
     }
 }
 
@@ -137,8 +137,8 @@ impl LLM for AzureOpenAI {
             generate_result.completion_tokens = usage.completion_tokens;
         }
 
-        if !response.choices.is_empty() {
-            generate_result.generation = response.choices[0].message.content.clone();
+        if let Some(choice) = response.choices.first() {
+            generate_result.generation = choice.message.content.clone().unwrap_or_default();
         }
 
         Ok(generate_result)
