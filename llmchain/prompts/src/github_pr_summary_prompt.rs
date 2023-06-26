@@ -30,23 +30,13 @@ impl GithubPRSummaryPrompt {
 impl Prompt for GithubPRSummaryPrompt {
     fn template(&self) -> String {
         let tpl = vec![
-            "Please follow these instructions to create a concise GitHub pull request summary as changelog based on the provided commit explanations",
-            "using the following format for each key change:",
-            "1. Identify and summarize the key changes in 1 to 4 main points.",
-            "2. For each point, write a title of 10 words or less.",
-            "3. Provide a brief description of each point, using 60 words or less.",
-            "The output format example for your reference:",
-            "```
-## PR Summary
-* **Efficient table deletion**
-
-The code now supports deleting all rows in a table more efficiently.
-
-* **Improved readability**
-
-Added comments throughout the codebase to enhance user understanding.
-```",
-            "commit explanation:",
+            "You are an expert programmer summarizing code changes, please provide a clear and concise summary of the main changes made in a pull request. Focus on the motivation behind the changes and avoid describing specific file modifications. Follow these guidelines while summarizing:",
+            "1. Ignore changes that you think are not important.",
+            "2. Remove the similar points.",
+            "3. Summarize and classify all changelogs into 1 to 4 points.",
+            "4. Summarize a title for each point, format is `* **Title**`, describing what the point mainly did, as a new title for the pull request changelog, no more than 30 words.",
+            "5. Make an readability summary for each point no more than 80 words, please do not describe what was modified.",
+            "--------",
             "{text}",
         ];
         tpl.join("\n")

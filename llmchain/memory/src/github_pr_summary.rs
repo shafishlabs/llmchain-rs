@@ -47,7 +47,7 @@ impl Summarize for GithubPRSummary {
     async fn add_documents(&self, documents: &Documents) -> Result<()> {
         for (i, document) in documents.iter().enumerate() {
             let template = "
-As a highly skilled programmer, please provide a clear and concise summary of the changes in the provided git diff patch. Focus on accurately describing the code modifications without delving into the reasons behind them:
+Explain the code diff and group them by file as github release changelog:
 
 ```diff
 {text}
@@ -63,7 +63,7 @@ As a highly skilled programmer, please provide a clear and concise summary of th
 
             let summary = self.llm.generate(&prompt).await?;
             info!(
-                "summary [{}/{}, token counts:{}]: \n{}",
+                "summary [{}/{}, tokens {}]: \n{}",
                 i + 1,
                 documents.len(),
                 tokens.len(),
@@ -81,7 +81,7 @@ As a highly skilled programmer, please provide a clear and concise summary of th
         }
 
         let mut input_variables = HashMap::new();
-        let text = self.summaries.read().join("\n====\n");
+        let text = self.summaries.read().join("\n");
         input_variables.insert("text", text.as_str());
 
         let prompt_template = GithubPRSummaryPrompt::create();
@@ -89,7 +89,7 @@ As a highly skilled programmer, please provide a clear and concise summary of th
 
         let tokens = chat_tokens(&prompt)?;
         *self.tokens.write() += tokens.len();
-        info!("prompt: token counts={}, result:{}", tokens.len(), prompt);
+        info!("prompt: tokens {}, result\n{}", tokens.len(), prompt);
 
         let summary = self.llm.generate(&prompt).await?;
         info!("final summary: {}", summary.generation);

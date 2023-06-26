@@ -16,7 +16,7 @@ use llmchain_common::chat_tokens;
 
 #[test]
 fn test_token() {
-    let input = "This is a sentence   with spaces, hahhahah haha ha";
+    let input = "🍌This is a sentence   with spaces, hahhahah haha ha";
     let output = chat_tokens(input).unwrap();
     assert_eq!(output, [
         "This",
