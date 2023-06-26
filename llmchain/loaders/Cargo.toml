@@ -13,7 +13,7 @@ llmchain-common = { path = "../common" }
 async-trait = { workspace = true }
 anyhow = { workspace = true }
 
-futures = "0.3.28"
+futures = "0.3.*"
 glob = "0.3.1"
 git2 = "0.17.2"
 log = { workspace = true }
