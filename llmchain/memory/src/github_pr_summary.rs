@@ -47,7 +47,7 @@ impl Summarize for GithubPRSummary {
     async fn add_documents(&self, documents: &Documents) -> Result<()> {
         for (i, document) in documents.iter().enumerate() {
             let template = "
-Explain the code diff and group them by file as github release changelog:
+Explain the code diff and group them by the file name:
 
 ```diff
 {text}
