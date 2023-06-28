@@ -41,7 +41,7 @@ jobs:
     env:
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
       DATABEND_DSN: ${{ secrets.DATABEND_DSN }}
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      L_GITHUB_TOKEN: ${{ secrets.L_GITHUB_TOKEN }}
       
     steps:
       - uses: actions/checkout@v3
