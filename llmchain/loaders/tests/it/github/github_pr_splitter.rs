@@ -24,7 +24,7 @@ use llmchain_loaders::GithubPRLoader;
 
 #[tokio::test]
 async fn test_github_pr_splitter_default() -> Result<()> {
-    let token = std::env::var("GITHUB_TOKEN").unwrap();
+    let token = std::env::var("L_GITHUB_TOKEN").expect("L_GITHUB_TOKEN is not set");
     // testdata dir.
     let curdir = std::env::current_dir()?.to_str().unwrap().to_string();
     let testdata_dir = format!("{}/tests/testdata", curdir);
