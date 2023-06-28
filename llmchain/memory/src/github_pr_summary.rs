@@ -46,8 +46,17 @@ impl GithubPRSummary {
 impl Summarize for GithubPRSummary {
     async fn add_documents(&self, documents: &Documents) -> Result<()> {
         for (i, document) in documents.iter().enumerate() {
-            let template = "
-Explain the code diff and group them by the file name:
+            let template =
+
+            "
+             Please explain the code diff group by the file name in bullet points.
+             If the file is added, prefix `ADD`, if the file is deleted, prefix `DELETE`, if the file is changed, prefix `CHANGE`.
+             Please use the following format:
+             [ADD/DELETE/CHANGE] file-name
+             - bullet point 1
+             - bullet point 2
+             ... ...
+            --------
 
 ```diff
 {text}
