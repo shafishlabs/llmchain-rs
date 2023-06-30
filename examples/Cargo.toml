@@ -50,13 +50,7 @@ doctest = false
 test = false
 
 [dependencies]
-llmchain-embeddings = { path = "../llmchain/embeddings" }
-llmchain-loaders = { path = "../llmchain/loaders" }
-llmchain-llms = { path = "../llmchain/llms" }
-llmchain-prompts = { path = "../llmchain/prompts" }
-llmchain-memory = { path = "../llmchain/memory" }
-llmchain-vector-stores = { path = "../llmchain/vector_stores" }
-llmchain-test-kits = { path = "../llmchain/test_kits" }
+llmchain = { path = "../export" }
 
 anyhow = { workspace = true }
 env_logger = { workspace = true }

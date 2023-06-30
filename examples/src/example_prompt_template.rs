@@ -16,8 +16,8 @@ use std::collections::HashMap;
 
 use anyhow::Result;
 use env_logger::Env;
-use llmchain_prompts::Prompt;
-use llmchain_prompts::PromptTemplate;
+use llmchain::Prompt;
+use llmchain::PromptTemplate;
 use log::info;
 
 /// cargo run --bin example_prompt_template

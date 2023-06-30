@@ -14,10 +14,10 @@
 
 use anyhow::Result;
 use env_logger::Env;
-use llmchain_embeddings::DatabendEmbedding;
-use llmchain_embeddings::Embedding;
-use llmchain_loaders::Document;
-use llmchain_loaders::Documents;
+use llmchain::DatabendEmbedding;
+use llmchain::Document;
+use llmchain::Documents;
+use llmchain::Embedding;
 use log::info;
 
 /// EXPORT DATABEND_DSN=<your-databend-dsn>

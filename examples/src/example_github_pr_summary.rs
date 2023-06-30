@@ -14,16 +14,16 @@
 
 use anyhow::Result;
 use env_logger::Env;
-use llmchain_llms::DatabendLLM;
-use llmchain_loaders::DocumentLoader;
-use llmchain_loaders::DocumentPath;
-use llmchain_loaders::DocumentSplitter;
-use llmchain_loaders::GithubPRDiffSplitter;
-use llmchain_loaders::GithubPRLoader;
-use llmchain_memory::GithubPRSummary;
-use llmchain_memory::Summarize;
-use llmchain_test_kits::handle_repl;
-use llmchain_test_kits::AsyncCallback;
+use llmchain::handle_repl;
+use llmchain::DatabendLLM;
+use llmchain::DocumentLoader;
+use llmchain::DocumentPath;
+use llmchain::DocumentSplitter;
+use llmchain::GithubPRDiffSplitter;
+use llmchain::GithubPRLoader;
+use llmchain::GithubPRSummary;
+use llmchain::ReplAsyncCallback;
+use llmchain::Summarize;
 use log::info;
 use url::Url;
 
@@ -32,7 +32,7 @@ use url::Url;
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     env_logger::Builder::from_env(Env::default().default_filter_or("info")).init();
-    let callback: Box<AsyncCallback> = Box::new(|input| Box::pin(github_pr_summary(input)));
+    let callback: Box<ReplAsyncCallback> = Box::new(|input| Box::pin(github_pr_summary(input)));
     handle_repl("pr> ", callback).await?;
 
     Ok(())
