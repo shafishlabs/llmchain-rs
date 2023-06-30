@@ -19,20 +19,20 @@ use std::time::Instant;
 
 use anyhow::Result;
 use env_logger::Env;
-use llmchain_embeddings::DatabendEmbedding;
-use llmchain_llms::DatabendLLM;
-use llmchain_llms::LLM;
-use llmchain_loaders::DirectoryLoader;
-use llmchain_loaders::DocumentLoader;
-use llmchain_loaders::DocumentPath;
-use llmchain_loaders::DocumentSplitter;
-use llmchain_loaders::LocalDisk;
-use llmchain_loaders::MarkdownLoader;
-use llmchain_loaders::MarkdownSplitter;
-use llmchain_prompts::DocumentRetrievalPrompt;
-use llmchain_prompts::Prompt;
-use llmchain_vector_stores::DatabendVectorStore;
-use llmchain_vector_stores::VectorStore;
+use llmchain::DatabendEmbedding;
+use llmchain::DatabendLLM;
+use llmchain::DatabendVectorStore;
+use llmchain::DirectoryLoader;
+use llmchain::DocumentLoader;
+use llmchain::DocumentPath;
+use llmchain::DocumentRetrievalPrompt;
+use llmchain::DocumentSplitter;
+use llmchain::LocalDisk;
+use llmchain::MarkdownLoader;
+use llmchain::MarkdownSplitter;
+use llmchain::Prompt;
+use llmchain::VectorStore;
+use llmchain::LLM;
 use log::info;
 
 /// EXPORT DATABEND_DSN=<your-databend-dsn>

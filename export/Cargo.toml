@@ -10,3 +10,4 @@ llmchain-llms = { path = "../llmchain/llms" }
 llmchain-memory = { path = "../llmchain/memory" }
 llmchain-prompts = { path = "../llmchain/prompts" }
 llmchain-vector-stores = { path = "../llmchain/vector_stores" }
+llmchain-test-kits = { path = "../llmchain/test_kits" }

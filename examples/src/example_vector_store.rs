@@ -16,11 +16,11 @@ use std::sync::Arc;
 
 use anyhow::Result;
 use env_logger::Env;
-use llmchain_embeddings::DatabendEmbedding;
-use llmchain_loaders::Document;
-use llmchain_loaders::Documents;
-use llmchain_vector_stores::DatabendVectorStore;
-use llmchain_vector_stores::VectorStore;
+use llmchain::DatabendEmbedding;
+use llmchain::DatabendVectorStore;
+use llmchain::Document;
+use llmchain::Documents;
+use llmchain::VectorStore;
 use log::info;
 
 /// EXPORT DATABEND_DSN=<your-databend-dsn>

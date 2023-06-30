@@ -14,9 +14,9 @@
 
 use anyhow::Result;
 use env_logger::Env;
-use llmchain_loaders::DocumentLoader;
-use llmchain_loaders::DocumentPath;
-use llmchain_loaders::GithubRepoLoader;
+use llmchain::DocumentLoader;
+use llmchain::DocumentPath;
+use llmchain::GithubRepoLoader;
 use log::info;
 
 /// cargo run --bin example_github_repo_loader

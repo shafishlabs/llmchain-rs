@@ -26,12 +26,12 @@ use rustyline::error::ReadlineError;
 use rustyline::CompletionType;
 use rustyline::DefaultEditor;
 
-pub type AsyncCallback =
+pub type ReplAsyncCallback =
     dyn Fn(String) -> Pin<Box<dyn Future<Output = Result<String>> + Send>> + Send + Sync;
 
 pub async fn handle_repl(
     hint: &str,
-    callback: Box<AsyncCallback>,
+    callback: Box<ReplAsyncCallback>,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let config = Builder::new()
         .completion_prompt_limit(5)
