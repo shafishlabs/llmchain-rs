@@ -4,8 +4,7 @@ version = "0.1.0"
 edition = "2021"
 license = "Apache-2.0"
 description = "A Rust framework for large language models, inspired by LangChain"
-categories = ["ai"]
-keywords = ["ai", "llm"]
+keywords = ["openai", "ai", "llm", "gpt"]
 
 [dependencies]
 anyhow = "1.0.*"
