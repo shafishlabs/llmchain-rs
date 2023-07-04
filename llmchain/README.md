@@ -15,3 +15,7 @@
   - **Vector Store**: [DatabendCloud](https://app.databend.com)
 
 - **Chains**: Seamlessly combines multiple actions to create unified, coherent AI services
+
+## Examples
+
+Please see [examples](https://github.com/shafishlabs/llmchain.rs/tree/main/examples).
