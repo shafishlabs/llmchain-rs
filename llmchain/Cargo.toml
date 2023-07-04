@@ -1,6 +1,6 @@
 [package]
 name = "llmchain"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["BohuTANG <overred.shuttler@gmail.com>"]
 edition = "2021"
 description = "A Rust framework for large language models, inspired by LangChain"
