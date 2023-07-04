@@ -2,25 +2,9 @@
 resolver = "2"
 
 members = [
-    "llmchain/common",
-    "llmchain/embeddings",
-    "llmchain/loaders",
-    "llmchain/llms",
-    "llmchain/memory",
-    "llmchain/prompts",
-    "llmchain/test_kits",
-    "llmchain/vector_stores",
-    "export",
-    "examples",
+    "llmchain",
+    "examples"
 ]
 
 
 [workspace.dependencies]
-anyhow = "1.0.*"
-async-trait = "0.1.68"
-databend-driver = "0.2.23"
-env_logger = "0.10.0"
-futures = "0.3.*"
-log = "0.4.17"
-
-tokio = { version = "1.28.0", features = ["full"]}

@@ -1,0 +1,35 @@
+[package]
+name = "llmchain"
+version = "0.1.1"
+authors = ["BohuTANG <overred.shuttler@gmail.com>"]
+edition = "2021"
+description = "A Rust framework for large language models, inspired by LangChain"
+repository = "https://github.com/shafishlabs/llmchain.rs"
+license = "Apache-2.0"
+keywords = ["openai", "ai", "llm", "gpt", "library"]
+
+[dependencies]
+anyhow = "1.0.*"
+async-openai = "0.12.0"
+async-trait = "0.1.68"
+databend-driver = "0.2.23"
+env_logger = "0.10.0"
+futures = "0.3.*"
+git2 = "0.17.2"
+glob = "0.3.1"
+goldenfile = "1.4"
+log = "0.4.17"
+md5 = "0.7.0"
+octocrab = "0.25.1"
+opendal = "0.38.0"
+parking_lot = "0.12.1"
+patch = "0.7.0"
+rayon = "1.7.0"
+regex = "1.8.1"
+serde_json = "1.0.95"
+tiktoken-rs = "0.5.0"
+tokio = { version = "1.28.0", features = ["full"] }
+tokio-stream = "0.1.12"
+uuid = "1.3.3"
+
+[dev-dependencies]
