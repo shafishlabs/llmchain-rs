@@ -11,6 +11,15 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-mod document_retrieval_prompt;
-mod prompt_template;
-mod text_to_sql_prompt;
+
+use anyhow::Result;
+
+use crate::Document;
+use crate::Documents;
+
+#[async_trait::async_trait]
+pub trait VectorStore: Send + Sync {
+    async fn init(&self) -> Result<()>;
+    async fn add_documents(&self, inputs: &Documents) -> Result<Vec<String>>;
+    async fn similarity_search(&self, query: &str, k: usize) -> Result<Vec<Document>>;
+}

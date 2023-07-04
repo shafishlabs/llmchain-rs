@@ -16,16 +16,16 @@ use std::collections::HashMap;
 use std::sync::Arc;
 
 use anyhow::Result;
-use llmchain_common::chat_tokens;
-use llmchain_llms::LLM;
-use llmchain_loaders::Documents;
-use llmchain_prompts::GithubPRSummaryPrompt;
-use llmchain_prompts::Prompt;
-use llmchain_prompts::PromptTemplate;
 use log::info;
 use parking_lot::RwLock;
 
+use crate::chat_tokens;
+use crate::Documents;
+use crate::GithubPRSummaryPrompt;
+use crate::Prompt;
+use crate::PromptTemplate;
 use crate::Summarize;
+use crate::LLM;
 
 pub struct GithubPRSummary {
     tokens: RwLock<usize>,

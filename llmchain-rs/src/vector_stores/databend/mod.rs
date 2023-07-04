@@ -12,12 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use anyhow::Result;
-use llmchain_loaders::Documents;
+#[allow(clippy::module_inception)]
+mod databend;
 
-#[async_trait::async_trait]
-pub trait Summarize: Send + Sync {
-    async fn add_documents(&self, documents: &Documents) -> Result<()>;
-    async fn final_summary(&self) -> Result<String>;
-    fn tokens(&self) -> usize;
-}
+pub use databend::DatabendVectorStore;
