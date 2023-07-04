@@ -12,8 +12,29 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-mod common;
-mod loaders;
+use crate::chat_tokens;
 
-pub use common::*;
-pub use loaders::*;
+#[derive(Debug, Clone, Eq, PartialEq)]
+pub struct Document {
+    pub path: String,
+    pub content: String,
+    pub content_md5: String,
+}
+
+impl Document {
+    pub fn create(path: &str, content: &str) -> Self {
+        Document {
+            path: path.to_string(),
+            content: content.to_string(),
+            content_md5: format!("{:x}", md5::compute(content)),
+        }
+    }
+
+    pub fn tokens(&self) -> usize {
+        chat_tokens(&self.content).unwrap().len()
+    }
+
+    pub fn size(&self) -> usize {
+        self.content.len()
+    }
+}

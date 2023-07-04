@@ -12,8 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-mod common;
-mod loaders;
+mod local_disk;
 
-pub use common::*;
-pub use loaders::*;
+#[allow(clippy::module_inception)]
+mod disk;
+mod remote_disk;
+
+pub use disk::Disk;
+pub use local_disk::LocalDisk;
+pub use remote_disk::RemoteDisk;

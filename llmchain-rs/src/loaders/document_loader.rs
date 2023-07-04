@@ -12,8 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-mod common;
-mod loaders;
+use anyhow::Result;
 
-pub use common::*;
-pub use loaders::*;
+use crate::DocumentPath;
+use crate::Documents;
+
+#[async_trait::async_trait]
+pub trait DocumentLoader: Send + Sync {
+    async fn load(&self, path: DocumentPath) -> Result<Documents>;
+}

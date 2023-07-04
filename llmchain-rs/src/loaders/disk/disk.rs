@@ -12,8 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-mod common;
-mod loaders;
+use anyhow::Result;
+use opendal::Operator;
 
-pub use common::*;
-pub use loaders::*;
+pub trait Disk: Send + Sync {
+    fn get_operator(&self) -> Result<Operator>;
+}

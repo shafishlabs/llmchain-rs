@@ -12,8 +12,30 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-mod common;
-mod loaders;
+use std::sync::Arc;
 
-pub use common::*;
-pub use loaders::*;
+use anyhow::Result;
+
+use crate::Disk;
+use crate::DocumentLoader;
+use crate::DocumentPath;
+use crate::Documents;
+use crate::TextLoader;
+
+pub struct MarkdownLoader {
+    disk: Arc<dyn Disk>,
+}
+
+impl MarkdownLoader {
+    pub fn create(disk: Arc<dyn Disk>) -> Arc<Self> {
+        Arc::new(MarkdownLoader { disk })
+    }
+}
+
+#[async_trait::async_trait]
+impl DocumentLoader for MarkdownLoader {
+    async fn load(&self, path: DocumentPath) -> Result<Documents> {
+        let text_loader = TextLoader::create(self.disk.clone());
+        text_loader.load(path).await
+    }
+}

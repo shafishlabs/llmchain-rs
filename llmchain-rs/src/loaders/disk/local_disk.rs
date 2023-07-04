@@ -12,8 +12,31 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-mod common;
-mod loaders;
+/// Local File System Disk
+use std::sync::Arc;
 
-pub use common::*;
-pub use loaders::*;
+use anyhow::Result;
+use opendal::services::Fs;
+use opendal::Operator;
+
+use crate::Disk;
+
+pub struct LocalDisk {
+    op: Operator,
+}
+
+impl LocalDisk {
+    pub fn create() -> Result<Arc<Self>> {
+        let mut builder = Fs::default();
+        builder.root("/");
+        let op = Operator::new(builder)?.finish();
+
+        Ok(Arc::new(LocalDisk { op }))
+    }
+}
+
+impl Disk for LocalDisk {
+    fn get_operator(&self) -> Result<Operator> {
+        Ok(self.op.clone())
+    }
+}

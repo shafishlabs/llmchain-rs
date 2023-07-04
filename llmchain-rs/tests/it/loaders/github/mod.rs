@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-mod common;
-mod loaders;
-
-pub use common::*;
-pub use loaders::*;
+mod github_pr_loader;
+mod github_pr_splitter;
+mod github_repo_loader;

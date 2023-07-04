@@ -12,8 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-mod common;
-mod loaders;
+use anyhow::Result;
 
-pub use common::*;
-pub use loaders::*;
+use crate::Documents;
+
+pub trait DocumentSplitter {
+    fn separators(&self) -> Vec<String>;
+    fn split_documents(&self, documents: &Documents) -> Result<Documents>;
+}

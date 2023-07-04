@@ -12,8 +12,34 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-mod common;
-mod loaders;
+/// Cloud Object Storage as Disk
+///
+/// AWS S3
+/// Azure Blob
+/// Google Cloud Storage
+/// Cloudflare R2
+/// Wasabi
+/// MinIO
+/// Alibaba Cloud OSS
+/// Tencent Cloud COS
+/// Huawei Cloud OBS
+use std::sync::Arc;
 
-pub use common::*;
-pub use loaders::*;
+use anyhow::Result;
+use opendal::Operator;
+
+use crate::Disk;
+
+pub struct RemoteDisk {}
+
+impl RemoteDisk {
+    pub fn create() -> Result<Arc<Self>> {
+        Ok(Arc::new(RemoteDisk {}))
+    }
+}
+
+impl Disk for RemoteDisk {
+    fn get_operator(&self) -> Result<Operator> {
+        todo!()
+    }
+}

@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-mod common;
-mod loaders;
+mod markdown_loader;
+mod markdown_splitter;
 
-pub use common::*;
-pub use loaders::*;
+pub use markdown_loader::MarkdownLoader;
+pub use markdown_splitter::MarkdownSplitter;

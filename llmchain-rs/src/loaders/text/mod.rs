@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-mod common;
-mod loaders;
+mod text_loader;
+mod text_splitter;
 
-pub use common::*;
-pub use loaders::*;
+pub use text_loader::TextLoader;
+pub use text_splitter::TextSplitter;
