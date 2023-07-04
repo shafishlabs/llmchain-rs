@@ -25,7 +25,7 @@ use llmchain::TextLoader;
 async fn test_text_loader() -> Result<()> {
     // testdata dir.
     let curdir = std::env::current_dir()?.to_str().unwrap().to_string();
-    let testdata_dir = format!("{}/tests/testdata", curdir);
+    let testdata_dir = format!("{}/tests/testdata/loaders", curdir);
     let text_file = format!("{}/text/example.txt", testdata_dir);
 
     // Load

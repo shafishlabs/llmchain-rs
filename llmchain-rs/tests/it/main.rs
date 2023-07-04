@@ -16,3 +16,4 @@ mod common;
 mod embeddings;
 mod llms;
 mod loaders;
+mod prompts;

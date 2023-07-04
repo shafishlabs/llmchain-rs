@@ -27,7 +27,7 @@ use llmchain::TextSplitter;
 async fn test_text_splitter_default() -> Result<()> {
     // testdata dir.
     let curdir = std::env::current_dir()?.to_str().unwrap().to_string();
-    let testdata_dir = format!("{}/tests/testdata", curdir);
+    let testdata_dir = format!("{}/tests/testdata/loaders", curdir);
     let text_file = format!("{}/text/example.txt", testdata_dir);
 
     // Load
@@ -66,7 +66,7 @@ async fn test_text_splitter_default() -> Result<()> {
 async fn test_text_splitter_10() -> Result<()> {
     // testdata dir.
     let curdir = std::env::current_dir()?.to_str().unwrap().to_string();
-    let testdata_dir = format!("{}/tests/testdata", curdir);
+    let testdata_dir = format!("{}/tests/testdata/loaders", curdir);
     let text_file = format!("{}/text/example.txt", testdata_dir);
 
     // Load

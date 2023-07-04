@@ -12,14 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-mod common;
-mod embeddings;
-mod llms;
-mod loaders;
-mod prompts;
+mod document_retrieval_prompt;
+mod github_pr_summary_prompt;
+mod prompt;
+mod text_to_sql_prompt;
 
-pub use common::*;
-pub use embeddings::*;
-pub use llms::*;
-pub use loaders::*;
-pub use prompts::*;
+pub use document_retrieval_prompt::DocumentRetrievalPrompt;
+pub use github_pr_summary_prompt::GithubPRSummaryPrompt;
+pub use prompt::Prompt;
+pub use prompt::PromptTemplate;
+pub use text_to_sql_prompt::TextToSQLPrompt;

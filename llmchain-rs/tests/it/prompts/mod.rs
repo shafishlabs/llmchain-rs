@@ -12,14 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-mod common;
-mod embeddings;
-mod llms;
-mod loaders;
-mod prompts;
-
-pub use common::*;
-pub use embeddings::*;
-pub use llms::*;
-pub use loaders::*;
-pub use prompts::*;
+mod document_retrieval_prompt;
+mod prompt_template;
+mod text_to_sql_prompt;

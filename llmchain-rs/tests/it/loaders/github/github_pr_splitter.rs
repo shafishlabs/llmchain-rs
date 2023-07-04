@@ -27,7 +27,7 @@ async fn test_github_pr_splitter_default() -> Result<()> {
     let token = std::env::var("L_GITHUB_TOKEN").expect("L_GITHUB_TOKEN is not set");
     // testdata dir.
     let curdir = std::env::current_dir()?.to_str().unwrap().to_string();
-    let testdata_dir = format!("{}/tests/testdata", curdir);
+    let testdata_dir = format!("{}/tests/testdata/loaders", curdir);
 
     // Load
     let github_pr_loader = GithubPRLoader::create("datafuselabs", "databend", &token);
