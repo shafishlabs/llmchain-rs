@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-mod common;
-mod llms;
-mod loaders;
+#[allow(clippy::module_inception)]
+mod azure_openai;
+
+pub use azure_openai::AzureOpenAI;
