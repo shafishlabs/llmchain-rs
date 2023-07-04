@@ -1,10 +1,12 @@
 [package]
 name = "llmchain"
 version = "0.1.0"
+authors = ["BohuTANG <overred.shuttler@gmail.com>"]
 edition = "2021"
-license = "Apache-2.0"
 description = "A Rust framework for large language models, inspired by LangChain"
-keywords = ["openai", "ai", "llm", "gpt"]
+repository = "https://github.com/shafishlabs/llmchain.rs"
+license = "Apache-2.0"
+keywords = ["openai", "ai", "llm", "gpt", "library"]
 
 [dependencies]
 anyhow = "1.0.*"
