@@ -2,7 +2,7 @@
 resolver = "2"
 
 members = [
-    "llmchain-rs"
+    "llmchain"
 ]
 
 
