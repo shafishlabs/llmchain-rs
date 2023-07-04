@@ -50,12 +50,14 @@ doctest = false
 test = false
 
 [dependencies]
-llmchain = { path = "../export" }
+llmchain = { path = "../llmchain" }
 
-anyhow = { workspace = true }
-env_logger = { workspace = true }
-log = { workspace = true }
-tokio = { workspace = true }
+anyhow = "1.0.*"
+env_logger = "0.10.0"
+log = "0.4.17"
+tokio = { version = "1.28.0", features = ["full"]}
 url = "2.4.0"
+colored = "2.0.0"
+rustyline = "11.0.0"
 
 [dev-dependencies]

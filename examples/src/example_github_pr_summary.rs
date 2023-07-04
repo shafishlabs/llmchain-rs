@@ -14,7 +14,6 @@
 
 use anyhow::Result;
 use env_logger::Env;
-use llmchain::handle_repl;
 use llmchain::DatabendLLM;
 use llmchain::DocumentLoader;
 use llmchain::DocumentPath;
@@ -22,8 +21,9 @@ use llmchain::DocumentSplitter;
 use llmchain::GithubPRDiffSplitter;
 use llmchain::GithubPRLoader;
 use llmchain::GithubPRSummary;
-use llmchain::ReplAsyncCallback;
 use llmchain::Summarize;
+use llmchain_examples::kit::handle_repl;
+use llmchain_examples::kit::ReplAsyncCallback;
 use log::info;
 use url::Url;
 
