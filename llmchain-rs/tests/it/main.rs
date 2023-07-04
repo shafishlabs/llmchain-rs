@@ -13,5 +13,6 @@
 // limitations under the License.
 
 mod common;
+mod embeddings;
 mod llms;
 mod loaders;

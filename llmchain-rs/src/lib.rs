@@ -13,9 +13,11 @@
 // limitations under the License.
 
 mod common;
+mod embeddings;
 mod llms;
 mod loaders;
 
 pub use common::*;
+pub use embeddings::*;
 pub use llms::*;
 pub use loaders::*;

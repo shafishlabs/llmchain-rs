@@ -12,8 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-mod string;
-mod token;
+#[allow(clippy::module_inception)]
+mod databend;
 
-pub use string::escape_sql_string;
-pub use token::chat_tokens;
+pub use databend::DatabendEmbedding;

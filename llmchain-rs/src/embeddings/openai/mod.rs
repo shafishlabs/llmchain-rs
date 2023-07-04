@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-mod azure_openai;
-mod databend;
+#[allow(clippy::module_inception)]
 mod openai;
+
+pub use openai::OpenAIEmbedding;

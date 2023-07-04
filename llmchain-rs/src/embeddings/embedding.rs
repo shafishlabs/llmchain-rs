@@ -13,9 +13,11 @@
 // limitations under the License.
 
 use anyhow::Result;
-use tiktoken_rs::r50k_base;
 
-pub fn chat_tokens(input: &str) -> Result<Vec<String>> {
-    let rke = r50k_base()?;
-    rke.split_by_token(input, true)
+use crate::Documents;
+
+#[async_trait::async_trait]
+pub trait Embedding: Send + Sync {
+    async fn embed_query(&self, input: &str) -> Result<Vec<f32>>;
+    async fn embed_documents(&self, inputs: &Documents) -> Result<Vec<Vec<f32>>>;
 }
