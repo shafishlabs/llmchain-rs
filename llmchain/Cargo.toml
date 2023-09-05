@@ -1,6 +1,6 @@
 [package]
 name = "llmchain"
-version = "0.1.2"
+version = "0.1.3"
 authors = ["BohuTANG <overred.shuttler@gmail.com>"]
 edition = "2021"
 description = "A Rust framework for large language models, inspired by LangChain"
@@ -10,18 +10,18 @@ keywords = ["openai", "ai", "llm", "gpt", "library"]
 
 [dependencies]
 anyhow = "1.0.*"
-async-openai = "0.12.0"
+async-openai = "0.14.0"
 async-trait = "0.1.68"
-databend-driver = "0.2.23"
+databend-driver = "0.6.4"
 env_logger = "0.10.0"
 futures = "0.3.*"
-git2 = "0.17.2"
+git2 = "0.18.0"
 glob = "0.3.1"
 goldenfile = "1.4"
 log = "0.4.17"
 md5 = "0.7.0"
-octocrab = "0.25.1"
-opendal = "0.38.0"
+octocrab = "0.30.1"
+opendal = "0.39.0"
 parking_lot = "0.12.1"
 patch = "0.7.0"
 rayon = "1.7.0"
