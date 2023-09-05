@@ -3,7 +3,7 @@ name: ci
 on:
   push:
     branches: [main]
-  pull_request_target:
+  pull_request:
     branches: [main]
 
 concurrency:
@@ -38,11 +38,11 @@ jobs:
 
   unit:
     runs-on: ubuntu-latest
+    if: github.event_name == 'push'
     env:
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
       DATABEND_DSN: ${{ secrets.DATABEND_DSN }}
       L_GITHUB_TOKEN: ${{ secrets.L_GITHUB_TOKEN }}
-      
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup

@@ -14,8 +14,9 @@
 
 use std::sync::Arc;
 
+use anyhow::anyhow;
 use anyhow::Result;
-use databend_driver::new_connection;
+use databend_driver::Client;
 use log::info;
 use tokio_stream::StreamExt;
 
@@ -25,13 +26,13 @@ use crate::GenerateResult;
 use crate::LLM;
 
 pub struct DatabendLLM {
-    dsn: String,
+    client: Client,
 }
 
 impl DatabendLLM {
     pub fn create(dsn: &str) -> Arc<Self> {
         Arc::new(DatabendLLM {
-            dsn: dsn.to_string(),
+            client: Client::new(dsn.to_string()),
         })
     }
 }
@@ -39,7 +40,7 @@ impl DatabendLLM {
 #[async_trait::async_trait]
 impl LLM for DatabendLLM {
     async fn embedding(&self, inputs: Vec<String>) -> Result<EmbeddingResult> {
-        let conn = new_connection(&self.dsn)?;
+        let conn = self.client.get_conn().await?;
         let mut embeddings = vec![];
         for (i, input) in inputs.iter().enumerate() {
             let now = std::time::Instant::now();
@@ -51,7 +52,7 @@ impl LLM for DatabendLLM {
                 ))
                 .await?;
             while let Some(row) = rows.next().await {
-                let row: RowResult = row?.try_into()?;
+                let row: RowResult = row?.try_into().map_err(|e: String| anyhow!(e))?;
                 let array_vec: Vec<f32> = serde_json::from_str(&row.0)?;
                 info!(
                     "embedding {}/{},  time: {:?}",
@@ -71,7 +72,7 @@ impl LLM for DatabendLLM {
     }
 
     async fn generate(&self, input: &str) -> Result<GenerateResult> {
-        let conn = new_connection(&self.dsn)?;
+        let conn = self.client.get_conn().await?;
         let row = conn
             .query_row(&format!(
                 "SELECT ai_text_completion('{}')",
@@ -79,13 +80,13 @@ impl LLM for DatabendLLM {
             ))
             .await?;
 
-        let mut generation = "".to_string();
-
-        if let Some(res) = row {
-            type RowResult = (String,);
-            let row: RowResult = res.try_into()?;
-            generation = row.0;
-        }
+        let generation = match row {
+            Some(row) => {
+                let (gen,): (String,) = row.try_into().map_err(|e: String| anyhow!(e))?;
+                gen
+            }
+            None => "".to_string(),
+        };
 
         Ok(GenerateResult {
             prompt_tokens: 0,
