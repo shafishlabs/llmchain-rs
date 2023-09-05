@@ -14,8 +14,9 @@
 
 use std::sync::Arc;
 
+use anyhow::anyhow;
 use anyhow::Result;
-use databend_driver::new_connection;
+use databend_driver::Client;
 use futures::StreamExt;
 use log::info;
 use uuid::Uuid;
@@ -27,7 +28,7 @@ use crate::Embedding;
 use crate::VectorStore;
 
 pub struct DatabendVectorStore {
-    dsn: String,
+    client: Client,
     database: String,
     table: String,
     embedding: Arc<dyn Embedding>,
@@ -37,7 +38,7 @@ pub struct DatabendVectorStore {
 impl DatabendVectorStore {
     pub fn create(dsn: &str, embedding: Arc<dyn Embedding>) -> Self {
         DatabendVectorStore {
-            dsn: dsn.to_string(),
+            client: Client::new(dsn.to_string()),
             database: "embedding_store".to_string(),
             table: "llmchain_collection".to_string(),
             embedding,
@@ -64,7 +65,7 @@ impl DatabendVectorStore {
 #[async_trait::async_trait]
 impl VectorStore for DatabendVectorStore {
     async fn init(&self) -> Result<()> {
-        let conn = new_connection(&self.dsn)?;
+        let conn = self.client.get_conn().await?;
 
         let database_create_sql = format!("CREATE DATABASE IF NOT EXISTS {}", self.database);
         conn.exec(&database_create_sql).await?;
@@ -104,7 +105,7 @@ impl VectorStore for DatabendVectorStore {
         let values = val_vec.join(",").to_string();
 
         let final_sql = format!("{} {}", sql, values);
-        let conn = new_connection(&self.dsn)?;
+        let conn = self.client.get_conn().await?;
         conn.exec(&final_sql).await?;
 
         Ok(uuids)
@@ -123,10 +124,10 @@ impl VectorStore for DatabendVectorStore {
 
         let mut documents = vec![];
         type RowResult = (String, String, String, f32);
-        let conn = new_connection(&self.dsn)?;
+        let conn = self.client.get_conn().await?;
         let mut rows = conn.query_iter(&sql).await?;
         while let Some(row) = rows.next().await {
-            let row: RowResult = row?.try_into()?;
+            let row: RowResult = row?.try_into().map_err(|e: String| anyhow!(e))?;
 
             info!("document: {:?}", row);
 
