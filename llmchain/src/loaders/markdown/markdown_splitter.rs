@@ -32,7 +32,7 @@ impl MarkdownSplitter {
                 "\n### ".to_string(),
                 "\n#### ".to_string(),
                 "\n##### ".to_string(),
-                "\n###### ".to_string()
+                "\n###### ".to_string(),
             ],
         }
     }

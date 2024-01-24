@@ -104,7 +104,6 @@ async fn test_markdown_splitter_100() -> Result<()> {
     Ok(())
 }
 
-
 #[tokio::test]
 async fn test_markdown_splitter_custom_separator() -> Result<()> {
     // testdata dir.
@@ -123,7 +122,7 @@ async fn test_markdown_splitter_custom_separator() -> Result<()> {
         "\n- ### ".to_string(),
         "\n- #### ".to_string(),
         "\n- ##### ".to_string(),
-        "\n- ###### ".to_string()
+        "\n- ###### ".to_string(),
     ]);
     let documents = markdown_splitter.split_documents(&documents)?;
 
@@ -149,4 +148,3 @@ async fn test_markdown_splitter_custom_separator() -> Result<()> {
 
     Ok(())
 }
-
