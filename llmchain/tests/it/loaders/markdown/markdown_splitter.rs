@@ -103,3 +103,48 @@ async fn test_markdown_splitter_100() -> Result<()> {
 
     Ok(())
 }
+
+#[tokio::test]
+async fn test_markdown_splitter_custom_separator() -> Result<()> {
+    // testdata dir.
+    let curdir = std::env::current_dir()?.to_str().unwrap().to_string();
+    let testdata_dir = format!("{}/tests/testdata/loaders", curdir);
+    let markdown_file = format!("{}/markdown/copy-hyphen.md", testdata_dir);
+
+    // Load
+    let markdown_loader = MarkdownLoader::create(LocalDisk::create()?);
+    let documents = markdown_loader
+        .load(DocumentPath::from_string(&markdown_file))
+        .await?;
+
+    let markdown_splitter = MarkdownSplitter::create().with_separators(vec![
+        "\n- ## ".to_string(),
+        "\n- ### ".to_string(),
+        "\n- #### ".to_string(),
+        "\n- ##### ".to_string(),
+        "\n- ###### ".to_string(),
+    ]);
+    let documents = markdown_splitter.split_documents(&documents)?;
+
+    // Check.
+    let mut mint = Mint::new(&testdata_dir);
+    let golden_path = "markdown/copy_md_splitter_custom_separator.golden";
+    let mut file = mint.new_goldenfile(golden_path)?;
+    for (i, doc) in documents.iter().enumerate() {
+        writeln!(
+            file,
+            "part={}, len={}, chunk_size={}, md5={}",
+            i,
+            doc.content.len(),
+            markdown_splitter.splitter_chunk_size,
+            doc.content_md5
+        )?;
+        writeln!(
+            file,
+            "------------------------------------------------------------"
+        )?;
+        writeln!(file, "{}", doc.content)?;
+    }
+
+    Ok(())
+}

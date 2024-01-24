@@ -20,12 +20,20 @@ use crate::TextSplitter;
 
 pub struct MarkdownSplitter {
     pub splitter_chunk_size: usize,
+    pub separators: Vec<String>,
 }
 
 impl MarkdownSplitter {
     pub fn create() -> Self {
         MarkdownSplitter {
             splitter_chunk_size: 400,
+            separators: vec![
+                "\n## ".to_string(),
+                "\n### ".to_string(),
+                "\n#### ".to_string(),
+                "\n##### ".to_string(),
+                "\n###### ".to_string(),
+            ],
         }
     }
 
@@ -33,17 +41,16 @@ impl MarkdownSplitter {
         self.splitter_chunk_size = chunk_size;
         self
     }
+
+    pub fn with_separators(mut self, separators: Vec<String>) -> Self {
+        self.separators = separators;
+        self
+    }
 }
 
 impl DocumentSplitter for MarkdownSplitter {
     fn separators(&self) -> Vec<String> {
-        vec![
-            "\n## ".to_string(),
-            "\n### ".to_string(),
-            "\n#### ".to_string(),
-            "\n##### ".to_string(),
-            "\n###### ".to_string(),
-        ]
+        self.separators.clone()
     }
 
     fn split_documents(&self, documents: &Documents) -> Result<Documents> {
