@@ -16,10 +16,9 @@ use std::collections::HashMap;
 use std::sync::Arc;
 
 use anyhow::Result;
-use futures::TryStreamExt;
+use async_recursion::async_recursion;
 use glob::Pattern;
 use opendal::EntryMode;
-use opendal::Metakey;
 use rayon::iter::ParallelIterator;
 use rayon::prelude::IntoParallelRefIterator;
 use rayon::ThreadPoolBuilder;
@@ -54,19 +53,19 @@ impl DirectoryLoader {
         self
     }
 
+    #[async_recursion]
     async fn process_directory(
         &self,
         path: &str,
         tasks: &mut Vec<(String, Arc<dyn DocumentLoader>)>,
     ) -> Result<()> {
         let op = self.disk.get_operator()?;
-        let mut ds = op.scan(path).await?;
-        while let Some(de) = ds.try_next().await? {
-            let meta = op.metadata(&de, Metakey::Mode).await?;
-            match meta.mode() {
+        let entries = op.list(path).await?;
+        for entry in entries {
+            match entry.metadata().mode() {
                 EntryMode::FILE => {
                     for loader in &self.loaders {
-                        let path_str = format!("{}{}", op.info().root(), de.path());
+                        let path_str = format!("{}{}", op.info().root(), entry.path());
                         let pattern = Pattern::new(loader.0)?;
                         if pattern.matches(&path_str) {
                             tasks.push((path_str, loader.1.clone()));
@@ -74,9 +73,13 @@ impl DirectoryLoader {
                         }
                     }
                 }
+                EntryMode::DIR=> {
+                    self.process_directory(&entry.path(), tasks).await?;
+                }
                 _ => continue,
             }
         }
+
         Ok(())
     }
 }
