@@ -1,4 +1,4 @@
-// Copyright 2023 Shafish Labs.
+// Copyright 2024 Shafish Labs.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,20 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-mod common;
-mod embeddings;
-mod llms;
-mod loaders;
-mod memory;
-mod models;
-mod prompts;
-mod vector_stores;
+use anyhow::Result;
 
-pub use common::*;
-pub use embeddings::*;
-pub use llms::*;
-pub use loaders::*;
-pub use memory::*;
-pub use prompts::*;
-pub use vector_stores::*;
-pub use models::*;
+
+#[async_trait::async_trait]
+pub trait Model: Send + Sync {
+    async fn pull(&self) -> Result<()>;
+}

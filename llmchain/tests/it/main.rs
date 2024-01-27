@@ -18,3 +18,4 @@ mod llms;
 mod loaders;
 mod prompts;
 mod vector_stores;
+mod models;
