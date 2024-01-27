@@ -73,8 +73,8 @@ impl DirectoryLoader {
                         }
                     }
                 }
-                EntryMode::DIR=> {
-                    self.process_directory(&entry.path(), tasks).await?;
+                EntryMode::DIR => {
+                    self.process_directory(entry.path(), tasks).await?;
                 }
                 _ => continue,
             }
