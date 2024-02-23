@@ -29,17 +29,14 @@ impl GithubPRSummaryPrompt {
 
 impl Prompt for GithubPRSummaryPrompt {
     fn template(&self) -> String {
-        let tpl = vec![
-            "You are an expert programmer summarizing code changes, please provide a clear and concise summary of the main changes made in a pull request. Focus on the motivation behind the changes and avoid describing specific file modifications. Follow these guidelines while summarizing:",
-            "1. Ignore changes that you think are not important.",
-            "2. Summarize and classify all changelogs into 1 to 5 points.",
-            "3. Remove the similar points.",
-            "4. Summarize a title for each point, format is `* **Title**`, describing what the point mainly did, as a new title for the pull request changelog, no more than 30 words.",
-            "5. Make an understandable summary for each point with in 50 words, mainly for the background of this change.",
-            "--------",
-            "{text}",
-        ];
-        tpl.join("\n")
+        r#"You are an expert programmer summarizing code changes, please provide a clear and concise summary of the main changes made in a pull request. Focus on the motivation behind the changes and avoid describing specific file modifications. Follow these guidelines while summarizing:
+            1. Ignore changes that you think are not important.
+            2. Summarize and classify all changelogs into 1 to 5 points.
+            3. Remove the similar points.
+            4. Summarize a title for each point, format is `* **Title**`, describing what the point mainly did, as a new title for the pull request changelog, no more than 30 words.
+            5. Make an understandable summary for each point with in 50 words, mainly for the background of this change.
+            --------
+            {text}"#.to_string()
     }
 
     fn variables(&self) -> Vec<String> {

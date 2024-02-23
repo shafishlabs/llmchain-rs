@@ -47,18 +47,15 @@ impl Prompt for DocumentRetrievalPrompt {
         // Source: 0-pl
         // Content: yy
         // Source: 24-pl
-        let tpl = vec![
-            "Given the following contexts of a long document and a question, create a final answer with references (\"SOURCES\"). ",
-            "If you don't know the answer, just say that you don't know. Don't try to make up an answer. ",
-            "please follow these instructions:\n",
-            "{instructions}\n",
-            "=========\n",
-            "{contexts}\n",
-            "=========\n",
-            "QUESTION: {question}\n",
-            "FINAL ANSWER:",
-        ];
-        tpl.join("")
+        r#"Given the following contexts of a long document and a question, create a final answer with references (\"SOURCES\").
+            If you don't know the answer, just say that you don't know. Don't try to make up an answer.
+            please follow these instructions
+            {instructions}
+            =========
+            {contexts}
+            =========
+            QUESTION: {question}
+            FINAL ANSWER:"#.to_string()
     }
 
     fn variables(&self) -> Vec<String> {
