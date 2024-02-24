@@ -26,9 +26,9 @@ pub struct OpenAIEmbedding {
 }
 
 impl OpenAIEmbedding {
-    pub fn create(api_key: &str) -> Self {
+    pub fn create<T: Into<Arc<OpenAI>>>(open_ai: T) -> Self {
         OpenAIEmbedding {
-            llm: OpenAI::create(api_key),
+            llm: open_ai.into(),
         }
     }
 }
