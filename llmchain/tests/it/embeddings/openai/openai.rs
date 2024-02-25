@@ -16,6 +16,7 @@ use anyhow::Result;
 use llmchain::Document;
 use llmchain::Documents;
 use llmchain::Embedding;
+use llmchain::OpenAI;
 use llmchain::OpenAIEmbedding;
 
 #[ignore]
@@ -25,14 +26,14 @@ async fn test_embedding_openai() -> Result<()> {
 
     // embeddings query.
     {
-        let embeddings = OpenAIEmbedding::create(&api_key);
+        let embeddings = OpenAIEmbedding::create(OpenAI::create(&api_key));
         let query_result = embeddings.embed_query("hello").await?;
         assert_eq!(query_result.len(), 1536);
     }
 
     // embeddings documents.
     {
-        let embeddings = OpenAIEmbedding::create(&api_key);
+        let embeddings = OpenAIEmbedding::create(OpenAI::create(&api_key));
         let documents = Documents::from(vec![
             Document::create("", "hello"),
             Document::create("", "llmchain.rs"),
