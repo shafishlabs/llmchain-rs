@@ -63,8 +63,8 @@ pub struct OpenAI {
     // We generally recommend altering this or top_p but not both.
     temperature: RwLock<f32>,
 
-    embedding_model: RwLock<OpenAIEmbeddingModel>,
-    generate_model: RwLock<OpenAIGenerateModel>,
+    embedding_model: RwLock<String>,
+    generate_model: RwLock<String>,
 }
 
 impl OpenAI {
@@ -74,8 +74,8 @@ impl OpenAI {
             api_key: api_key.to_string(),
             max_tokens: RwLock::new(4095),
             temperature: RwLock::new(1.0),
-            embedding_model: RwLock::new(OpenAIEmbeddingModel::TextEmbeddingAda002),
-            generate_model: RwLock::new(OpenAIGenerateModel::Gpt35),
+            embedding_model: RwLock::new(OpenAIEmbeddingModel::TextEmbeddingAda002.to_string()),
+            generate_model: RwLock::new(OpenAIGenerateModel::Gpt35.to_string()),
         })
     }
 
@@ -89,13 +89,13 @@ impl OpenAI {
         self.clone()
     }
 
-    pub fn with_embedding_model(self: &Arc<Self>, model: OpenAIEmbeddingModel) -> Arc<Self> {
-        *self.embedding_model.write() = model;
+    pub fn with_embedding_model<M: Into<String>>(self: &Arc<Self>, model: M) -> Arc<Self> {
+        *self.embedding_model.write() = model.into();
         self.clone()
     }
 
-    pub fn with_generate_model(self: &Arc<Self>, model: OpenAIGenerateModel) -> Arc<Self> {
-        *self.generate_model.write() = model;
+    pub fn with_generate_model<M: Into<String>>(self: &Arc<Self>, model: M) -> Arc<Self> {
+        *self.generate_model.write() = model.into();
         self.clone()
     }
 
