@@ -16,5 +16,7 @@
 mod openai;
 
 pub use openai::OpenAI;
+pub use openai::OpenAIBuilder;
+pub use openai::OpenAIBuilderError;
 pub use openai::OpenAIEmbeddingModel;
 pub use openai::OpenAIGenerateModel;
