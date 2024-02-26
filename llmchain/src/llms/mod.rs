@@ -21,5 +21,7 @@ pub use azure_openai::AzureOpenAI;
 pub use databend::DatabendLLM;
 pub use llm::*;
 pub use openai::OpenAI;
+pub use openai::OpenAIBuilder;
+pub use openai::OpenAIBuilderError;
 pub use openai::OpenAIEmbeddingModel;
 pub use openai::OpenAIGenerateModel;

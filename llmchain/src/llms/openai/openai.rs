@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use std::sync::Arc;
-
 use anyhow::Result;
 use async_openai::config::OpenAIConfig;
 use async_openai::types::ChatCompletionRequestMessageArgs;
@@ -21,7 +19,7 @@ use async_openai::types::CreateChatCompletionRequestArgs;
 use async_openai::types::CreateEmbeddingRequestArgs;
 use async_openai::types::Role;
 use async_openai::Client;
-use parking_lot::RwLock;
+use derive_builder::Builder;
 
 use crate::EmbeddingResult;
 use crate::GenerateResult;
@@ -51,64 +49,46 @@ impl ToString for OpenAIGenerateModel {
     }
 }
 
+#[derive(Builder)]
+#[builder(name = "OpenAIBuilder")]
+#[builder(derive(Debug))]
 pub struct OpenAI {
-    api_base: RwLock<String>,
+    api_base: String,
     api_key: String,
+    org_id: Option<String>,
 
     // The maximum number of tokens allowed for the generated answer.
     // By default, the number of tokens the model can return will be (4095 - prompt tokens).
-    max_tokens: RwLock<u16>,
+    max_tokens: u16,
 
     // What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic.
     // We generally recommend altering this or top_p but not both.
-    temperature: RwLock<f32>,
+    temperature: f32,
 
-    embedding_model: RwLock<String>,
-    generate_model: RwLock<String>,
+    embedding_model: String,
+    generate_model: String,
+
+    http_client: reqwest::Client,
 }
 
 impl OpenAI {
-    pub fn create(api_key: &str) -> Arc<Self> {
-        Arc::new(OpenAI {
-            api_base: RwLock::new("https://api.openai.com/v1/".to_string()),
-            api_key: api_key.to_string(),
-            max_tokens: RwLock::new(4095),
-            temperature: RwLock::new(1.0),
-            embedding_model: RwLock::new(OpenAIEmbeddingModel::TextEmbeddingAda002.to_string()),
-            generate_model: RwLock::new(OpenAIGenerateModel::Gpt35.to_string()),
-        })
+    pub fn create<S: Into<String>>(api_key: S) -> OpenAI {
+        OpenAIBuilder::default()
+            .api_key(api_key.into())
+            .build()
+            .unwrap()
     }
 
-    pub fn with_api_base<S: Into<String>>(self: &Arc<Self>, api_base: S) -> Arc<Self> {
-        *self.api_base.write() = api_base.into();
-        self.clone()
-    }
-
-    pub fn with_max_tokens(self: &Arc<Self>, max_tokens: u16) -> Arc<Self> {
-        *self.max_tokens.write() = max_tokens;
-        self.clone()
-    }
-
-    pub fn with_embedding_model<M: Into<String>>(self: &Arc<Self>, model: M) -> Arc<Self> {
-        *self.embedding_model.write() = model.into();
-        self.clone()
-    }
-
-    pub fn with_generate_model<M: Into<String>>(self: &Arc<Self>, model: M) -> Arc<Self> {
-        *self.generate_model.write() = model.into();
-        self.clone()
-    }
-
-    pub fn with_temperature(self: &Arc<Self>, temperature: f32) -> Arc<Self> {
-        *self.temperature.write() = temperature;
-        self.clone()
-    }
-
-    pub fn get_client(&self) -> Client<OpenAIConfig> {
-        let conf = OpenAIConfig::new()
+    fn get_client(&self) -> Client<OpenAIConfig> {
+        let mut conf = OpenAIConfig::new()
             .with_api_key(&self.api_key)
-            .with_api_base(&*self.api_base.read());
-        Client::with_config(conf)
+            .with_api_base(&self.api_base);
+
+        if let Some(org_id) = &self.org_id {
+            conf = conf.with_org_id(org_id);
+        }
+
+        Client::with_config(conf).with_http_client(self.http_client.clone())
     }
 }
 
@@ -116,7 +96,7 @@ impl OpenAI {
 impl LLM for OpenAI {
     async fn embedding(&self, inputs: Vec<String>) -> Result<EmbeddingResult> {
         let request = CreateEmbeddingRequestArgs::default()
-            .model(&*self.embedding_model.read().to_string())
+            .model(&self.embedding_model.to_string())
             .input(inputs)
             .build()?;
 
@@ -137,9 +117,9 @@ impl LLM for OpenAI {
 
     async fn generate(&self, input: &str) -> Result<GenerateResult> {
         let request = CreateChatCompletionRequestArgs::default()
-            .max_tokens(*self.max_tokens.read() - input.len() as u16)
-            .model(&*self.generate_model.read().to_string())
-            .temperature(*self.temperature.read())
+            .max_tokens(self.max_tokens - input.len() as u16)
+            .model(self.generate_model.to_string())
+            .temperature(self.temperature)
             .messages([ChatCompletionRequestMessageArgs::default()
                 .role(Role::Assistant)
                 .content(input)

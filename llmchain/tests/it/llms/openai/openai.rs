@@ -13,7 +13,7 @@
 // limitations under the License.
 
 use anyhow::Result;
-use llmchain::OpenAI;
+use llmchain::OpenAIBuilder;
 use llmchain::OpenAIGenerateModel;
 use llmchain::LLM;
 
@@ -22,7 +22,7 @@ use llmchain::LLM;
 async fn test_llm_openai_generate_gpt35() -> Result<()> {
     let api_key = std::env::var("OPENAI_API_KEY").unwrap_or("".to_string());
 
-    let llm = OpenAI::create(&api_key);
+    let llm = OpenAIBuilder::default().api_key(api_key).build()?;
     let result = llm.generate("say Hello").await?;
     let generation = result.generation;
     assert!(generation.contains("Hello"));
@@ -38,7 +38,10 @@ async fn test_llm_openai_generate_gpt35() -> Result<()> {
 async fn test_llm_openai_generate_gpt4() -> Result<()> {
     let api_key = std::env::var("OPENAI_API_KEY").unwrap_or("".to_string());
 
-    let llm = OpenAI::create(&api_key).with_generate_model(OpenAIGenerateModel::Gpt4.to_string());
+    let llm = OpenAIBuilder::default()
+        .api_key(api_key)
+        .generate_model(OpenAIGenerateModel::Gpt4.to_string())
+        .build()?;
     let result = llm.generate("say Hello").await?;
     let generation = result.generation;
     assert!(generation.contains("Hello"));
@@ -53,7 +56,7 @@ async fn test_llm_openai_generate_gpt4() -> Result<()> {
 #[tokio::test]
 async fn test_llm_openai_embedding() -> Result<()> {
     let api_key = std::env::var("OPENAI_API_KEY").unwrap_or("".to_string());
-    let llm = OpenAI::create(&api_key);
+    let llm = OpenAIBuilder::default().api_key(api_key).build()?;
     let inputs = vec!["llmchain".to_string(), "rs".to_string()];
     let result = llm.embedding(inputs).await?;
     let embeddings = result.embeddings;
