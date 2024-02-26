@@ -38,7 +38,10 @@ async fn test_llm_openai_generate_gpt35() -> Result<()> {
 async fn test_llm_openai_generate_gpt4() -> Result<()> {
     let api_key = std::env::var("OPENAI_API_KEY").unwrap_or("".to_string());
 
-    let llm = OpenAIBuilder::default().api_key(api_key).generate_model(OpenAIGenerateModel::Gpt4.to_string()).build()?;
+    let llm = OpenAIBuilder::default()
+        .api_key(api_key)
+        .generate_model(OpenAIGenerateModel::Gpt4.to_string())
+        .build()?;
     let result = llm.generate("say Hello").await?;
     let generation = result.generation;
     assert!(generation.contains("Hello"));

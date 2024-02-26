@@ -73,7 +73,10 @@ pub struct OpenAI {
 
 impl OpenAI {
     pub fn create<S: Into<String>>(api_key: S) -> OpenAI {
-        OpenAIBuilder::default().api_key(api_key.into()).build().unwrap()
+        OpenAIBuilder::default()
+            .api_key(api_key.into())
+            .build()
+            .unwrap()
     }
 
     fn get_client(&self) -> Client<OpenAIConfig> {

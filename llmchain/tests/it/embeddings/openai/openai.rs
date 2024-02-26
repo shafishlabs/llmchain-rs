@@ -26,14 +26,16 @@ async fn test_embedding_openai() -> Result<()> {
 
     // embeddings query.
     {
-        let embeddings = OpenAIEmbedding::create(OpenAIBuilder::default().api_key(api_key.clone()).build()?);
+        let embeddings =
+            OpenAIEmbedding::create(OpenAIBuilder::default().api_key(api_key.clone()).build()?);
         let query_result = embeddings.embed_query("hello").await?;
         assert_eq!(query_result.len(), 1536);
     }
 
     // embeddings documents.
     {
-        let embeddings = OpenAIEmbedding::create(OpenAIBuilder::default().api_key(api_key.clone()).build()?);
+        let embeddings =
+            OpenAIEmbedding::create(OpenAIBuilder::default().api_key(api_key.clone()).build()?);
         let documents = Documents::from(vec![
             Document::create("", "hello"),
             Document::create("", "llmchain.rs"),
