@@ -68,7 +68,7 @@ pub struct OpenAI {
     embedding_model: String,
     generate_model: String,
 
-    http_client: Option<reqwest::Client>,
+    http_client: reqwest::Client,
 }
 
 impl OpenAI {
@@ -81,12 +81,7 @@ impl OpenAI {
             conf = conf.with_org_id(org_id);
         }
 
-        let mut client = Client::with_config(conf);
-        if let Some(http_client) = &self.http_client {
-            client = client.with_http_client(http_client.clone())
-        }
-
-        client
+        Client::with_config(conf).with_http_client(self.http_client.clone())
     }
 }
 
